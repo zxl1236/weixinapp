@@ -1,0 +1,117 @@
+/* 主卡片样式 */
+.main-card {
+  text-align: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  margin-bottom: 30rpx;
+  padding: 40rpx;
+  border-radius: 20rpx;
+}
+
+.main-card .title {
+  color: white;
+  font-size: 52rpx;
+  font-weight: 700;
+  margin-bottom: 15rpx;
+}
+
+.main-card .subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 34rpx;
+  margin-bottom: 40rpx;
+}
+
+/* 测试选项网格样式 */
+.test-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  margin-top: 40rpx;
+}
+
+.test-option-card {
+  background: rgba(255, 255, 255, 0.15);
+  border: 4rpx solid rgba(255, 255, 255, 0.2);
+  border-radius: 24rpx;
+  padding: 32rpx 24rpx;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.test-option-card:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.option-icon {
+  font-size: 64rpx;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.option-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  margin-bottom: 12rpx;
+  color: white;
+}
+
+.option-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 16rpx;
+  line-height: 1.4;
+}
+
+.option-time {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+  display: inline-block;
+}
+
+/* 错题回顾卡片特殊样式 */
+.mistake-card {
+  background: linear-gradient(135deg, rgba(255, 154, 158, 0.2) 0%, rgba(254, 207, 239, 0.2) 100%);
+  border-color: rgba(255, 154, 158, 0.3);
+}
+
+.mistake-card:active {
+  background: linear-gradient(135deg, rgba(255, 154, 158, 0.3) 0%, rgba(254, 207, 239, 0.3) 100%);
+}
+
+/* 历史记录样式 */
+.history-card {
+  margin-bottom: 30rpx;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #e9ecef;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-score {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #4A90E2;
+}
+
+.history-level {
+  font-size: 28rpx;
+  color: #2c3e50;
+}
+
+.history-date {
+  font-size: 24rpx;
+  color: #7f8c8d;
+}

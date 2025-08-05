@@ -1,0 +1,115 @@
+/* 全局样式 */
+page {
+  background-color: #f8f9fa;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 通用容器样式 */
+.container {
+  padding: 20rpx;
+  min-height: 100vh;
+}
+
+/* 卡片样式 */
+.card {
+  background: white;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  margin-bottom: 20rpx;
+  padding: 30rpx;
+}
+
+/* 按钮样式 */
+.btn {
+  border-radius: 12rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  border: none;
+  padding: 24rpx 48rpx;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #4A90E2, #357ABD);
+  color: white;
+}
+
+.btn-primary:active {
+  background: linear-gradient(135deg, #357ABD, #2A5D8A);
+}
+
+.btn-secondary {
+  background: #f8f9fa;
+  color: #6c757d;
+  border: 2rpx solid #e9ecef;
+}
+
+.btn-secondary:active {
+  background: #e9ecef;
+}
+
+/* 文本样式 */
+.title {
+  font-size: 48rpx;
+  font-weight: 600;
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+.subtitle {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #34495e;
+  margin-bottom: 15rpx;
+}
+
+.text {
+  font-size: 28rpx;
+  color: #5a6c7d;
+  line-height: 1.6;
+}
+
+/* 进度条样式 */
+.progress-container {
+  background: #e9ecef;
+  border-radius: 10rpx;
+  height: 8rpx;
+  margin: 20rpx 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, #4A90E2, #357ABD);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* 选项样式 */
+.option {
+  background: white;
+  border: 2rpx solid #e9ecef;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  transition: all 0.3s ease;
+}
+
+.option:active {
+  background: #f8f9fa;
+}
+
+.option.selected {
+  border-color: #4A90E2;
+  background: #f0f7ff;
+}
+
+.option.correct {
+  border-color: #28a745;
+  background: #f0fff4;
+}
+
+.option.wrong {
+  border-color: #dc3545;
+  background: #fff5f5;
+}

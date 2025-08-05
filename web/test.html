@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K12词汇量测试</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%234A90E2' d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg>">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* 测试页面容器 */
+        .modern-test-container {
+            background: #fff;
+            min-height: 100vh;
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 测试头部样式 */
+        .test-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 30px;
+            margin: 0 auto 32px auto;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .test-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .progress-percentage {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 14px;
+            border-radius: 16px;
+        }
+
+        .timer-display {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .pause-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pause-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .pause-btn svg {
+            fill: white;
+            width: 16px;
+            height: 16px;
+        }
+
+        .modern-progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .modern-progress-fill {
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff);
+            background-size: 200% 100%;
+            animation: progressGlow 3s ease-in-out infinite;
+            height: 100%;
+            border-radius: 15px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            width: 0%;
+        }
+
+        @keyframes progressGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* 单词显示卡片 */
+        .word-display-card {
+            background: linear-gradient(135deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            margin: 0 auto 24px auto;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: none;
+            max-width: 900px;
+            width: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .word-display-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .word-main {
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .word-text {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 50%, #2d3748 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Georgia', serif;
+            letter-spacing: 1px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .word-meaning-hint {
+            font-size: 18px;
+            color: #666;
+            font-weight: 400;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        /* 发音相关样式 */
+        .phonetic {
+            font-size: 16px;
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 50%, #4a90e2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+            margin: 4px 0 8px 0;
+            letter-spacing: 0.5px;
+        }
+
+        .pronunciation-btn {
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pronunciation-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .pronunciation-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 词性标签 */
+        .part-of-speech {
+            font-size: 16px;
+            font-weight: 500;
+            color: #7f8c8d;
+            background: linear-gradient(135deg, #e8f4fd, #d1ecf1);
+            padding: 4px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        /* 定义和标签样式 */
+        .definition {
+            font-size: 14px;
+            color: #555;
+            font-style: italic;
+            margin: 8px 0;
+            padding: 8px 12px;
+            background: rgba(0, 123, 255, 0.05);
+            border-left: 3px solid #007bff;
+            border-radius: 4px;
+        }
+
+        .exam-tags {
+            margin: 8px 0;
+        }
+
+        .exam-tag {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            margin: 2px;
+            display: inline-block;
+        }
+
+        .frequency-tag {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            margin: 4px 2px;
+            display: inline-block;
+        }
+
+        /* K12专用等级标签样式 */
+        .level-tag {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            margin: 4px 2px;
+            display: inline-block;
+        }
+
+        .level-tag.primary {
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+            color: white;
+            box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
+        }
+
+        .level-tag.junior {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            box-shadow: 0 2px 8px rgba(79, 172, 254, 0.3);
+        }
+
+        .level-tag.senior {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            color: white;
+            box-shadow: 0 2px 8px rgba(250, 112, 154, 0.3);
+        }
+
+        .difficulty-stars {
+            font-size: 12px;
+            color: #ffd700;
+            margin: 4px 0 8px 0;
+            text-shadow: 0 1px 2px rgba(255, 215, 0, 0.3);
+            letter-spacing: 1px;
+        }
+
+        /* 选项容器 */
+        .modern-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 100%;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        /* 选项按钮 */
+        .modern-option {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.99) 100%);
+            border: 2px solid rgba(74, 144, 226, 0.1);
+            border-radius: 18px;
+            padding: 20px 28px;
+            min-height: 64px;
+            font-size: 17px;
+            font-weight: 500;
+            color: #2d3748;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modern-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.15);
+            border-color: rgba(74, 144, 226, 0.3);
+        }
+
+        .modern-option.selected {
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+            color: white;
+            border-color: #357ABD;
+        }
+
+        .modern-option.correct {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border-color: #27ae60;
+        }
+
+        .modern-option.wrong {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .modern-option.incorrect {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        /* 反馈动画 */
+        .shake-animation {
+            animation: shakeError 0.5s ease-in-out;
+        }
+
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes successPop {
+            0% { transform: translateY(-50%) scale(0); opacity: 0; }
+            50% { transform: translateY(-50%) scale(1.2); opacity: 1; }
+            100% { transform: translateY(-50%) scale(1); opacity: 1; }
+        }
+
+        @keyframes errorShake {
+            0%, 100% { transform: translateY(-50%) translateX(0); }
+            25% { transform: translateY(-50%) translateX(-5px); }
+            75% { transform: translateY(-50%) translateX(5px); }
+        }
+
+        @keyframes correctAnswerPulse {
+            0% { transform: translateY(-50%) scale(0); opacity: 0; }
+            50% { transform: translateY(-50%) scale(1.1); opacity: 1; }
+            100% { transform: translateY(-50%) scale(1); opacity: 1; }
+        }
+
+        /* 返回首页按钮 */
+        .back-to-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(74, 144, 226, 0.2);
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4A90E2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+        }
+
+        .back-to-home:hover {
+            background: #4A90E2;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .modern-test-container {
+                padding: 20px;
+            }
+            
+            .test-header {
+                padding: 20px;
+            }
+            
+            .word-display-card {
+                padding: 30px 20px;
+            }
+            
+            .word-text {
+                font-size: 36px;
+            }
+            
+            .modern-option {
+                padding: 16px 20px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 返回首页按钮 -->
+    <button class="back-to-home" onclick="goHome()">← 返回首页</button>
+
+    <!-- 测试页面 -->
+    <div class="modern-test-container">
+        <div class="test-header">
+            <div class="test-progress">
+                <div id="modernProgressText" class="progress-percentage">0%</div>
+                <div class="timer-display" id="testTimer">用时: 00:00</div>
+                <button id="pauseResumeBtn" class="pause-btn" onclick="toggleTimer()" title="暂停/继续">
+                    <svg class="icon-pause" viewBox="0 0 24 24">
+                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
+                    </svg>
+                    <svg class="icon-play" viewBox="0 0 24 24" style="display: none;">
+                        <path d="M8 5v14l11-7z"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="modern-progress-bar">
+                <div id="modernProgressBar" class="modern-progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="word-display-card" id="modernQuestionCard">
+            <!-- 题目将在这里动态加载 -->
+        </div>
+    </div>
+
+    <!-- 隐藏的兼容性元素 -->
+    <div style="display: none;">
+        <div id="progressText"></div>
+        <div id="scoreText"></div>
+        <div id="progressBar"></div>
+        <div id="questionCard"></div>
+        <div id="testPage"></div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="wordDatabase.js"></script>
+    <script src="primaryVocabDatabase.js"></script>
+    <script src="primaryVocabData.js"></script>
+    <script src="app_enhancements.js"></script>
+    <script src="ecdictWordDatabase.js"></script>
+    <script src="improvedVocabAssessment.js"></script>
+    <script src="enhancedResultPage.js"></script>
+    <script src="chartInitializer.js"></script>
+    <script src="mistake_book.js"></script>
+    <script src="app.js"></script>
+    <link rel="stylesheet" href="enhancedResultStyles.css">
+
+    <script>
+        // 页面加载完成后从URL参数获取测试级别并开始测试
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const level = urlParams.get('level');
+            const mode = urlParams.get('mode');
+            
+            // 检查是否是复习模式
+            if (mode === 'review') {
+                // 延迟一点开始复习测试，确保所有脚本都加载完成
+                setTimeout(() => {
+                    startReviewTest();
+                }, 500);
+            } else if (level && ['primary', 'junior', 'senior'].includes(level)) {
+                // 延迟一点开始测试，确保所有脚本都加载完成
+                setTimeout(() => {
+                    if (typeof startTestByLevel === 'function') {
+                        startTestByLevel(level);
+                    } else {
+                        console.error('startTestByLevel函数未找到');
+                        alert('测试初始化失败，请返回首页重试');
+                    }
+                }, 500);
+            } else {
+                console.error('无效的测试级别参数:', level);
+                alert('无效的测试参数，请返回首页重新选择');
+            }
+        });
+        
+        // 开始复习测试
+        function startReviewTest() {
+            try {
+                const reviewDataString = sessionStorage.getItem('reviewData');
+                if (!reviewDataString) {
+                    alert('未找到复习数据，请返回错题本重新开始');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                const reviewData = JSON.parse(reviewDataString);
+                console.log('📚 开始复习测试:', reviewData);
+                
+                if (!reviewData.words || reviewData.words.length === 0) {
+                    alert('复习数据为空，请返回错题本重新开始');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                // 将错题转换为测试题目格式
+                const reviewQuestions = convertMistakesToQuestions(reviewData.words);
+                
+                if (reviewQuestions.length === 0) {
+                    alert('无法生成复习题目，请检查错题数据');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                // 显示复习模式的加载动画
+                showReviewLoadingAnimation(reviewQuestions.length, () => {
+                    // 使用通用的测试初始化函数
+                    if (typeof initializeTestWithQuestions === 'function') {
+                        initializeTestWithQuestions(reviewQuestions, reviewQuestions.length);
+                        
+                        // 标记为复习模式
+                        if (typeof currentTest !== 'undefined') {
+                            currentTest.isReviewMode = true;
+                            currentTest.reviewSource = reviewData.source;
+                            currentTest.testMode = 'mistake_review';
+                        }
+                    } else {
+                        console.error('initializeTestWithQuestions函数未找到');
+                        alert('测试初始化失败，请刷新页面重试');
+                    }
+                });
+                
+            } catch (error) {
+                console.error('复习测试启动失败:', error);
+                alert('复习测试启动失败，请返回错题本重试');
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // 将错题转换为测试题目格式
+        function convertMistakesToQuestions(mistakes) {
+            return mistakes.map(mistake => {
+                // 生成干扰选项
+                const distractors = generateDistractors(mistake.meaning, mistake.level);
+                const allOptions = [mistake.meaning, ...distractors];
+                
+                // 打乱选项顺序
+                shuffleArray(allOptions);
+                
+                return {
+                    word: mistake.word,
+                    meaning: mistake.meaning,
+                    phonetic: mistake.phonetic || '',
+                    partOfSpeech: mistake.partOfSpeech || '',
+                    level: mistake.level || 'unknown',
+                    difficulty: mistake.difficulty || 3,
+                    options: allOptions,
+                    correctIndex: allOptions.indexOf(mistake.meaning),
+                    isReviewQuestion: true,
+                    originalMistake: mistake
+                };
+            });
+        }
+        
+        // 生成干扰选项
+        function generateDistractors(correctMeaning, level) {
+            // 预定义的干扰选项池
+            const distractorPools = {
+                primary: [
+                    '喜欢', '不喜欢', '好的', '坏的', '大的', '小的', '高的', '低的',
+                    '快的', '慢的', '新的', '旧的', '热的', '冷的', '明亮的', '暗的'
+                ],
+                junior: [
+                    '重要的', '困难的', '容易的', '有趣的', '无聊的', '美丽的', '丑陋的',
+                    '成功的', '失败的', '健康的', '危险的', '安全的', '自由的', '忙碌的'
+                ],
+                senior: [
+                    '显著的', '复杂的', '简单的', '有效的', '无效的', '独特的', '普通的',
+                    '积极的', '消极的', '创新的', '传统的', '专业的', '业余的', '正式的'
+                ]
+            };
+            
+            const pool = distractorPools[level] || distractorPools.junior;
+            const distractors = [];
+            
+            // 随机选择3个不同的干扰选项
+            while (distractors.length < 3 && pool.length > 0) {
+                const randomIndex = Math.floor(Math.random() * pool.length);
+                const distractor = pool[randomIndex];
+                
+                if (distractor !== correctMeaning && !distractors.includes(distractor)) {
+                    distractors.push(distractor);
+                }
+            }
+            
+            // 如果不够3个，用通用干扰选项补充
+            while (distractors.length < 3) {
+                const commonDistractors = ['选项A', '选项B', '选项C', '选项D'];
+                const distractor = commonDistractors[distractors.length];
+                if (!distractors.includes(distractor)) {
+                    distractors.push(distractor);
+                }
+            }
+            
+            return distractors;
+        }
+        
+        // 复习模式加载动画
+        function showReviewLoadingAnimation(questionCount, onComplete) {
+            if (typeof showTestLoadingAnimation === 'function') {
+                showTestLoadingAnimation(questionCount, onComplete);
+            } else {
+                // 简化版加载动画
+                const questionCard = document.getElementById('modernQuestionCard');
+                if (questionCard) {
+                    questionCard.innerHTML = `
+                        <div style="text-align: center; padding: 50px 40px;">
+                            <div style="font-size: 28px; margin-bottom: 20px; color: #2d3748;">📚 正在准备复习测试...</div>
+                            <div style="font-size: 18px; color: #718096;">共 ${questionCount} 道复习题目</div>
+                        </div>
+                    `;
+                }
+                
+                setTimeout(() => {
+                    if (onComplete && typeof onComplete === 'function') {
+                        onComplete();
+                    }
+                }, 1000);
+            }
+        }
+        
+        // 打乱数组的函数
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 返回首页函数
+        function goHome() {
+            window.location.href = 'index.html';
+        }
+
+        // 重写showPage函数，适配独立页面
+        function showPage(pageId) {
+            if (pageId === 'resultPage') {
+                // 保存测试结果到sessionStorage
+                if (typeof currentTest !== 'undefined' && currentTest) {
+                    const testResult = {
+                        score: currentTest.score,
+                        totalQuestions: currentTest.totalQuestions,
+                        level: currentTest.level,
+                        answers: currentTest.answers,
+                        testTime: timerManager ? timerManager.formatTime(timerManager.getElapsedTime()) : '未知',
+                        endTime: new Date().toISOString(),
+                        isReviewMode: currentTest.isReviewMode || false,
+                        testMode: currentTest.testMode || 'normal'
+                    };
+                    
+                    sessionStorage.setItem('testResult', JSON.stringify(testResult));
+                    console.log('💾 测试结果已保存到sessionStorage:', testResult);
+                }
+                // 跳转到结果展示页面
+                console.log('🚀 跳转到结果页面...');
+                window.location.href = 'result_display.html';
+            }
+            // 测试页面本身就是当前页面，不需要切换
+        }
+    </script>
+</body>
+</html>

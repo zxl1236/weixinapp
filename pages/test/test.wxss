@@ -1,0 +1,237 @@
+/* 进度条区域 */
+.progress-section {
+  margin-bottom: 30rpx;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.progress-text, .score-text {
+  font-size: 28rpx;
+  color: #5a6c7d;
+  font-weight: 500;
+}
+
+.score-text {
+  color: #4A90E2;
+  font-weight: 600;
+}
+
+/* 题目卡片 */
+.question-card {
+  margin-bottom: 30rpx;
+  min-height: 600rpx;
+}
+
+.question-header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.word-level {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  margin-bottom: 16rpx;
+  padding: 8rpx 20rpx;
+  background: #f8f9fa;
+  border-radius: 20rpx;
+  display: inline-block;
+}
+
+.question-word {
+  font-size: 56rpx;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 20rpx;
+  font-family: 'Georgia', serif;
+}
+
+.question-text {
+  font-size: 32rpx;
+  color: #34495e;
+  text-align: center;
+  margin-bottom: 40rpx;
+  font-weight: 500;
+}
+
+/* 选项容器 */
+.options-container {
+  margin-bottom: 40rpx;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  border: 3rpx solid #e9ecef;
+  border-radius: 16rpx;
+  padding: 32rpx 28rpx;
+  margin-bottom: 20rpx;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.option:active {
+  transform: scale(0.98);
+}
+
+.option.selected {
+  border-color: #4A90E2;
+  background: #f0f7ff;
+  box-shadow: 0 4rpx 12rpx rgba(74, 144, 226, 0.15);
+}
+
+.option.correct {
+  border-color: #28a745;
+  background: #f0fff4;
+  box-shadow: 0 4rpx 12rpx rgba(40, 167, 69, 0.15);
+}
+
+.option.wrong {
+  border-color: #dc3545;
+  background: #fff5f5;
+  box-shadow: 0 4rpx 12rpx rgba(220, 53, 69, 0.15);
+}
+
+.option-label {
+  font-size: 32rpx;
+  color: #2c3e50;
+  font-weight: 500;
+  flex: 1;
+}
+
+.option-indicator {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #28a745;
+  margin-left: 20rpx;
+}
+
+.option-indicator.wrong {
+  color: #dc3545;
+}
+
+/* 动作按钮 */
+.action-buttons {
+  margin-bottom: 30rpx;
+}
+
+.action-buttons .btn {
+  width: 100%;
+  font-size: 36rpx;
+  padding: 28rpx;
+  font-weight: 600;
+}
+
+/* 解释说明 */
+.explanation {
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  border-left: 6rpx solid #4A90E2;
+}
+
+.explanation-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #4A90E2;
+  margin-bottom: 12rpx;
+}
+
+.explanation-text {
+  font-size: 28rpx;
+  color: #5a6c7d;
+  line-height: 1.6;
+}
+
+.word-highlight {
+  font-weight: 700;
+  color: #2c3e50;
+  font-family: 'Georgia', serif;
+}
+
+.meaning-highlight {
+  font-weight: 600;
+  color: #4A90E2;
+}
+
+/* 加载状态 */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400rpx;
+}
+
+.loading-text {
+  font-size: 32rpx;
+  color: #7f8c8d;
+}
+
+/* 弹窗样式 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-container {
+  background: white;
+  border-radius: 20rpx;
+  width: 600rpx;
+  max-width: 90%;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 40rpx 30rpx 20rpx;
+  text-align: center;
+  border-bottom: 1rpx solid #e9ecef;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.modal-body {
+  padding: 30rpx;
+  text-align: center;
+}
+
+.modal-text {
+  font-size: 30rpx;
+  color: #5a6c7d;
+  line-height: 1.6;
+}
+
+.modal-footer {
+  display: flex;
+  border-top: 1rpx solid #e9ecef;
+}
+
+.modal-footer .btn {
+  flex: 1;
+  border-radius: 0;
+  border: none;
+  padding: 32rpx;
+  font-size: 32rpx;
+}
+
+.modal-footer .btn:first-child {
+  border-right: 1rpx solid #e9ecef;
+}

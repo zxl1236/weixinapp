@@ -1,0 +1,97 @@
+<view class="container">
+  <!-- 结果头部 -->
+  <view class="card result-header">
+    <view class="score-circle">
+      <view class="score-number">{{result.score}}</view>
+      <view class="score-total">/{{result.total}}</view>
+    </view>
+    <view class="percentage">{{result.percentage}}%</view>
+    <view class="level-info">
+      <view class="level-title">{{levelInfo.level}}</view>
+      <view class="level-range">词汇量: {{levelInfo.range}}</view>
+      <view class="level-description">{{levelInfo.description}}</view>
+    </view>
+  </view>
+
+  <!-- 详细统计 -->
+  <view class="card stats-card">
+    <view class="subtitle">测试统计</view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <view class="stat-value">{{result.score}}</view>
+        <view class="stat-label">正确题数</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{wrongCount}}</view>
+        <view class="stat-label">错误题数</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{formatTime(result.duration)}}</view>
+        <view class="stat-label">用时</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{avgTimePerQuestion}}</view>
+        <view class="stat-label">平均每题</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 学习建议 -->
+  <view class="card advice-card">
+    <view class="subtitle">学习建议</view>
+    <view class="advice-list">
+      <view class="advice-item" wx:for="{{suggestions}}" wx:key="index">
+        <view class="advice-icon">{{item.icon}}</view>
+        <view class="advice-text">{{item.text}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 错题回顾 -->
+  <view class="card mistakes-card" wx:if="{{mistakes.length > 0}}">
+    <view class="subtitle">错题回顾</view>
+    <view class="mistake-item" wx:for="{{mistakes}}" wx:key="index">
+      <view class="mistake-word">{{item.question.word}}</view>
+      <view class="mistake-details">
+        <view class="mistake-line">
+          <text class="mistake-label">正确答案:</text>
+          <text class="mistake-correct">{{item.question.meaning}}</text>
+        </view>
+        <view class="mistake-line">
+          <text class="mistake-label">你的答案:</text>
+          <text class="mistake-wrong">{{item.question.options[item.selectedAnswer]}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="card actions-card">
+    <view class="action-buttons">
+      <button class="btn btn-primary" bindtap="retakeTest">重新测试</button>
+      <button class="btn btn-secondary" bindtap="shareResult">分享结果</button>
+      <button class="btn btn-secondary" bindtap="backToHome">返回首页</button>
+    </view>
+  </view>
+
+  <!-- 历史对比 -->
+  <view class="card history-comparison" wx:if="{{showComparison && comparisonData}}">
+    <view class="subtitle">进步对比</view>
+    <view class="comparison-item">
+      <view class="comparison-label">本次测试</view>
+      <view class="comparison-value current">{{result.percentage}}%</view>
+    </view>
+    <view class="comparison-item">
+      <view class="comparison-label">上次测试</view>
+      <view class="comparison-value previous">{{comparisonData.percentage}}%</view>
+    </view>
+    <view class="comparison-item improvement" wx:if="{{improvement !== 0}}">
+      <view class="comparison-label">
+        {{improvement > 0 ? '进步' : '退步'}}
+      </view>
+      <view class="comparison-value {{improvement > 0 ? 'positive' : 'negative'}}">
+        {{improvement > 0 ? '+' : ''}}{{improvement}}%
+      </view>
+    </view>
+  </view>
+</view>

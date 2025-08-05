@@ -1,0 +1,45 @@
+<view class="container">
+  <view class="main-card">
+    <view class="title">📚 K12词汇量测试</view>
+    <view class="subtitle">专为中小学生设计的智能评估系统</view>
+    
+    <view class="test-options">
+      <view class="test-option-card" bindtap="startTest" data-level="primary">
+        <view class="option-icon">🎒</view>
+        <view class="option-title">小学词汇</view>
+        <view class="option-desc">全面检测小学阶段词汇量</view>
+        <view class="option-time">约5分钟</view>
+      </view>
+      
+      <view class="test-option-card" bindtap="startTest" data-level="junior">
+        <view class="option-icon">📚</view>
+        <view class="option-title">初中词汇</view>
+        <view class="option-desc">覆盖初中教学大纲核心词</view>
+        <view class="option-time">约8分钟</view>
+      </view>
+      
+      <view class="test-option-card" bindtap="startTest" data-level="senior">
+        <view class="option-icon">🎓</view>
+        <view class="option-title">高中词汇</view>
+        <view class="option-desc">挑战高中阶段必备三千词</view>
+        <view class="option-time">约10分钟</view>
+      </view>
+      
+      <view class="test-option-card mistake-card" bindtap="showMistakeBook">
+        <view class="option-icon">🧠</view>
+        <view class="option-title">错题回顾</view>
+        <view class="option-desc">温故而知新，在这里复习你答错的单词</view>
+        <view class="option-time">随时复习</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card history-card" wx:if="{{hasHistory}}">
+    <view class="subtitle">历史记录</view>
+    <view class="history-item" wx:for="{{testHistory}}" wx:key="index">
+      <view class="history-score">{{item.score}}/{{item.total}}</view>
+      <view class="history-level">{{item.level}}</view>
+      <view class="history-date">{{item.date}}</view>
+    </view>
+  </view>
+</view>

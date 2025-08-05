@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试结果 - K12词汇量测试</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%234A90E2' d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg>">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .result-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .result-title {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 50%, #2A5D8A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .result-subtitle {
+            font-size: 18px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .nav-buttons {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 1001;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(74, 144, 226, 0.2);
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4A90E2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            background: #4A90E2;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+        }
+
+        /* 结果内容区域 */
+        #resultContent {
+            min-height: 500px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .result-container {
+                padding: 10px;
+            }
+            
+            .result-title {
+                font-size: 28px;
+            }
+            
+            .nav-buttons {
+                position: relative;
+                top: auto;
+                left: auto;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+    
+    <!-- 引入结果页面的CSS -->
+    <link rel="stylesheet" href="enhancedResultStyles.css">
+</head>
+<body>
+    <!-- 导航按钮 -->
+    <div class="nav-buttons">
+        <a href="index.html" class="nav-btn">← 返回首页</a>
+        <button class="nav-btn" onclick="restartTest()">重新测试</button>
+    </div>
+
+    <!-- 结果页面容器 -->
+    <div class="result-container">
+        <div class="result-header">
+            <h1 class="result-title">📊 测试结果</h1>
+            <p class="result-subtitle">您的词汇量评估报告</p>
+        </div>
+        
+        <div id="resultContent">
+            <!-- 结果内容将在这里动态生成 -->
+            <div style="text-align: center; padding: 60px 20px; color: #6b7280;">
+                <div style="font-size: 48px; margin-bottom: 20px;">⏳</div>
+                <div style="font-size: 18px;">正在生成您的测试结果...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="wordDatabase.js"></script>
+    <script src="ecdictWordDatabase.js"></script>
+    <script src="improvedVocabAssessment.js"></script>
+    <script src="enhancedResultPage.js"></script>
+    <script src="chartInitializer.js"></script>
+    <script src="mistake_book.js"></script>
+
+    <script>
+        // 页面加载完成后获取测试结果数据并显示
+        window.addEventListener('DOMContentLoaded', function() {
+            // 从localStorage或sessionStorage获取测试结果
+            const testResult = sessionStorage.getItem('testResult') || localStorage.getItem('testResult');
+            
+            if (testResult) {
+                try {
+                    const resultData = JSON.parse(testResult);
+                    displayTestResult(resultData);
+                } catch (error) {
+                    console.error('解析测试结果失败:', error);
+                    showErrorMessage();
+                }
+            } else {
+                showErrorMessage();
+            }
+        });
+
+        // 显示测试结果
+        function displayTestResult(resultData) {
+            const resultContent = document.getElementById('resultContent');
+            
+            if (typeof generateEnhancedResultPage === 'function') {
+                // 使用现有的结果页面生成函数
+                generateEnhancedResultPage(resultData);
+                
+                // 将生成的结果移动到我们的容器中
+                const resultPage = document.getElementById('resultPage');
+                if (resultPage) {
+                    resultContent.innerHTML = resultPage.innerHTML;
+                    resultPage.style.display = 'none';
+                }
+            } else {
+                // 简单的结果显示
+                resultContent.innerHTML = `
+                    <div style="padding: 40px; text-align: center;">
+                        <h2 style="color: #4A90E2; margin-bottom: 20px;">测试完成！</h2>
+                        <p style="font-size: 18px; color: #6b7280;">
+                            您的测试得分：${resultData.score || 0}/${resultData.total || 20}
+                        </p>
+                        <p style="font-size: 16px; color: #9ca3af; margin-top: 12px;">
+                            词汇量等级：${resultData.level || '未知'}
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        // 显示错误信息
+        function showErrorMessage() {
+            const resultContent = document.getElementById('resultContent');
+            resultContent.innerHTML = `
+                <div style="padding: 60px 20px; text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 20px; color: #ef4444;">⚠️</div>
+                    <h3 style="color: #ef4444; margin-bottom: 16px;">无法加载测试结果</h3>
+                    <p style="color: #6b7280; margin-bottom: 24px;">
+                        可能是因为没有完成测试或数据丢失
+                    </p>
+                    <a href="index.html" class="nav-btn">返回首页重新测试</a>
+                </div>
+            `;
+        }
+
+        // 重新测试函数
+        function restartTest() {
+            // 清除之前的测试数据
+            sessionStorage.removeItem('testResult');
+            localStorage.removeItem('testResult');
+            
+            // 返回首页
+            window.location.href = 'index.html';
+        }
+
+        // 重写页面跳转函数
+        function showPage(pageId) {
+            if (pageId === 'homePage') {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // 提供goHome函数供其他脚本调用
+        function goHome() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

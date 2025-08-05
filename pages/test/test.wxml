@@ -1,0 +1,94 @@
+<view class="container">
+  <!-- 进度条 -->
+  <view class="progress-section">
+    <view class="progress-info">
+      <text class="progress-text">第 {{currentIndex + 1}} / {{totalQuestions}} 题</text>
+      <text class="score-text">得分: {{score}}</text>
+    </view>
+    <view class="progress-container">
+      <view class="progress-bar" style="width: {{((currentIndex + 1) / totalQuestions) * 100}}%"></view>
+    </view>
+  </view>
+
+  <!-- 题目卡片 -->
+  <view class="card question-card" wx:if="{{currentQuestion}}">
+    <view class="question-header">
+      <view class="word-level">Level {{currentQuestion.level}}</view>
+      <view class="question-word">{{currentQuestion.word}}</view>
+    </view>
+    
+    <view class="question-text">请选择这个单词的中文意思：</view>
+    
+    <!-- 选项列表 -->
+    <view class="options-container">
+      <view 
+        class="option {{selectedAnswer === index ? 'selected' : ''}} {{showResult && index === correctIndex ? 'correct' : ''}} {{showResult && selectedAnswer === index && index !== correctIndex ? 'wrong' : ''}}"
+        wx:for="{{currentQuestion.options}}" 
+        wx:key="index"
+        bindtap="selectOption"
+        data-index="{{index}}"
+      >
+        <view class="option-label">{{item}}</view>
+        <view class="option-indicator" wx:if="{{showResult && index === correctIndex}}">✓</view>
+        <view class="option-indicator wrong" wx:if="{{showResult && selectedAnswer === index && index !== correctIndex}}">✗</view>
+      </view>
+    </view>
+
+    <!-- 答题按钮 -->
+    <view class="action-buttons">
+      <button 
+        class="btn btn-primary" 
+        wx:if="{{!showResult && selectedAnswer !== null}}"
+        bindtap="submitAnswer"
+      >
+        确认答案
+      </button>
+      
+      <button 
+        class="btn btn-primary" 
+        wx:if="{{showResult && currentIndex < totalQuestions - 1}}"
+        bindtap="nextQuestion"
+      >
+        下一题
+      </button>
+      
+      <button 
+        class="btn btn-primary" 
+        wx:if="{{showResult && currentIndex === totalQuestions - 1}}"
+        bindtap="finishTest"
+      >
+        查看结果
+      </button>
+    </view>
+
+    <!-- 解释说明 -->
+    <view class="explanation" wx:if="{{showResult}}">
+      <view class="explanation-title">解析</view>
+      <view class="explanation-text">
+        <text class="word-highlight">{{currentQuestion.word}}</text> 的正确中文意思是 
+        <text class="meaning-highlight">{{currentQuestion.meaning}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-text">正在加载题目...</view>
+  </view>
+</view>
+
+<!-- 退出确认弹窗 -->
+<view class="modal-mask" wx:if="{{showExitModal}}" catchtap="hideExitModal">
+  <view class="modal-container" catchtap="">
+    <view class="modal-header">
+      <text class="modal-title">确认退出</text>
+    </view>
+    <view class="modal-body">
+      <text class="modal-text">确定要退出测试吗？当前进度将会丢失。</text>
+    </view>
+    <view class="modal-footer">
+      <button class="btn btn-secondary" bindtap="hideExitModal">继续测试</button>
+      <button class="btn btn-primary" bindtap="confirmExit">确认退出</button>
+    </view>
+  </view>
+</view>
