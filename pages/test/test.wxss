@@ -21,6 +21,27 @@
   font-weight: 600;
 }
 
+/* 阶段信息 */
+.stage-info {
+  text-align: center;
+  margin: 16rpx 0;
+}
+
+.stage-desc {
+  font-size: 24rpx;
+  color: #6c757d;
+  background: #f8f9fa;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  display: inline-block;
+}
+
+/* 页面背景 */
+page {
+  /* 使用统一的淡雅渐变背景 */
+  background: linear-gradient(180deg, var(--bg-grad-start), var(--bg-grad-end));
+}
+
 /* 题目卡片 */
 .question-card {
   margin-bottom: 30rpx;
@@ -234,4 +255,63 @@
 
 .modal-footer .btn:first-child {
   border-right: 1rpx solid #e9ecef;
+}
+
+/* 音标样式 */
+.phonetic {
+  font-size: 32rpx;
+  color: #7f8c8d;
+  text-align: center;
+  margin: 15rpx 0 10rpx 0;
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+  background: #f8f9fa;
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+  display: inline-block;
+}
+
+/* 词性样式 */
+.part-of-speech {
+  text-align: center;
+  margin: 10rpx 0 15rpx 0;
+}
+
+.pos-tag {
+  display: inline-block;
+  padding: 6rpx 16rpx;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  color: #1976d2;
+  font-size: 24rpx;
+  border-radius: 20rpx;
+  font-weight: 500;
+  border: 1rpx solid #2196f3;
+}
+
+/* 发音按钮区域 */
+.pronunciation-section {
+  display: flex;
+  justify-content: center;
+  margin: 20rpx 0;
+}
+
+.pronunciation-btn {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  color: #5a6c7d;
+  border: none;
+  border-radius: 16rpx;
+  padding: 18rpx 32rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  box-shadow: 0 6rpx 20rpx rgba(168, 237, 234, 0.25);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.5rpx;
+  transition: all 0.3s ease;
+  min-width: 160rpx;
+}
+
+.pronunciation-btn:active {
+  background: linear-gradient(135deg, #229954, #27ae60);
+  transform: scale(0.95);
+  box-shadow: 0 2rpx 8rpx rgba(39, 174, 96, 0.4);
 }

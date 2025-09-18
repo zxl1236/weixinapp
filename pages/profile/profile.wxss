@@ -1,0 +1,604 @@
+/* ===== 页面容器：明亮舒适背景设计 ===== */
+.profile-page {
+  min-height: 100vh;
+  padding: 0;
+  padding-bottom: 140rpx; /* 给 tabBar 留空间 */
+  background: linear-gradient(180deg,
+    rgb(76, 175, 215) 0%,
+    rgba(135, 206, 235, 0.85) 25%,
+    rgba(176, 224, 230, 0.6) 50%,
+    rgba(248, 252, 255, 1) 100%
+  );
+  position: relative;
+}
+
+/* 顶部装饰波浪 */
+.profile-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 400rpx;
+  background: linear-gradient(135deg,
+    rgba(135, 206, 235, 0.3) 0%, 
+    rgba(176, 224, 230, 0.2) 100%
+  );
+  clip-path: ellipse(100% 60% at 50% 0%);
+  z-index: 0;
+}
+
+.profile-container {
+  position: relative;
+  z-index: 1;
+  padding: 40rpx 24rpx 0;
+}
+
+/* ===== 卡片通用风格已整合到各元素中 ===== */
+
+/* ===== 用户信息卡片：全新设计 ===== */
+.user-card {
+  background: linear-gradient(135deg, 
+    rgba(255,255,255,0.95) 0%, 
+    rgba(255,255,255,0.9) 50%,
+    rgba(248,252,255,0.92) 100%
+  );
+  border-radius: 32rpx;
+  box-shadow: 
+    0 12rpx 32rpx rgba(76, 175, 215, 0.2),
+    0 4rpx 16rpx rgba(0,0,0,0.06),
+    inset 0 1rpx 0 rgba(255,255,255,0.9);
+  border: 1rpx solid rgba(255,255,255,0.7);
+  padding: 48rpx 32rpx;
+  margin: 60rpx 0 40rpx;
+  display: flex;
+  align-items: center;
+  position: relative;
+  /* 玻璃效果增强 */
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+}
+
+/* 卡片装饰元素 */
+.user-card::before {
+  content: '';
+  position: absolute;
+  top: -2rpx;
+  left: -2rpx;
+  right: -2rpx;
+  bottom: -2rpx;
+  background: linear-gradient(135deg, 
+    rgba(76, 175, 215, 0.3) 0%,
+    rgba(135, 206, 235, 0.2) 50%,
+    rgba(176, 224, 230, 0.25) 100%
+  );
+  border-radius: 34rpx;
+  z-index: -1;
+}
+
+.user-avatar {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  padding: 8rpx;
+  background: conic-gradient(from 45deg, 
+    rgb(76, 175, 215), 
+    rgba(135, 206, 235, 0.8), 
+    rgb(76, 175, 215), 
+    rgba(135, 206, 235, 0.9),
+    rgb(76, 175, 215)
+  );
+  box-shadow: 
+    0 12rpx 24rpx rgba(76, 175, 215, 0.3),
+    0 6rpx 12rpx rgba(0,0,0,0.08),
+    inset 0 2rpx 4rpx rgba(255,255,255,0.4);
+  margin-right: 32rpx;
+  position: relative;
+  animation: avatar-glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes avatar-glow {
+  0% { box-shadow: 0 12rpx 24rpx rgba(76, 175, 215, 0.25), 0 6rpx 12rpx rgba(0,0,0,0.08); }
+  100% { box-shadow: 0 16rpx 32rpx rgba(76, 175, 215, 0.4), 0 8rpx 16rpx rgba(0,0,0,0.12); }
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border: 3rpx solid rgba(255,255,255,0.9);
+}
+
+.user-info { 
+  flex: 1; 
+  display: flex; 
+  flex-direction: column;
+  position: relative;
+}
+
+.user-name {
+  font-size: 38rpx;
+  font-weight: 800;
+  color: #1a365d;
+  margin-bottom: 8rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.08);
+  background: linear-gradient(135deg, #1a365d, #2d5a87);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.user-desc {
+  font-size: 30rpx;
+  color: #64748b;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+/* ===== 登录按钮样式：现代化设计 ===== */
+.login-btn {
+  background: linear-gradient(135deg, 
+    rgb(6, 65, 78) 0%,
+    rgb(8, 85, 102) 50%,
+    rgb(6, 65, 78) 100%
+  );
+  color: white;
+  border-radius: 28rpx;
+  padding: 28rpx 40rpx;
+  margin: 24rpx 0 32rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+  border: none;
+  box-shadow: 
+    0 12rpx 32rpx rgba(6, 65, 78, 0.4),
+    0 4rpx 16rpx rgba(0,0,0,0.1),
+    inset 0 1rpx 0 rgba(255,255,255,0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255,255,255,0.2), 
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.login-btn:active {
+  transform: translateY(2rpx) scale(0.98);
+  box-shadow: 0 8rpx 20rpx rgba(6, 65, 78, 0.5);
+}
+
+.login-btn:active::before {
+  left: 100%;
+}
+
+.switch-btn {
+  background: linear-gradient(135deg, 
+    rgba(255,255,255,0.95) 0%, 
+    rgba(248,250,252,0.9) 100%
+  );
+  color: #475569;
+  border-radius: 24rpx;
+  padding: 24rpx 32rpx;
+  margin: 16rpx 0 32rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  border: 2rpx solid rgba(6, 65, 78, 0.15);
+  box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+.switch-btn:active {
+  transform: translateY(1rpx) scale(0.98);
+  border-color: rgba(6, 65, 78, 0.25);
+}
+
+/* ===== 模块标题：现代化样式 ===== */
+.section-title {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 24rpx 8rpx 24rpx;
+  position: relative;
+  padding-left: 20rpx;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8rpx;
+  height: 32rpx;
+  background: linear-gradient(135deg, rgb(6, 65, 78), rgb(8, 85, 102));
+  border-radius: 4rpx;
+}
+
+/* ===== 学习统计：全新卡片设计 ===== */
+.stats-section { margin-bottom: 40rpx; }
+
+.stats-grid {
+  display: flex;
+  gap: 20rpx;
+}
+
+.stat-item {
+  background: linear-gradient(135deg, 
+    rgba(255,255,255,0.95) 0%, 
+    rgba(255,255,255,0.9) 50%,
+    rgba(248,252,255,0.95) 100%
+  );
+  border-radius: 28rpx;
+  box-shadow: 
+    0 8rpx 24rpx rgba(76, 175, 215, 0.15),
+    0 4rpx 12rpx rgba(0,0,0,0.06),
+    inset 0 1rpx 0 rgba(255,255,255,0.8);
+  border: 1rpx solid rgba(255,255,255,0.7);
+  flex: 1;
+  padding: 32rpx 24rpx;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  border-radius: 28rpx 28rpx 0 0;
+}
+
+.stat-item:nth-child(1)::before { 
+  background: linear-gradient(135deg, rgb(76, 175, 215), rgba(135, 206, 235, 0.8)); 
+}
+.stat-item:nth-child(2)::before { 
+  background: linear-gradient(135deg, rgba(135, 206, 235, 0.8), rgba(176, 224, 230, 0.9)); 
+}
+.stat-item:nth-child(3)::before { 
+  background: linear-gradient(135deg, rgba(176, 224, 230, 0.9), rgb(76, 175, 215)); 
+}
+
+.stat-item:active { 
+  transform: translateY(2rpx) scale(0.98); 
+  box-shadow: 0 8rpx 24rpx rgba(76, 175, 215, 0.25);
+}
+
+.stat-number {
+  display: block;
+  font-size: 48rpx;
+  font-weight: 900;
+  color: #1a365d;
+  margin-bottom: 12rpx;
+  background: linear-gradient(135deg, #1a365d, #2d5a87);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
+}
+
+.stat-label {
+  font-size: 28rpx;
+  color: #64748b;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+/* ===== 功能菜单：全新现代化设计 ===== */
+.menu-section { margin-bottom: 40rpx; }
+
+.menu-list {
+  background: linear-gradient(135deg, 
+    rgba(255,255,255,0.95) 0%, 
+    rgba(255,255,255,0.9) 50%,
+    rgba(248,252,255,0.95) 100%
+  );
+  border-radius: 32rpx;
+  box-shadow: 
+    0 12rpx 32rpx rgba(76, 175, 215, 0.18),
+    0 6rpx 16rpx rgba(0,0,0,0.06),
+    inset 0 1rpx 0 rgba(255,255,255,0.8);
+  border: 1rpx solid rgba(255,255,255,0.7);
+  overflow: hidden;
+  /* 玻璃效果增强 */
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 32rpx 28rpx;
+  border-bottom: 1rpx solid rgba(226,232,240,0.4);
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.menu-item:last-child { border-bottom: none; }
+
+.menu-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(6, 65, 78, 0.08), 
+    transparent
+  );
+  transition: left 0.3s ease;
+}
+
+.menu-item-press { 
+  transform: translateY(1rpx) scale(0.99); 
+  background: rgba(6, 65, 78, 0.05);
+}
+
+.menu-item-press::before {
+  left: 100%;
+}
+
+.menu-icon {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 24rpx;
+  margin-right: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 8rpx 24rpx rgba(0,0,0,0.08),
+    inset 0 1rpx 0 rgba(255,255,255,0.5);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.menu-icon::after {
+  content: '';
+  position: absolute;
+  top: -2rpx;
+  left: -2rpx;
+  right: -2rpx;
+  bottom: -2rpx;
+  border-radius: 26rpx;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.menu-item:active .menu-icon {
+  transform: scale(0.95);
+}
+
+.menu-item:active .menu-icon::after {
+  opacity: 1;
+}
+
+.icon-img { 
+  width: 52rpx; 
+  height: 52rpx; 
+  opacity: 0.9;
+  transition: all 0.3s ease;
+}
+
+.menu-item:active .icon-img {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.menu-content { 
+  flex: 1; 
+  display: flex; 
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+.menu-title {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 10rpx;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.menu-subtitle {
+  font-size: 28rpx;
+  color: #64748b;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.menu-arrow {
+  width: 40rpx;
+  height: 40rpx;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  background: linear-gradient(135deg, rgba(6, 65, 78, 0.1), rgba(8, 85, 102, 0.08));
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.menu-item:active .menu-arrow {
+  background: linear-gradient(135deg, rgba(6, 65, 78, 0.2), rgba(8, 85, 102, 0.15));
+  transform: scale(1.1) translateX(4rpx);
+}
+
+.arrow-icon {
+  font-size: 36rpx;
+  color: rgb(6, 65, 78);
+  font-weight: 800;
+  transition: all 0.3s ease;
+}
+
+/* 图标背景 - 企业色彩系列增强 */
+.menu-item:nth-child(1) .menu-icon {
+  background: linear-gradient(135deg, rgba(76, 175, 215, 0.2), rgba(135, 206, 235, 0.15));
+}
+.menu-item:nth-child(1) .menu-icon::after {
+  background: linear-gradient(135deg, rgba(76, 175, 215, 0.3), rgba(135, 206, 235, 0.25));
+}
+
+.menu-item:nth-child(2) .menu-icon {
+  background: linear-gradient(135deg, rgba(135, 206, 235, 0.15), rgba(176, 224, 230, 0.12));
+}
+.menu-item:nth-child(2) .menu-icon::after {
+  background: linear-gradient(135deg, rgba(135, 206, 235, 0.25), rgba(176, 224, 230, 0.2));
+}
+
+.menu-item:nth-child(3) .menu-icon {
+  background: linear-gradient(135deg, rgba(176, 224, 230, 0.15), rgba(76, 175, 215, 0.18));
+}
+.menu-item:nth-child(3) .menu-icon::after {
+  background: linear-gradient(135deg, rgba(176, 224, 230, 0.25), rgba(76, 175, 215, 0.3));
+}
+
+.menu-item:nth-child(4) .menu-icon {
+  background: linear-gradient(135deg, rgba(76, 175, 215, 0.12), rgba(135, 206, 235, 0.16));
+}
+.menu-item:nth-child(4) .menu-icon::after {
+  background: linear-gradient(135deg, rgba(76, 175, 215, 0.22), rgba(135, 206, 235, 0.26));
+}
+
+/* ===== 装饰性视觉元素 ===== */
+/* 浮动装饰圆点 */
+.profile-page::after {
+  content: '';
+  position: absolute;
+  top: 200rpx;
+  right: 40rpx;
+  width: 120rpx;
+  height: 120rpx;
+  background: radial-gradient(circle, rgba(76, 175, 215, 0.15) 0%, rgba(135, 206, 235, 0.08) 50%, transparent 100%);
+  border-radius: 50%;
+  animation: float-decoration 4s ease-in-out infinite alternate;
+  z-index: 0;
+}
+
+@keyframes float-decoration {
+  0% { 
+    transform: translateY(0) scale(1);
+    opacity: 0.6;
+  }
+  100% { 
+    transform: translateY(-20rpx) scale(1.1);
+    opacity: 0.3;
+  }
+}
+
+/* 卡片悬浮动效增强 */
+.user-card:hover,
+.stat-item:hover,
+.menu-list:hover {
+  transform: translateY(-4rpx);
+  box-shadow: 
+    0 16rpx 48rpx rgba(76, 175, 215, 0.25),
+    0 8rpx 24rpx rgba(0,0,0,0.1);
+}
+
+/* 统计数字动画 */
+.stat-number {
+  animation: count-up 0.8s ease-out;
+}
+
+@keyframes count-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20rpx) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 菜单项进入动画 */
+.menu-item {
+  animation: slide-in-up 0.6s ease-out backwards;
+}
+
+.menu-item:nth-child(1) { animation-delay: 0.1s; }
+.menu-item:nth-child(2) { animation-delay: 0.2s; }
+.menu-item:nth-child(3) { animation-delay: 0.3s; }
+.menu-item:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes slide-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(40rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 页面整体进入动画 */
+.profile-container {
+  animation: fade-in-up 0.8s ease-out;
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(60rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 按钮点击波纹效果 */
+.login-btn,
+.switch-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.login-btn::after,
+.switch-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255,255,255,0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.login-btn:active::after {
+  width: 300rpx;
+  height: 300rpx;
+}
+
+.switch-btn:active::after {
+  width: 300rpx;
+  height: 300rpx;
+  background: rgba(6, 65, 78, 0.1);
+}

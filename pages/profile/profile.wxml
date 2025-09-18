@@ -1,0 +1,67 @@
+<view class="profile-container profile-page">
+  <!-- 用户信息卡片 -->
+  <view class="user-card">
+    <view class="user-avatar">
+      <image src="{{userInfo.avatarUrl || defaultAvatar}}" class="avatar-img" mode="aspectFill"></image>
+    </view>
+    <view class="user-info">
+      <text class="user-name">{{userInfo.nickName || '未登录'}}</text>
+      <text class="user-desc">继续加油学习吧！</text>
+    </view>
+  </view>
+
+  <!-- 登录按钮（未登录时显示） -->
+  <button wx:if="{{!hasUserInfo}}" bindtap="getUserProfile" class="login-btn">
+    点击登录授权
+  </button>
+
+  <!-- 可选：已登录时显示"更换账号" -->
+  <button wx:elif="{{hasUserInfo}}" bindtap="reAuth" class="switch-btn">
+    更换账号
+  </button>
+
+  <!-- 学习统计 -->
+  <view class="stats-section">
+    <view class="section-title">学习统计</view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-number">{{studyStats.totalWords}}</text>
+        <text class="stat-label">总词汇量</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{studyStats.learnedWords}}</text>
+        <text class="stat-label">已掌握</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{studyStats.studyDays}}</text>
+        <text class="stat-label">学习天数</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-section">
+    <view class="section-title">功能菜单</view>
+    <view class="menu-list">
+      <view 
+        wx:for="{{menuItems}}" 
+        wx:key="index" 
+        class="menu-item"
+        data-url="{{item.url}}"
+        bindtap="navigateToPage"
+        hover-class="menu-item-press"
+      >
+        <view class="menu-icon">
+          <image src="{{item.icon}}" class="icon-img" mode="aspectFit"></image>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">{{item.title}}</text>
+          <text class="menu-subtitle">{{item.subtitle}}</text>
+        </view>
+        <view class="menu-arrow">
+          <text class="arrow-icon">›</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

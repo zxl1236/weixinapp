@@ -1,0 +1,194 @@
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.98) 0%, 
+    rgba(248, 250, 252, 0.95) 50%,
+    rgba(255, 255, 255, 0.98) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  border-top: 2px solid transparent;
+  background-clip: padding-box;
+  z-index: 1000;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 
+    0 -8px 32px rgba(0, 0, 0, 0.08),
+    0 -4px 16px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    #10a37f 0%, 
+    #0ea5e9 33.33%, 
+    #6366f1 66.66%, 
+    #f59e0b 100%
+  );
+  opacity: 0.6;
+}
+
+.tab-bar-item {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 8px 0 6px 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px 12px 0 0;
+  margin: 0 2px;
+}
+
+.tab-bar-icon {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 4px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: contrast(0.8) brightness(0.9);
+}
+
+.tab-bar-text {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.2;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.tab-bar-item-selected {
+  background: linear-gradient(180deg, 
+    rgba(16, 163, 127, 0.08) 0%, 
+    rgba(255, 255, 255, 0.6) 100%
+  );
+  transform: translateY(-2px);
+}
+
+.tab-bar-item-selected::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 4px;
+  background: linear-gradient(90deg, #10a37f, #0ea5e9);
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 3px 12px rgba(16, 163, 127, 0.4);
+}
+
+.tab-bar-item-selected .tab-bar-icon {
+  transform: scale(1.1);
+  filter: contrast(1.2) brightness(1.1) saturate(1.3);
+}
+
+.tab-bar-item-selected .tab-bar-text {
+  color: #10a37f;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(16, 163, 127, 0.2);
+}
+
+/* 不同标签页的主题色 - 应用企业色彩 */
+.tab-bar-item:nth-child(1).tab-bar-item-selected {
+  background: linear-gradient(180deg, 
+    rgba(6, 65, 78, 0.1) 0%, 
+    rgba(255, 255, 255, 0.6) 100%
+  );
+}
+
+.tab-bar-item:nth-child(1).tab-bar-item-selected::before {
+  background: linear-gradient(90deg, rgb(6, 65, 78), #0891b2);
+}
+
+.tab-bar-item:nth-child(1).tab-bar-item-selected .tab-bar-text {
+  color: rgb(6, 65, 78);
+}
+
+.tab-bar-item:nth-child(2).tab-bar-item-selected {
+  background: linear-gradient(180deg, 
+    rgba(99, 102, 241, 0.1) 0%, 
+    rgba(255, 255, 255, 0.6) 100%
+  );
+}
+
+.tab-bar-item:nth-child(2).tab-bar-item-selected::before {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+.tab-bar-item:nth-child(2).tab-bar-item-selected .tab-bar-text {
+  color: #6366f1;
+}
+
+.tab-bar-item:nth-child(3).tab-bar-item-selected {
+  background: linear-gradient(180deg, 
+    rgba(245, 158, 11, 0.1) 0%, 
+    rgba(255, 255, 255, 0.6) 100%
+  );
+}
+
+.tab-bar-item:nth-child(3).tab-bar-item-selected::before {
+  background: linear-gradient(90deg, #f59e0b, #f97316);
+}
+
+.tab-bar-item:nth-child(3).tab-bar-item-selected .tab-bar-text {
+  color: #f59e0b;
+}
+
+/* 点击效果 */
+.tab-bar-item:active {
+  transform: scale(0.95);
+  background: rgba(16, 163, 127, 0.05);
+}
+
+/* 悬浮动画效果 */
+@keyframes float-up {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-1px); }
+  100% { transform: translateY(0); }
+}
+
+.tab-bar-item-selected .tab-bar-icon {
+  animation: float-up 2s ease-in-out infinite;
+}
+
+/* 响应式字号调整 */
+@media screen and (min-width: 375px) {
+  .tab-bar-text {
+    font-size: 12px;
+  }
+  
+  .tab-bar-icon {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media screen and (min-width: 414px) {
+  .tab-bar-text {
+    font-size: 13px;
+  }
+  
+  .tab-bar-icon {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .tab-bar {
+    height: 65px;
+  }
+}

@@ -8,7 +8,10 @@
     <view class="percentage">{{result.percentage}}%</view>
     <view class="level-info">
       <view class="level-title">{{levelInfo.level}}</view>
-      <view class="level-range">词汇量: {{levelInfo.range}}</view>
+      <view class="level-range" wx:if="{{levelInfo.range}}">
+        <text wx:if="{{levelInfo.stageName}}">【{{levelInfo.stageName}}阶段】</text>
+        词汇量: {{levelInfo.range}}个单词
+      </view>
       <view class="level-description">{{levelInfo.description}}</view>
     </view>
   </view>
@@ -49,17 +52,55 @@
 
   <!-- 错题回顾 -->
   <view class="card mistakes-card" wx:if="{{mistakes.length > 0}}">
-    <view class="subtitle">错题回顾</view>
-    <view class="mistake-item" wx:for="{{mistakes}}" wx:key="index">
-      <view class="mistake-word">{{item.question.word}}</view>
-      <view class="mistake-details">
-        <view class="mistake-line">
-          <text class="mistake-label">正确答案:</text>
-          <text class="mistake-correct">{{item.question.meaning}}</text>
+    <view class="subtitle-with-toggle">
+      <text class="subtitle">错题回顾 ({{mistakes.length}}题)</text>
+      <view class="toggle-btn" bindtap="toggleWords">
+        <text>{{showMistakes ? '收起' : '展开'}}</text>
+        <text class="arrow {{showMistakes ? 'up' : 'down'}}">▼</text>
+      </view>
+    </view>
+    <view class="collapsible-content" wx:if="{{showMistakes}}">
+      <view class="mistake-item" wx:for="{{mistakes}}" wx:key="index">
+        <view class="mistake-word">{{item.question}}</view>
+        <view class="mistake-details">
+          <view class="mistake-line">
+            <text class="mistake-label">正确答案:</text>
+            <text class="mistake-correct">{{item.correctAnswer}}</text>
+          </view>
+          <view class="mistake-line">
+            <text class="mistake-label">你的答案:</text>
+            <text class="mistake-wrong">{{item.selectedAnswer}}</text>
+          </view>
+          <view class="mistake-line" wx:if="{{item.phonetic}}">
+            <text class="mistake-label">音标:</text>
+            <text class="mistake-phonetic">{{item.phonetic}}</text>
+          </view>
         </view>
-        <view class="mistake-line">
-          <text class="mistake-label">你的答案:</text>
-          <text class="mistake-wrong">{{item.question.options[item.selectedAnswer]}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 正确题回顾 -->
+  <view class="card correct-card" wx:if="{{correctAnswers.length > 0}}">
+    <view class="subtitle-with-toggle">
+      <text class="subtitle">正确题回顾 ({{correctAnswers.length}}题)</text>
+      <view class="toggle-btn" bindtap="toggleCorrectAnswers">
+        <text>{{showCorrectAnswers ? '收起' : '展开'}}</text>
+        <text class="arrow {{showCorrectAnswers ? 'up' : 'down'}}">▼</text>
+      </view>
+    </view>
+    <view class="collapsible-content" wx:if="{{showCorrectAnswers}}">
+      <view class="correct-item" wx:for="{{correctAnswers}}" wx:key="index">
+        <view class="correct-word">{{item.question}}</view>
+        <view class="correct-details">
+          <view class="correct-line">
+            <text class="correct-label">正确答案:</text>
+            <text class="correct-answer">{{item.correctAnswer}}</text>
+          </view>
+          <view class="correct-line" wx:if="{{item.phonetic}}">
+            <text class="correct-label">音标:</text>
+            <text class="correct-phonetic">{{item.phonetic}}</text>
+          </view>
         </view>
       </view>
     </view>
@@ -69,6 +110,7 @@
   <view class="card actions-card">
     <view class="action-buttons">
       <button class="btn btn-primary" bindtap="retakeTest">重新测试</button>
+      <button class="btn btn-secondary" bindtap="exportPDF">导出PDF报告</button>
       <button class="btn btn-secondary" bindtap="shareResult">分享结果</button>
       <button class="btn btn-secondary" bindtap="backToHome">返回首页</button>
     </view>

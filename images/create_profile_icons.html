@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>创建我的页面图标</title>
+</head>
+<body>
+    <script>
+        // 创建我的页面图标
+        function createProfileIcons() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 100;
+            canvas.height = 100;
+            const ctx = canvas.getContext('2d');
+
+            // 普通状态的我的图标
+            ctx.clearRect(0, 0, 100, 100);
+            ctx.fillStyle = '#8B92A5';
+            ctx.beginPath();
+            ctx.arc(50, 35, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(50, 75, 25, 0, Math.PI * 2);
+            ctx.fill();
+
+            canvas.toBlob(function(blob) {
+                const link = document.createElement('a');
+                link.download = 'profile.png';
+                link.href = URL.createObjectURL(blob);
+                link.click();
+            });
+
+            // 激活状态的我的图标
+            setTimeout(() => {
+                ctx.clearRect(0, 0, 100, 100);
+                ctx.fillStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.arc(50, 35, 15, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(50, 75, 25, 0, Math.PI * 2);
+                ctx.fill();
+
+                canvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.download = 'profile-active.png';
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                });
+            }, 100);
+
+            // 默认头像
+            setTimeout(() => {
+                ctx.clearRect(0, 0, 100, 100);
+                ctx.fillStyle = '#e2e8f0';
+                ctx.fillRect(0, 0, 100, 100);
+                ctx.fillStyle = '#94a3b8';
+                ctx.beginPath();
+                ctx.arc(50, 35, 12, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(50, 70, 20, 0, Math.PI * 2);
+                ctx.fill();
+
+                canvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.download = 'default-avatar.png';
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                });
+            }, 200);
+
+            // 其他功能图标
+            const icons = [
+                { name: 'progress-icon.png', color: '#10a37f', shape: 'chart' },
+                { name: 'mistake-icon.png', color: '#ef4444', shape: 'x' },
+                { name: 'training-icon.png', color: '#6366f1', shape: 'dumbbell' },
+                { name: 'payment-icon.png', color: '#f59e0b', shape: 'crown' }
+            ];
+
+            icons.forEach((icon, index) => {
+                setTimeout(() => {
+                    ctx.clearRect(0, 0, 100, 100);
+                    ctx.fillStyle = icon.color;
+                    
+                    if (icon.shape === 'chart') {
+                        // 进度图标 - 柱状图
+                        ctx.fillRect(20, 60, 10, 30);
+                        ctx.fillRect(35, 45, 10, 45);
+                        ctx.fillRect(50, 30, 10, 60);
+                        ctx.fillRect(65, 40, 10, 50);
+                    } else if (icon.shape === 'x') {
+                        // 错题图标 - X
+                        ctx.lineWidth = 8;
+                        ctx.strokeStyle = icon.color;
+                        ctx.beginPath();
+                        ctx.moveTo(25, 25);
+                        ctx.lineTo(75, 75);
+                        ctx.moveTo(75, 25);
+                        ctx.lineTo(25, 75);
+                        ctx.stroke();
+                    } else if (icon.shape === 'dumbbell') {
+                        // 训练图标 - 哑铃
+                        ctx.fillRect(20, 45, 10, 10);
+                        ctx.fillRect(70, 45, 10, 10);
+                        ctx.fillRect(30, 48, 40, 4);
+                    } else if (icon.shape === 'crown') {
+                        // 支付图标 - 皇冠
+                        ctx.fillRect(25, 50, 50, 25);
+                        ctx.beginPath();
+                        ctx.moveTo(25, 50);
+                        ctx.lineTo(35, 25);
+                        ctx.lineTo(50, 40);
+                        ctx.lineTo(65, 25);
+                        ctx.lineTo(75, 50);
+                        ctx.fill();
+                    }
+
+                    canvas.toBlob(function(blob) {
+                        const link = document.createElement('a');
+                        link.download = icon.name;
+                        link.href = URL.createObjectURL(blob);
+                        link.click();
+                    });
+                }, 300 + index * 100);
+            });
+        }
+
+        // 页面加载后自动创建图标
+        window.onload = createProfileIcons;
+    </script>
+    <p>正在生成我的页面所需图标...</p>
+</body>
+</html>

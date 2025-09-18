@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel转JSON工具 - 年级词汇数据处理</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #5a67d8;
+            background: #f7fafc;
+        }
+
+        .upload-area.dragover {
+            border-color: #4c51bf;
+            background: #e6fffa;
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .upload-hint {
+            font-size: 0.9em;
+            color: #999;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-area {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .output-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .output-title {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .copy-btn {
+            padding: 8px 16px;
+            font-size: 0.9em;
+            background: #28a745;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+
+        .output-content {
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            max-height: 500px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .format-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .format-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .format-card:hover, .format-card.selected {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        .format-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .format-card p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .example-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .example-table th,
+        .example-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .example-table th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        .example-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .example-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            color: #1565c0;
+        }
+
+        .alert-success {
+            background: #e8f5e8;
+            border-left: 4px solid #4caf50;
+            color: #2e7d32;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Excel转JSON工具</h1>
+            <p>专为微信小程序英语学习应用的年级词汇数据处理</p>
+        </div>
+
+        <div class="content">
+            <!-- 格式说明 -->
+            <div class="section">
+                <h2>📋 Excel文件格式要求</h2>
+                <div class="alert alert-info">
+                    <strong>重要：</strong>请确保您的Excel文件包含以下列（列名不区分大小写，支持中英文）
+                </div>
+                
+                <table class="example-table">
+                    <thead>
+                        <tr>
+                            <th>必需列</th>
+                            <th>可选列名</th>
+                            <th>示例</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>单词</strong></td>
+                            <td>word, Word, 单词, 英文</td>
+                            <td>apple</td>
+                            <td>英文单词（必填）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>释义</strong></td>
+                            <td>meaning, Meaning, 释义, 中文, 意思</td>
+                            <td>苹果</td>
+                            <td>中文释义（必填）</td>
+                        </tr>
+                        <tr>
+                            <td>音标</td>
+                            <td>phonetic, Phonetic, 音标, 发音</td>
+                            <td>[ˈæpl]</td>
+                            <td>国际音标（可选）</td>
+                        </tr>
+                        <tr>
+                            <td>年级</td>
+                            <td>level, Level, 年级, 等级</td>
+                            <td>3</td>
+                            <td>年级数字（可选，会自动设置）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>词性</strong></td>
+                            <td>partOfSpeech, pos, 词性, 性质</td>
+                            <td>n.</td>
+                            <td>词性标注（必填）：n.名词 v.动词 adj.形容词 adv.副词 prep.介词 conj.连词 pron.代词 phrase.短语</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 文件上传 -->
+            <div class="section">
+                <h2>📁 上传Excel文件</h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📄</div>
+                    <div class="upload-text">点击选择或拖拽Excel文件到此处</div>
+                    <div class="upload-hint">支持 .xlsx, .xls 格式</div>
+                    <input type="file" id="fileInput" accept=".xlsx,.xls" />
+                </div>
+                <br>
+                <button class="btn" onclick="document.getElementById('fileInput').click()">
+                    选择文件
+                </button>
+            </div>
+
+            <!-- 输出格式选择 -->
+            <div class="section" id="formatSection" style="display: none;">
+                <h2>🎯 选择输出格式</h2>
+                <div class="format-options">
+                    <div class="format-card" data-format="preprocessed" onclick="selectFormat('preprocessed')">
+                        <h3>🔧 预处理数据格式</h3>
+                        <p>直接替换 preprocessedWordDatabase.js 中的年级数据</p>
+                    </div>
+                    <div class="format-card" data-format="dynamic" onclick="selectFormat('dynamic')">
+                        <h3>⚡ 动态管理格式</h3>
+                        <p>用于 dynamicWordManager.js 的批量添加</p>
+                    </div>
+                    <div class="format-card" data-format="standard" onclick="selectFormat('standard')">
+                        <h3>📋 标准JSON格式</h3>
+                        <p>通用的JSON数组格式</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据统计 -->
+            <div class="section" id="statsSection" style="display: none;">
+                <h2>📊 数据统计</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="totalWords">0</span>
+                        <div class="stat-label">总词汇数</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="withPhonetic">0</span>
+                        <div class="stat-label">含音标</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="validWords">0</span>
+                        <div class="stat-label">有效词汇</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="detectedGrade">-</span>
+                        <div class="stat-label">检测年级</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="partOfSpeechTypes">0</span>
+                        <div class="stat-label">词性种类</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 年级设置 -->
+            <div class="section" id="gradeSection" style="display: none;">
+                <h2>🎓 年级设置</h2>
+                <div class="alert alert-info">
+                    <strong>目标年级：</strong>这些词汇将被添加到哪个年级？
+                </div>
+                <select id="gradeSelect" style="padding: 10px; border-radius: 5px; border: 1px solid #ddd; font-size: 16px;">
+                    <option value="3">三年级 (grade3)</option>
+                    <option value="4">四年级 (grade4)</option>
+                    <option value="5">五年级 (grade5)</option>
+                    <option value="6">六年级 (grade6)</option>
+                    <option value="7">初一 (grade7)</option>
+                    <option value="8">初二 (grade8)</option>
+                    <option value="9">初三 (grade9)</option>
+                    <option value="10">高一 (grade10)</option>
+                    <option value="11">高二 (grade11)</option>
+                    <option value="12">高三 (grade12)</option>
+                </select>
+                <br><br>
+                <button class="btn" id="generateBtn" onclick="generateOutput()" disabled>
+                    🚀 生成代码
+                </button>
+            </div>
+
+            <!-- 输出结果 -->
+            <div class="section" id="outputSection" style="display: none;">
+                <h2>📄 生成的代码</h2>
+                <div class="alert alert-success">
+                    <strong>成功！</strong>请复制下方代码到对应的文件中。
+                </div>
+                <div class="output-area">
+                    <div class="output-header">
+                        <span class="output-title" id="outputTitle">代码输出</span>
+                        <button class="copy-btn" onclick="copyToClipboard()">📋 复制代码</button>
+                    </div>
+                    <div class="output-content" id="outputContent"></div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h3>📝 使用说明：</h3>
+                    <div id="usageInstructions"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentData = null;
+        let selectedFormat = 'preprocessed';
+
+        // 文件上传处理
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+
+        // 处理文件
+        function handleFile(file) {
+            if (!file) return;
+
+            if (!file.name.match(/\.(xlsx|xls)$/i)) {
+                alert('请选择Excel文件（.xlsx 或 .xls）');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                    
+                    processExcelData(jsonData);
+                } catch (error) {
+                    alert('文件解析失败，请确保文件格式正确：' + error.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // 处理Excel数据
+        function processExcelData(data) {
+            console.log('原始数据:', data);
+            
+            // 数据清理和标准化
+            const processedData = data.map((row, index) => {
+                const word = findValue(row, ['word', 'Word', '单词', '英文']) || '';
+                const meaning = findValue(row, ['meaning', 'Meaning', '释义', '中文', '意思']) || '';
+                const phonetic = findValue(row, ['phonetic', 'Phonetic', '音标', '发音']) || '';
+                const partOfSpeech = findValue(row, ['partOfSpeech', 'pos', '词性', '性质']) || '';
+                const level = findValue(row, ['level', 'Level', '年级', '等级']) || '';
+
+                if (!word.trim() || !meaning.trim() || !partOfSpeech.trim()) {
+                    console.warn(`第${index + 1}行数据不完整（缺少单词/释义/词性），跳过:`, row);
+                    return null;
+                }
+
+                return {
+                    word: word.trim(),
+                    meaning: meaning.trim(),
+                    phonetic: phonetic.trim(),
+                    partOfSpeech: partOfSpeech.trim(),
+                    level: level || null,
+                    originalRow: index + 1
+                };
+            }).filter(item => item !== null);
+
+            currentData = processedData;
+            
+            // 显示统计信息
+            updateStats(processedData);
+            
+            // 显示后续选项
+            document.getElementById('formatSection').style.display = 'block';
+            document.getElementById('statsSection').style.display = 'block';
+            document.getElementById('gradeSection').style.display = 'block';
+            document.getElementById('generateBtn').disabled = false;
+
+            // 自动选择第一个格式
+            selectFormat('preprocessed');
+        }
+
+        // 查找字段值（支持多种列名）
+        function findValue(row, possibleKeys) {
+            for (const key of possibleKeys) {
+                if (row.hasOwnProperty(key) && row[key] !== undefined && row[key] !== null) {
+                    return String(row[key]).trim();
+                }
+            }
+            return '';
+        }
+
+        // 更新统计信息
+        function updateStats(data) {
+            const totalWords = data.length;
+            const withPhonetic = data.filter(item => item.phonetic).length;
+            const validWords = data.filter(item => item.word && item.meaning && item.partOfSpeech).length;
+            
+            // 统计词性种类
+            const partOfSpeechSet = new Set(data.map(item => item.partOfSpeech).filter(pos => pos));
+            const partOfSpeechTypes = partOfSpeechSet.size;
+            
+            // 尝试检测年级
+            let detectedGrade = '-';
+            const levels = data.map(item => item.level).filter(level => level);
+            if (levels.length > 0) {
+                const mostCommon = levels.sort((a,b) =>
+                    levels.filter(v => v === a).length - levels.filter(v => v === b).length
+                ).pop();
+                detectedGrade = mostCommon;
+            }
+
+            document.getElementById('totalWords').textContent = totalWords;
+            document.getElementById('withPhonetic').textContent = withPhonetic;
+            document.getElementById('validWords').textContent = validWords;
+            document.getElementById('detectedGrade').textContent = detectedGrade;
+            document.getElementById('partOfSpeechTypes').textContent = partOfSpeechTypes;
+
+            // 如果检测到年级，自动设置
+            if (detectedGrade !== '-') {
+                const gradeSelect = document.getElementById('gradeSelect');
+                gradeSelect.value = detectedGrade;
+            }
+        }
+
+        // 选择输出格式
+        function selectFormat(format) {
+            selectedFormat = format;
+            
+            // 更新UI
+            document.querySelectorAll('.format-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-format="${format}"]`).classList.add('selected');
+        }
+
+        // 生成输出代码
+        function generateOutput() {
+            if (!currentData || currentData.length === 0) {
+                alert('没有有效数据');
+                return;
+            }
+
+            const grade = document.getElementById('gradeSelect').value;
+            const gradeId = `grade${grade}`;
+            
+            let output = '';
+            let title = '';
+            let instructions = '';
+
+            switch (selectedFormat) {
+                case 'preprocessed':
+                    output = generatePreprocessedFormat(currentData, grade, gradeId);
+                    title = `预处理数据格式 - ${getGradeName(grade)}`;
+                    instructions = `
+                        <div class="alert alert-info">
+                            <strong>使用步骤：</strong><br>
+                            1. 打开文件：<code>utils/preprocessedWordDatabase.js</code><br>
+                            2. 找到 <code>${gradeId}:</code> 部分<br>
+                            3. 用下方代码替换整个 <code>${gradeId}</code> 数组<br>
+                            4. 保存文件并重启小程序
+                        </div>
+                    `;
+                    break;
+                    
+                case 'dynamic':
+                    output = generatePreprocessedFormat(currentData, grade); // 重用预处理格式
+                    title = `动态导入格式 - ${getGradeName(grade)}`;
+                    instructions = `
+                        <div class="alert alert-info">
+                            <strong>使用步骤：</strong><br>
+                            1. 复制下方代码<br>
+                            2. 替换到 <code>utils/preprocessedWordDatabase.js</code> 文件中<br>
+                            3. 重启小程序生效
+                        </div>
+                    `;
+                    break;
+                    
+                case 'standard':
+                    output = generateStandardFormat(currentData, grade);
+                    title = `标准JSON格式 - ${getGradeName(grade)}`;
+                    instructions = `
+                        <div class="alert alert-info">
+                            <strong>使用说明：</strong><br>
+                            这是标准的JSON数组格式，可以用于任何需要词汇数据的地方。
+                        </div>
+                    `;
+                    break;
+            }
+
+            // 显示结果
+            document.getElementById('outputTitle').textContent = title;
+            document.getElementById('outputContent').textContent = output;
+            document.getElementById('usageInstructions').innerHTML = instructions;
+            document.getElementById('outputSection').style.display = 'block';
+
+            // 滚动到结果区域
+            document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 生成预处理数据格式
+        function generatePreprocessedFormat(data, grade, gradeId) {
+            const gradeNum = parseInt(grade);
+            let output = `  // ${getGradeName(grade)} (${data.length}个词汇)\n`;
+            output += `  ${gradeId}: [\n`;
+            
+            data.forEach((item, index) => {
+                const comma = index < data.length - 1 ? ',' : '';
+                const phonetic = item.phonetic ? `"${item.phonetic}"` : '""';
+                output += `    { "word": "${item.word}", "phonetic": ${phonetic}, "meaning": "${item.meaning}", "partOfSpeech": "${item.partOfSpeech}", "level": ${gradeNum} }${comma}\n`;
+            });
+            
+            output += `  ],`;
+            return output;
+        }
+
+        // 动态管理格式已移除，重用预处理格式
+
+        // 生成标准JSON格式
+        function generateStandardFormat(data, grade) {
+            const gradeNum = parseInt(grade);
+            const words = data.map(item => ({
+                word: item.word,
+                phonetic: item.phonetic || '',
+                meaning: item.meaning,
+                partOfSpeech: item.partOfSpeech,
+                level: gradeNum
+            }));
+
+            return JSON.stringify(words, null, 2);
+        }
+
+        // 获取年级名称
+        function getGradeName(grade) {
+            const names = {
+                '3': '三年级', '4': '四年级', '5': '五年级', '6': '六年级',
+                '7': '初一', '8': '初二', '9': '初三',
+                '10': '高一', '11': '高二', '12': '高三'
+            };
+            return names[grade] || `${grade}年级`;
+        }
+
+        // 复制到剪贴板
+        function copyToClipboard() {
+            const content = document.getElementById('outputContent').textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = '✅ 已复制';
+                btn.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                }, 2000);
+            }).catch(() => {
+                // 降级方案
+                const textArea = document.createElement('textarea');
+                textArea.value = content;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('代码已复制到剪贴板');
+            });
+        }
+    </script>
+</body>
+</html>

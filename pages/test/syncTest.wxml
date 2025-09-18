@@ -1,0 +1,141 @@
+<!-- 数据同步测试页面 -->
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="header">
+    <text class="title">🧪 数据同步测试</text>
+    <text class="subtitle">验证四阶段学习数据同步功能</text>
+  </view>
+
+  <!-- 当前统计 -->
+  <view class="stats-section" wx:if="{{currentStats}}">
+    <view class="section-title">📊 当前数据统计</view>
+    
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-label">单词掌握数据</text>
+        <text class="stat-value">{{currentStats.masteryMapSize}}</text>
+      </view>
+      
+      <view class="stat-item">
+        <text class="stat-label">学习会话</text>
+        <text class="stat-value">{{currentStats.sessionHistorySize}}</text>
+      </view>
+      
+      <view class="stat-item">
+        <text class="stat-label">日常统计</text>
+        <text class="stat-value">{{currentStats.dailyStatsSize}}</text>
+      </view>
+    </view>
+
+    <!-- 年级进度 -->
+    <view class="grade-progress">
+      <view class="grade-item">
+        <text class="grade-name">三年级</text>
+        <text class="grade-stats">
+          总词汇: {{currentStats.grade3Progress.total}}, 
+          掌握: {{currentStats.grade3Progress.mastered + currentStats.grade3Progress.expert}},
+          需要复习: {{currentStats.grade3Progress.needReview}}
+        </text>
+      </view>
+      
+      <view class="grade-item">
+        <text class="grade-name">四年级</text>
+        <text class="grade-stats">
+          总词汇: {{currentStats.grade4Progress.total}}, 
+          掌握: {{currentStats.grade4Progress.mastered + currentStats.grade4Progress.expert}},
+          需要复习: {{currentStats.grade4Progress.needReview}}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 测试控制 -->
+  <view class="test-section">
+    <view class="section-title">🧪 测试控制</view>
+    
+    <view class="button-group">
+      <button 
+        class="test-btn primary" 
+        bindtap="runTest" 
+        disabled="{{testing}}">
+        {{testing ? '测试中...' : '运行测试'}}
+      </button>
+      
+      <button 
+        class="test-btn secondary" 
+        bindtap="quickVerifySync">
+        快速验证同步
+      </button>
+      
+      <button 
+        class="test-btn danger" 
+        bindtap="clearTestData">
+        清理测试数据
+      </button>
+    </view>
+  </view>
+
+  <!-- 测试结果 -->
+  <view class="results-section" wx:if="{{testResults}}">
+    <view class="section-title">📋 测试结果</view>
+    
+    <view class="result-summary">
+      <view class="summary-item success">
+        <text class="summary-label">通过</text>
+        <text class="summary-value">{{testResults.summary.passed}}</text>
+      </view>
+      
+      <view class="summary-item fail">
+        <text class="summary-label">失败</text>
+        <text class="summary-value">{{testResults.summary.failed}}</text>
+      </view>
+      
+      <view class="summary-item total">
+        <text class="summary-label">总计</text>
+        <text class="summary-value">{{testResults.summary.total}}</text>
+      </view>
+      
+      <view class="summary-item rate">
+        <text class="summary-label">成功率</text>
+        <text class="summary-value">{{testResults.summary.successRate}}%</text>
+      </view>
+    </view>
+
+    <view class="result-actions">
+      <button class="action-btn" bindtap="showTestDetails">查看详情</button>
+      <button class="action-btn" bindtap="exportReport">导出报告</button>
+    </view>
+  </view>
+
+  <!-- 测试项目列表 -->
+  <view class="test-list" wx:if="{{testResults && testResults.details}}">
+    <view class="section-title">📝 测试项目</view>
+    
+    <view 
+      class="test-item {{item.passed ? 'passed' : 'failed'}}"
+      wx:for="{{testResults.details}}" 
+      wx:key="name">
+      <view class="test-status">
+        <text class="status-icon">{{item.passed ? '✅' : '❌'}}</text>
+      </view>
+      <view class="test-content">
+        <text class="test-name">{{item.name}}</text>
+        <text class="test-message">{{item.message}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 存储信息 -->
+  <view class="storage-section" wx:if="{{currentStats && currentStats.storageInfo}}">
+    <view class="section-title">💾 存储信息</view>
+    
+    <view class="storage-info">
+      <text class="storage-text">
+        使用空间: {{currentStats.storageInfo.currentSize}}KB / {{currentStats.storageInfo.limitSize}}KB
+      </text>
+      <text class="storage-text">
+        相关存储键: {{currentStats.storageInfo.keys.length}} 个
+      </text>
+    </view>
+  </view>
+</view>

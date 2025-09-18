@@ -1,3 +1,9 @@
+/* 页面背景 */
+page {
+  /* 使用统一的淡雅渐变背景 */
+  background: linear-gradient(180deg, var(--bg-grad-start), var(--bg-grad-end));
+}
+
 /* 结果头部样式 */
 .result-header {
   text-align: center;
@@ -128,6 +134,57 @@
   margin-bottom: 30rpx;
 }
 
+/* 正确题回顾 */
+.correct-card {
+  margin-bottom: 30rpx;
+}
+
+/* 可折叠标题 */
+.subtitle-with-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  color: #4A90E2;
+  font-size: 28rpx;
+  cursor: pointer;
+}
+
+.arrow {
+  margin-left: 8rpx;
+  transition: transform 0.3s ease;
+  color: #4A90E2;
+}
+
+.arrow.up {
+  transform: rotate(180deg);
+}
+
+.arrow.down {
+  transform: rotate(0deg);
+}
+
+/* 可折叠内容 */
+.collapsible-content {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000rpx;
+  }
+}
+
 .mistake-item {
   background: #fff5f5;
   border: 1rpx solid #ffebee;
@@ -179,6 +236,66 @@
   font-size: 28rpx;
   color: #dc3545;
   font-weight: 600;
+}
+
+.mistake-phonetic {
+  font-size: 26rpx;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* 正确题样式 */
+.correct-item {
+  background: #f0f8f0;
+  border: 1rpx solid #d4edda;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.correct-item:last-child {
+  margin-bottom: 0;
+}
+
+.correct-word {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 16rpx;
+  font-family: 'Georgia', serif;
+}
+
+.correct-details {
+  margin-top: 12rpx;
+}
+
+.correct-line {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.correct-line:last-child {
+  margin-bottom: 0;
+}
+
+.correct-label {
+  font-size: 26rpx;
+  color: #7f8c8d;
+  width: 160rpx;
+  flex-shrink: 0;
+}
+
+.correct-answer {
+  font-size: 28rpx;
+  color: #28a745;
+  font-weight: 600;
+}
+
+.correct-phonetic {
+  font-size: 26rpx;
+  color: #6c757d;
+  font-style: italic;
 }
 
 /* 操作按钮 */

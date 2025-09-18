@@ -1,17 +1,40 @@
-const app = getApp();
+const { userManager } = require('../../utils/userManager');
 
 Page({
   data: {
-    hasHistory: false,
-    testHistory: []
+    testHistory: [],
+    remainingTests: 3,
+    isPremium: false,
+    membershipStatus: {},
+    expireTimeText: ''
   },
 
   onLoad() {
     this.loadTestHistory();
+    this.checkDailyLimit();
   },
 
   onShow() {
+    // 更新tabbar选中状态
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({
+        selected: 0 // 首页是第1个tab
+      });
+    }
     this.loadTestHistory();
+    this.checkDailyLimit();
+  },
+
+  // 检查每日测试限制和会员状态
+  checkDailyLimit() {
+    const membershipStatus = userManager.getMembershipStatus();
+    const remainingTests = userManager.getRemainingTests();
+    
+    this.setData({
+      isPremium: membershipStatus.isPremium,
+      membershipStatus: membershipStatus,
+      remainingTests: remainingTests.unlimited ? '∞' : remainingTests.count
+    });
   },
 
   // 加载测试历史
@@ -19,77 +42,124 @@ Page({
     try {
       const history = wx.getStorageSync('testHistory') || [];
       this.setData({
-        hasHistory: history.length > 0,
-        testHistory: history.slice(-3) // 只显示最近3次记录
+        testHistory: history.slice(-5)
       });
     } catch (e) {
       console.error('加载历史记录失败:', e);
     }
   },
 
-  // 开始快速测试
-  startQuickTest() {
-    this.navigateToTest(10);
-  },
-
-  // 开始标准测试
-  startStandardTest() {
-    this.navigateToTest(20);
-  },
-
-  // 开始深度测试
-  startExtendedTest() {
-    this.navigateToTest(30);
-  },
-
-  // 新的分级测试启动函数
-  startTest(e) {
-    const level = e.currentTarget.dataset.level;
-    console.log('启动测试，级别:', level);
-    // 根据不同级别设置不同的题目数量
-    const questionCount = level === 'primary' ? 15 : level === 'junior' ? 20 : 25;
-    this.navigateToTest(questionCount);
-  },
-
-  // 显示错题本
-  showMistakeBook() {
-    // 这里可以跳转到错题本页面，或者显示错题本功能
-    wx.showToast({
-      title: '错题本功能开发中',
-      icon: 'none'
+  // 跳转到分级训练
+  goToGradeTraining(e) {
+    const stage = e.currentTarget.dataset.stage;
+    
+    let gradeToCheck;
+    switch(stage) {
+      case 'primary':
+        gradeToCheck = 3;
+        break;
+      case 'junior':
+        gradeToCheck = 7;
+        break;
+      case 'senior':
+        gradeToCheck = 10;
+        break;
+      default:
+        gradeToCheck = 3;
+    }
+    
+    if (!userManager.canAccessGrade(gradeToCheck)) {
+      const membershipStatus = userManager.getMembershipStatus();
+      const accessibleGrades = membershipStatus.config.accessibleGrades.join('、');
+      userManager.showPermissionModal(`免费版只能访问${accessibleGrades}年级内容`);
+      return;
+    }
+    
+    wx.navigateTo({
+      url: `/pages/training/training?stage=${stage}`
     });
   },
 
-  // 导航到测试页面
-  navigateToTest(questionCount) {
-    wx.showLoading({
-      title: '正在准备题目...',
-      mask: true
+  // 跳转到水平测试
+  goToLevelTest() {
+    const canTest = userManager.canTakeTest();
+    if (!canTest.allowed) {
+      userManager.showPermissionModal(canTest.reason);
+      return;
+    }
+    
+    wx.navigateTo({
+      url: '/pages/gradeTest/gradeTest'
     });
+  },
 
-    // 模拟加载时间，增强用户体验
-    setTimeout(() => {
-      wx.hideLoading();
-      wx.navigateTo({
-        url: `/pages/test/test?count=${questionCount}`
+  // 显示生词本
+  showWordBook() {
+    wx.switchTab({
+      url: '/pages/mistake/mistake'
+    });
+  },
+
+  // 跳转到升级页面
+  goToUpgrade() {
+    wx.navigateTo({
+      url: '/pages/payment/payment'
+    });
+  },
+
+  // 跳转到支付页面（会员管理）
+  goToPayment() {
+    wx.navigateTo({
+      url: '/pages/payment/payment'
+    });
+  },
+
+  // 清空所有历史记录
+  clearAllHistory() {
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要清空所有历史记录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          try {
+            wx.removeStorageSync('testHistory');
+            this.setData({
+              testHistory: []
+            });
+            wx.showToast({
+              title: '已清空',
+              icon: 'success'
+            });
+          } catch (error) {
+            wx.showToast({
+              title: '删除失败',
+              icon: 'error'
+            });
+          }
+        }
+      }
+    });
+  },
+
+  // 删除单条历史记录
+  deleteHistory(e) {
+    const id = e.currentTarget.dataset.id;
+    try {
+      const history = wx.getStorageSync('testHistory') || [];
+      const newHistory = history.filter(item => item.id !== id);
+      
+      wx.setStorageSync('testHistory', newHistory);
+      this.loadTestHistory();
+      
+      wx.showToast({
+        title: '已删除',
+        icon: 'success'
       });
-    }, 800);
-  },
-
-  // 分享功能
-  onShareAppMessage() {
-    return {
-      title: '英文词汇量测试 - 快速测试你的英语水平',
-      path: '/pages/index/index',
-      imageUrl: '' // 可以添加分享图片
-    };
-  },
-
-  // 分享到朋友圈
-  onShareTimeline() {
-    return {
-      title: '英文词汇量测试 - 快速测试你的英语水平',
-      imageUrl: '' // 可以添加分享图片
-    };
+    } catch (error) {
+      wx.showToast({
+        title: '删除失败',
+        icon: 'error'
+      });
+    }
   }
 });

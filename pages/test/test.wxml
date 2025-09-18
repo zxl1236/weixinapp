@@ -2,11 +2,17 @@
   <!-- 进度条 -->
   <view class="progress-section">
     <view class="progress-info">
-      <text class="progress-text">第 {{currentIndex + 1}} / {{totalQuestions}} 题</text>
+      <text class="progress-text">
+        {{(isTraining || isAssessment) ? currentGradeName + (isAssessment ? ' 评估' : ' 训练') + ' · ' : ''}}第 {{currentIndex + 1}} / {{totalQuestions}} 题
+      </text>
       <text class="score-text">得分: {{score}}</text>
     </view>
+    <!-- 阶段描述 -->
+    <view class="stage-info" wx:if="{{stageDescription}}">
+      <text class="stage-desc">{{stageDescription}}</text>
+    </view>
     <view class="progress-container">
-      <view class="progress-bar" style="width: {{((currentIndex + 1) / totalQuestions) * 100}}%"></view>
+      <view class="progress-bar" style="width: {{((currentIndex + 1) / totalQuestions) * 100}};"></view>
     </view>
   </view>
 
@@ -15,6 +21,15 @@
     <view class="question-header">
       <view class="word-level">Level {{currentQuestion.level}}</view>
       <view class="question-word">{{currentQuestion.word}}</view>
+      <view class="phonetic" wx:if="{{currentQuestion.phonetic}}">{{currentQuestion.phonetic}}</view>
+      <view class="part-of-speech" wx:if="{{currentQuestion.partOfSpeech}}">
+        <text class="pos-tag">{{currentQuestion.partOfSpeech}}</text>
+      </view>
+      <view class="pronunciation-section">
+        <button class="pronunciation-btn" bindtap="playPronunciation">
+          🔊 听发音
+        </button>
+      </view>
     </view>
     
     <view class="question-text">请选择这个单词的中文意思：</view>
@@ -61,8 +76,8 @@
       </button>
     </view>
 
-    <!-- 解释说明 -->
-    <view class="explanation" wx:if="{{showResult}}">
+    <!-- 解释说明 - 仅错误答案时显示 -->
+    <view class="explanation" wx:if="{{showResult && !isLastAnswerCorrect}}">
       <view class="explanation-title">解析</view>
       <view class="explanation-text">
         <text class="word-highlight">{{currentQuestion.word}}</text> 的正确中文意思是 

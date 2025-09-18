@@ -1,0 +1,349 @@
+/* 水平测试页面样式（柔和马卡龙版） */
+
+.container {
+  min-height: 100vh;
+  /* 使用统一的淡雅渐变背景 */
+  background: linear-gradient(180deg, var(--bg-grad-start), var(--bg-grad-end));
+  padding: 40rpx 30rpx;
+}
+
+/* 页面标题 */
+.header {
+  margin-bottom: 40rpx;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 56rpx;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 15rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.08);
+}
+
+.page-subtitle {
+  font-size: 32rpx;
+  color: rgba(44, 62, 80, 0.7);
+  line-height: 1.5;
+}
+
+/* 模式说明（玻璃卡片风） */
+.mode-explanation {
+  background: rgba(255, 255, 255, 0.6);
+  border: 2rpx solid rgba(255, 255, 255, 0.7);
+  border-radius: 18rpx;
+  padding: 25rpx;
+  margin-bottom: 40rpx;
+  text-align: center;
+  backdrop-filter: blur(6rpx);
+}
+
+.mode-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 12rpx;
+}
+
+.mode-desc {
+  font-size: 28rpx;
+  color: rgba(44,62,80,0.75);
+  line-height: 1.6;
+}
+
+/* 阶段选择样式 */
+.stage-selection {
+  margin-bottom: 40rpx;
+}
+
+.stage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.stage-card {
+  /* 柔和半透明白 + 细边框 */
+  background: rgba(255, 255, 255, 0.65);
+  border: 2rpx solid rgba(255, 255, 255, 0.8);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  display: flex;
+  align-items: center;
+  transition: all 0.25s ease;
+  box-shadow: 0 6rpx 20rpx rgba(0,0,0,0.06);
+}
+
+.stage-card:active {
+  transform: scale(0.985);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.08);
+}
+
+.stage-icon {
+  font-size: 64rpx;
+  margin-right: 30rpx;
+  color: #66a6ff; /* 轻蓝 */
+}
+
+.stage-info {
+  flex: 1;
+}
+
+.stage-name {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 8rpx;
+}
+
+.stage-desc {
+  font-size: 28rpx;
+  color: rgba(44,62,80,0.7);
+  margin-bottom: 8rpx;
+}
+
+.stage-count {
+  font-size: 24rpx;
+  color: rgba(44,62,80,0.6);
+  background: rgba(168, 237, 234, 0.25);
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  display: inline-block;
+}
+
+.stage-arrow {
+  font-size: 36rpx;
+  color: rgba(44,62,80,0.45);
+}
+
+/* 年级选择视图样式 */
+.grade-selection {
+  margin-bottom: 40rpx;
+}
+
+.back-header {
+  margin-bottom: 30rpx;
+}
+
+.back-btn {
+  background: rgba(255,255,255,0.65);
+  color: #2c3e50;
+  border: 2rpx solid rgba(255,255,255,0.85);
+  padding: 15rpx 25rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  box-shadow: 0 4rpx 14rpx rgba(0,0,0,0.06);
+}
+
+.back-btn:active {
+  background: rgba(255,255,255,0.8);
+}
+
+.current-stage-info {
+  background: rgba(255,255,255,0.6);
+  border-radius: 15rpx;
+  padding: 25rpx;
+  margin-bottom: 30rpx;
+  text-align: center;
+  border: 2rpx solid rgba(255,255,255,0.75);
+}
+
+.stage-badge { margin-bottom: 15rpx; }
+
+.stage-icon-small {
+  font-size: 44rpx;
+  margin-right: 15rpx;
+  color: #89f7fe;
+}
+
+.stage-name-small {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.stage-desc-small {
+  font-size: 26rpx;
+  color: rgba(44,62,80,0.7);
+}
+
+/* 年级列表 */
+.grade-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.grade-card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0,0,0,0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: 2rpx solid rgba(255,255,255,0.9);
+}
+
+.grade-card:active {
+  transform: translateY(2rpx) scale(0.992);
+  box-shadow: 0 6rpx 18rpx rgba(0,0,0,0.1);
+}
+
+/* 年级信息区域 */
+.grade-info { margin-bottom: 20rpx; }
+
+.grade-name {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #2c3e50;
+  margin-bottom: 12rpx;
+}
+
+.grade-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.word-count {
+  font-size: 26rpx;
+  color: #7f8c8d;
+}
+
+.mastery-info {
+  display: flex;
+  align-items: center;
+}
+
+.mastery-rate {
+  font-size: 26rpx;
+  color: #27ae60;
+  font-weight: 700;
+}
+
+/* 按钮区域（柔和渐变） */
+.grade-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 15rpx;
+  margin-bottom: 15rpx;
+}
+
+.test-btn {
+  /* 粉橙柔和 */
+  background: linear-gradient(135deg, #ffd1c1 0%, #ffb199 100%);
+  color: #5b4636;
+  border: none;
+  border-radius: 25rpx;
+  padding: 15rpx 20rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  text-align: center;
+  flex: 1;
+  box-shadow: 0 4rpx 14rpx rgba(255, 177, 153, 0.35);
+}
+
+.test-btn:active { opacity: 0.88; }
+
+.train-btn {
+  /* 天空蓝柔和 */
+  background: linear-gradient(135deg, #b3e5ff 0%, #89f7fe 100%);
+  color: #24425a;
+  border: none;
+  border-radius: 25rpx;
+  padding: 15rpx 20rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  text-align: center;
+  flex: 1;
+  box-shadow: 0 4rpx 14rpx rgba(137, 247, 254, 0.3);
+}
+
+.train-btn:active { opacity: 0.88; }
+
+.progress-btn {
+  /* 薄荷绿柔和 */
+  background: linear-gradient(135deg, #d6f6e6 0%, #b9efd6 100%);
+  color: #1d3b2e;
+  border: none;
+  border-radius: 25rpx;
+  padding: 15rpx 20rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  text-align: center;
+  flex: 1;
+  box-shadow: 0 4rpx 14rpx rgba(185, 239, 214, 0.35);
+}
+
+.progress-btn:active { opacity: 0.88; }
+
+/* 进度详情展开区域 */
+.progress-detail {
+  background: #f8f9fa;
+  border-radius: 15rpx;
+  padding: 20rpx;
+  margin-top: 15rpx;
+  animation: slideDown 0.3s ease-out;
+  border: 2rpx solid #f1f3f5;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10rpx); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.progress-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #eceff1;
+}
+
+.progress-item:last-child { border-bottom: none; }
+
+.progress-label {
+  font-size: 26rpx;
+  color: #6c757d;
+}
+
+.progress-value {
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.progress-item.mastered .progress-value { color: #2ecc71; }
+.progress-item.incorrect .progress-value { color: #e57373; }
+.progress-item.unlearned .progress-value { color: #90a4ae; }
+
+/* 底部提示（半透明轻提示） */
+.footer-tips {
+  margin-bottom: 30rpx;
+}
+
+.tip-item {
+  background: rgba(255, 255, 255, 0.6);
+  color: #2c3e50;
+  font-size: 26rpx;
+  padding: 15rpx 20rpx;
+  border-radius: 12rpx;
+  margin-bottom: 10rpx;
+  line-height: 1.5;
+  border: 2rpx solid rgba(255,255,255,0.8);
+}
+
+/* 返回按钮（统一柔和风格） */
+.back-btn {
+  background: rgba(255, 255, 255, 0.65);
+  color: #2c3e50;
+  text-align: center;
+  padding: 20rpx;
+  border-radius: 15rpx;
+  font-size: 30rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 6rpx 18rpx rgba(0,0,0,0.06);
+}
+
+.back-btn:active {
+  background: rgba(255, 255, 255, 0.8);
+}

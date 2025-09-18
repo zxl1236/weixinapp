@@ -1,0 +1,490 @@
+/* 生词本页面样式 */
+
+/* 页面容器 - 为底部tabBar留空间 */
+page {
+  padding-bottom: 120rpx;
+  /* 使用统一的淡雅渐变背景 */
+  background: linear-gradient(180deg, var(--bg-grad-start), var(--bg-grad-end));
+}
+
+/* 页面头部 */
+.header {
+  text-align: center;
+  margin-bottom: 20rpx;
+  margin-top: 20rpx;
+}
+
+.header-top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5rpx;
+  padding: 15rpx 30rpx 10rpx 30rpx;
+}
+
+.placeholder {
+  min-width: 110rpx;
+  height: 52rpx;
+}
+
+.back-btn {
+  padding: 6rpx 18rpx;
+  border-radius: 50rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  z-index: 999;
+  min-width: 110rpx;
+  height: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(0rpx);
+}
+
+.back-btn:hover {
+  transform: translateY(-2rpx);
+  box-shadow: 0 8rpx 20rpx rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.back-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.3);
+}
+
+.back-icon {
+  font-size: 36rpx;
+  color: white;
+  margin-right: 8rpx;
+  font-weight: bold;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+}
+
+.back-text {
+  font-size: 28rpx;
+  color: white;
+  font-weight: 500;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+}
+
+.header .title {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.header .subtitle {
+  font-size: 28rpx;
+  color: #7f8c8d;
+}
+
+/* 加载状态 */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400rpx;
+}
+
+.loading-text {
+  font-size: 32rpx;
+  color: #7f8c8d;
+}
+
+/* 空状态 */
+.empty-container {
+  text-align: center;
+  padding: 100rpx 40rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 30rpx;
+}
+
+.empty-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 20rpx;
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: #7f8c8d;
+  margin-bottom: 40rpx;
+  line-height: 1.5;
+}
+
+.empty-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  align-items: center;
+}
+
+.empty-actions .btn {
+  width: 300rpx;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 40rpx;
+}
+
+.action-buttons .btn {
+  flex: 1;
+  font-size: 28rpx;
+  padding: 20rpx;
+  border-radius: 12rpx;
+}
+
+/* 错题卡片 */
+.mistake-card {
+  background: white;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  margin-bottom: 20rpx;
+  padding: 30rpx;
+  transition: all 0.3s ease;
+}
+
+.mistake-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 错题卡片头部 */
+.mistake-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20rpx;
+}
+
+.word-info {
+  flex: 1;
+}
+
+.mistake-word {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8rpx;
+}
+
+.mistake-level {
+  font-size: 24rpx;
+  color: #95a5a6;
+  background: #ecf0f1;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  display: inline-block;
+}
+
+.mistake-status {
+  text-align: right;
+}
+
+.error-count {
+  font-size: 24rpx;
+  color: #e74c3c;
+  margin-bottom: 8rpx;
+}
+
+.mastered-badge {
+  font-size: 22rpx;
+  color: #27ae60;
+  background: #d5f4e6;
+  padding: 4rpx 10rpx;
+  border-radius: 10rpx;
+}
+
+/* 错题内容 */
+.mistake-content {
+  border-top: 1rpx solid #ecf0f1;
+  padding-top: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.correct-answer, .last-error {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.label {
+  font-size: 26rpx;
+  color: #7f8c8d;
+  margin-right: 15rpx;
+  min-width: 120rpx;
+}
+
+.answer {
+  font-size: 28rpx;
+  color: #27ae60;
+  font-weight: 500;
+}
+
+.time {
+  font-size: 26rpx;
+  color: #95a5a6;
+}
+
+/* 错题操作 */
+.mistake-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.action-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none;
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 600;
+  padding: 14rpx 28rpx;
+  border-radius: 16rpx;
+  line-height: 1;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4rpx 15rpx rgba(102, 126, 234, 0.25);
+  letter-spacing: 0.5rpx;
+}
+
+.action-btn:active {
+  background: #3498db !important;
+  color: white;
+}
+
+.mastered-btn {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%) !important;
+  color: #5a6c7d;
+  box-shadow: 0 4rpx 15rpx rgba(168, 237, 234, 0.25);
+}
+
+.mastered-btn:active {
+  transform: translateY(2rpx) scale(0.98);
+  box-shadow: 0 2rpx 10rpx rgba(168, 237, 234, 0.35);
+}
+
+/* 模态框样式 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background: white;
+  border-radius: 20rpx;
+  width: 90%;
+  max-width: 600rpx;
+  max-height: 80%;
+  overflow: hidden;
+}
+
+.detail-modal {
+  max-height: 70%;
+}
+
+/* 模态框头部 */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #ecf0f1;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.close-btn {
+  font-size: 32rpx;
+  color: #95a5a6;
+  padding: 10rpx;
+  border-radius: 50%;
+  background: #f8f9fa;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.close-btn:active {
+  background: #e9ecef;
+}
+
+/* 模态框内容 */
+.modal-body {
+  padding: 30rpx;
+  max-height: 500rpx;
+  overflow-y: auto;
+}
+
+.detail-word {
+  text-align: center;
+  margin-bottom: 30rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #ecf0f1;
+}
+
+.word-main {
+  font-size: 42rpx;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 10rpx;
+}
+
+.word-level {
+  font-size: 24rpx;
+  color: #95a5a6;
+  background: #ecf0f1;
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  display: inline-block;
+}
+
+.detail-answer {
+  margin-bottom: 30rpx;
+}
+
+.detail-label {
+  font-size: 26rpx;
+  color: #7f8c8d;
+  margin-bottom: 10rpx;
+}
+
+.detail-value {
+  font-size: 32rpx;
+  font-weight: 500;
+  padding: 15rpx 20rpx;
+  border-radius: 12rpx;
+  background: #f8f9fa;
+}
+
+.detail-value.correct {
+  color: #27ae60;
+  background: #d5f4e6;
+}
+
+/* 错误统计 */
+.error-stats {
+  display: flex;
+  gap: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #7f8c8d;
+  margin-bottom: 8rpx;
+}
+
+.stat-value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* 错误历史 */
+.error-history {
+  margin-bottom: 20rpx;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15rpx 20rpx;
+  background: #fff5f5;
+  border-left: 4rpx solid #e74c3c;
+  margin-bottom: 10rpx;
+  border-radius: 0 8rpx 8rpx 0;
+}
+
+.history-answer {
+  font-size: 26rpx;
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+.history-time {
+  font-size: 22rpx;
+  color: #95a5a6;
+}
+
+/* 模态框底部 */
+.modal-footer {
+  display: flex;
+  gap: 20rpx;
+  padding: 30rpx;
+  border-top: 1rpx solid #ecf0f1;
+}
+
+.modal-footer .btn {
+  flex: 1;
+  font-size: 28rpx;
+  padding: 20rpx;
+  border-radius: 12rpx;
+}
+
+/* 单词音标样式 */
+.word-phonetic {
+  font-size: 28rpx;
+  color: #7f8c8d;
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+  margin: 8rpx 0;
+  background: #f8f9fa;
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  display: inline-block;
+}
+
+/* 单词发音按钮 */
+.word-pronunciation-btn {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  color: #5a6c7d;
+  border: none;
+  border-radius: 16rpx;
+  padding: 16rpx 28rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  margin-top: 15rpx;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4rpx 15rpx rgba(168, 237, 234, 0.25);
+  letter-spacing: 0.5rpx;
+  box-shadow: 0 3rpx 10rpx rgba(39, 174, 96, 0.3);
+}
+
+.word-pronunciation-btn:active {
+  background: linear-gradient(135deg, #229954, #27ae60);
+  transform: scale(0.95);
+}

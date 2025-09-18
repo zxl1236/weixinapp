@@ -1,0 +1,128 @@
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="header">
+    <view class="header-top">
+      <view class="back-btn" bindtap="goBack">
+        <text class="back-icon">←</text>
+        <text class="back-text">返回</text>
+      </view>
+      
+      <view class="placeholder"></view>
+    </view>
+    <view class="subtitle" wx:if="{{!isEmpty}}">共收录 {{mistakes.length}} 个生词</view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-text">正在加载生词...</view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-container" wx:if="{{isEmpty && !loading}}">
+    <view class="empty-icon">🎉</view>
+    <view class="empty-title">暂无生词</view>
+    <view class="empty-desc">继续学习，生词会自动收录到这里</view>
+    <view class="empty-actions">
+      <button class="btn btn-primary" bindtap="goToTest">开始测试</button>
+      <button class="btn btn-secondary" bindtap="addTestWords">添加生词</button>
+    </view>
+  </view>
+
+  <!-- 生词列表 -->
+  <view class="mistakes-list" wx:if="{{!isEmpty && !loading}}">
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button class="btn btn-primary" bindtap="reviewWords">
+        🔄 复习生词 ({{unmasteredCount}})
+      </button>
+      <button class="btn btn-secondary" bindtap="clearWords">
+        🗑️ 清空生词本
+      </button>
+    </view>
+
+    <!-- 生词卡片 -->
+    <view class="mistake-card" wx:for="{{mistakes}}" wx:key="word" data-index="{{index}}" bindtap="showWordDetail">
+      <view class="mistake-header">
+        <view class="word-info">
+          <view class="mistake-word">{{item.word}}</view>
+          <view class="mistake-level">Level {{item.level}}</view>
+        </view>
+        <view class="mistake-status">
+          <view class="error-count">学习 {{item.errorCount}} 次</view>
+          <view class="mastered-badge" wx:if="{{item.mastered}}">✅ 已掌握</view>
+        </view>
+      </view>
+      
+      <view class="mistake-content">
+        <view class="correct-answer">
+          <text class="label">中文意思：</text>
+          <text class="answer">{{item.correctAnswer}}</text>
+        </view>
+        <view class="last-error">
+          <text class="label">最近学习：</text>
+          <text class="time">{{item.lastErrorTimeStr}}</text>
+        </view>
+      </view>
+
+      <view class="mistake-actions">
+        <button class="action-btn mastered-btn" wx:if="{{!item.mastered}}" 
+                data-index="{{index}}" bindtap="markAsMastered" catchtap="">
+          标记已掌握
+        </button>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 生词详情弹窗 -->
+<view class="modal-mask" wx:if="{{showDetail}}" catchtap="closeWordDetail">
+  <view class="modal-container detail-modal" catchtap="">
+    <view class="modal-header">
+      <view class="modal-title">📝 生词详情</view>
+      <view class="close-btn" bindtap="closeWordDetail">✕</view>
+    </view>
+    
+    <view class="modal-body" wx:if="{{currentMistake}}">
+      <view class="detail-word">
+        <view class="word-main">{{currentMistake.word}}</view>
+        <view class="word-phonetic" wx:if="{{currentMistake.phonetic}}">{{currentMistake.phonetic}}</view>
+        <view class="word-level">Level {{currentMistake.level}}</view>
+        <button class="word-pronunciation-btn" bindtap="playWordPronunciation" data-word="{{currentMistake.word}}" data-phonetic="{{currentMistake.phonetic}}">
+          🔊 听发音
+        </button>
+      </view>
+      
+      <view class="detail-answer">
+        <view class="detail-label">中文意思</view>
+        <view class="detail-value correct">{{currentMistake.correctAnswer}}</view>
+      </view>
+
+      <view class="error-stats">
+        <view class="stat-item">
+          <view class="stat-label">学习次数</view>
+          <view class="stat-value">{{currentMistake.errorCount}} 次</view>
+        </view>
+        <view class="stat-item">
+          <view class="stat-label">首次学习</view>
+          <view class="stat-value">{{currentMistake.firstErrorTimeStr}}</view>
+        </view>
+      </view>
+
+      <view class="error-history" wx:if="{{currentMistake.errorHistory.length > 0}}">
+        <view class="detail-label">学习历史</view>
+        <view class="history-item" wx:for="{{currentMistake.errorHistory}}" wx:key="timestamp">
+          <view class="history-answer">学习了：{{item.selectedAnswer}}</view>
+          <view class="history-time">{{item.timeStr}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="modal-footer">
+      <button class="btn btn-secondary" bindtap="closeWordDetail">关闭</button>
+      <button class="btn btn-primary" wx:if="{{currentMistake && !currentMistake.mastered}}" 
+              data-index="{{currentMistakeIndex}}" bindtap="markAsMastered">
+        标记已掌握
+      </button>
+    </view>
+  </view>
+</view>

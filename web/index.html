@@ -7,7 +7,7 @@
     
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%234A90E2' d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg>">
-    
+    <a>1</a>
     <style>
         * {
             margin: 0;
@@ -495,10 +495,10 @@
                         <div class="option-desc">挑战高中阶段必备三千词</div>
                         <div class="option-time">约10分钟</div>
                     </div>
-                    <div class="test-option-card card-4" onclick="showMistakeBookPage()">
+                    <div class="test-option-card card-4" onclick="showWordBookPage()">
                         <div class="option-icon">🧠</div>
-                        <div class="option-title">错题回顾</div>
-                        <div class="option-desc">温故而知新，在这里复习你答错的单词</div>
+                        <div class="option-title">生词本</div>
+                        <div class="option-desc">温故而知新，在这里复习你学习的生词</div>
                         <div class="option-time">随时复习</div>
                     </div>
                 </div>
@@ -507,18 +507,34 @@
 
 
 
-        <!-- 错题本页面 -->
+        <!-- 生词本页面 -->
+        <div id="wordBookPage" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; overflow-y: auto; z-index: 1000; padding: 20px;">
+            <div class="word-book-container">
+                <div class="word-book-page-header">
+                    <h2>我的生词本</h2>
+                    <button class="btn btn-secondary" onclick="goHome()">返回首页</button>
+                </div>
+                <div id="wordListContainer">
+                    <!-- 生词将在这里动态加载 -->
+                </div>
+                <div class="word-book-actions">
+                    <button class="btn btn-danger" onclick="confirmClearWordBook()">清空生词本</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 兼容旧版本：错题本页面 -->
         <div id="mistakeBookPage" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; overflow-y: auto; z-index: 1000; padding: 20px;">
             <div class="mistake-book-container">
                 <div class="mistake-book-page-header">
-                    <h2>我的错题本</h2>
+                    <h2>我的生词本</h2>
                     <button class="btn btn-secondary" onclick="goHome()">返回首页</button>
                 </div>
                 <div id="mistakeListContainer">
-                    <!-- 错题将在这里动态加载 -->
+                    <!-- 生词将在这里动态加载 -->
                 </div>
                 <div class="mistake-book-actions">
-                    <button class="btn btn-danger" onclick="confirmClearMistakeBook()">清空错题本</button>
+                    <button class="btn btn-danger" onclick="confirmClearWordBook()">清空生词本</button>
                 </div>
             </div>
         </div>
@@ -575,9 +591,9 @@
             // 检查URL hash是否包含错题本标识
             if (window.location.hash === '#mistakeBook') {
                 setTimeout(() => {
-                    if (typeof showMistakeBookPage === 'function') {
-                        console.log('🔄 自动显示错题本页面');
-                        showMistakeBookPage();
+                    if (typeof showWordBookPage === 'function') {
+                        console.log('🔄 自动显示生词本页面');
+                        showWordBookPage();
                     }
                 }, 100);
             }

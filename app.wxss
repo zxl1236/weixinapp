@@ -1,115 +1,165 @@
-/* 全局样式 */
+/* ===== 全局主题变量 ===== */
 page {
-  background-color: #f8f9fa;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --bg-grad-start: #f7f9fc;
+  --bg-grad-end: #eef2f7;
+  --text-strong: #1f2937;
+  --text: #374151;
+  --text-subtle: #6b7280;
+
+  /* 🎨 企业色彩主题 */
+  --brand: rgb(6, 65, 78);           /* 企业主色 */
+  --brand-light: rgba(6, 65, 78, 0.8);   /* 浅色变体 */
+  --brand-lighter: rgba(6, 65, 78, 0.15); /* 更浅背景 */
+  --brand-gradient: linear-gradient(135deg, rgb(6, 65, 78) 0%, rgb(8, 85, 102) 100%); /* 渐变 */
+  --brand-2: rgb(8, 85, 102);        /* 辅助渐变色 */
+  --success: #10b981;
+  --info: #0ea5e9;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+
+  --card-bg: #ffffff;
+  --border: #eceff5;
+
+  --shadow-sm: 0 2rpx 10rpx rgba(0,0,0,.06);
+  --shadow-md: 0 6rpx 24rpx rgba(0,0,0,.10);
+  --shadow-lg: 0 10rpx 36rpx rgba(0,0,0,.14);
+
+  --radius: 16rpx;
+  --radius-lg: 20rpx;
+
+  /* 应用统一的淡雅渐变背景 */
+  background: linear-gradient(180deg, var(--bg-grad-start), var(--bg-grad-end));
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* 通用容器样式 */
+/* 全局容器样式 */
 .container {
-  padding: 20rpx;
+  padding: 24rpx;
   min-height: 100vh;
+  background: transparent; /* 使用页面背景 */
 }
 
-/* 卡片样式 */
+/* 通用卡片样式 */
 .card {
-  background: white;
-  border-radius: 16rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
   margin-bottom: 20rpx;
-  padding: 30rpx;
+  border: 1rpx solid var(--border);
 }
 
-/* 按钮样式 */
+/* 通用按钮样式 */
 .btn {
-  border-radius: 12rpx;
-  font-size: 32rpx;
+  border-radius: var(--radius);
+  font-size: 28rpx;
   font-weight: 500;
   border: none;
-  padding: 24rpx 48rpx;
-  transition: all 0.3s ease;
+  transition: transform .08s ease, opacity .08s ease;
+}
+
+.btn:active {
+  transform: scale(.98);
+  opacity: .9;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #4A90E2, #357ABD);
+  background: var(--brand);
   color: white;
-}
-
-.btn-primary:active {
-  background: linear-gradient(135deg, #357ABD, #2A5D8A);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary {
-  background: #f8f9fa;
-  color: #6c757d;
-  border: 2rpx solid #e9ecef;
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1rpx solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
-.btn-secondary:active {
-  background: #e9ecef;
-}
-
-/* 文本样式 */
+/* 文字样式 */
 .title {
-  font-size: 48rpx;
-  font-weight: 600;
-  color: #2c3e50;
-  text-align: center;
-  margin-bottom: 20rpx;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--text-strong);
 }
 
 .subtitle {
-  font-size: 32rpx;
-  font-weight: 500;
-  color: #34495e;
-  margin-bottom: 15rpx;
-}
-
-.text {
   font-size: 28rpx;
-  color: #5a6c7d;
-  line-height: 1.6;
-}
-
-/* 进度条样式 */
-.progress-container {
-  background: #e9ecef;
-  border-radius: 10rpx;
-  height: 8rpx;
-  margin: 20rpx 0;
-  overflow: hidden;
-}
-
-.progress-bar {
-  background: linear-gradient(90deg, #4A90E2, #357ABD);
-  height: 100%;
-  transition: width 0.3s ease;
-}
-
-/* 选项样式 */
-.option {
-  background: white;
-  border: 2rpx solid #e9ecef;
-  border-radius: 12rpx;
-  padding: 30rpx;
+  color: var(--text-subtle);
   margin-bottom: 20rpx;
-  transition: all 0.3s ease;
 }
 
-.option:active {
-  background: #f8f9fa;
+.text-muted {
+  color: var(--text-subtle);
+  font-size: 24rpx;
 }
 
-.option.selected {
-  border-color: #4A90E2;
-  background: #f0f7ff;
+/* 🎨 企业色彩通用组件样式 */
+.brand-btn {
+  background: var(--brand-gradient);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 20rpx 40rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  box-shadow: 0 6rpx 20rpx rgba(6, 65, 78, 0.25);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.option.correct {
-  border-color: #28a745;
-  background: #f0fff4;
+.brand-btn:active {
+  transform: translateY(2rpx) scale(0.98);
+  box-shadow: 0 3rpx 12rpx rgba(6, 65, 78, 0.35);
 }
 
-.option.wrong {
-  border-color: #dc3545;
-  background: #fff5f5;
+.brand-card {
+  background: linear-gradient(135deg, var(--brand-lighter) 0%, rgba(255,255,255,0.9) 100%);
+  border: 2rpx solid var(--brand-lighter);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8rpx 24rpx rgba(6, 65, 78, 0.12);
+  backdrop-filter: blur(10rpx);
+  -webkit-backdrop-filter: blur(10rpx);
+}
+
+.brand-text {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.brand-accent {
+  background: var(--brand-lighter);
+  color: var(--brand);
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.brand-border {
+  border-left: 4rpx solid var(--brand);
+  padding-left: 16rpx;
+}
+
+.brand-gradient-text {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* 降级方案 */
+  color: var(--brand);
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  page {
+    --bg-grad-start: #0f172a;
+    --bg-grad-end: #111827;
+    --card-bg: #0b1220;
+    --border: #1f2937;
+    --text-strong: #e5e7eb;
+    --text: #d1d5db;
+    --text-subtle: #9ca3af;
+    --shadow-sm: 0 2rpx 10rpx rgba(0,0,0,.4);
+    --shadow-md: 0 6rpx 24rpx rgba(0,0,0,.5);
+    --shadow-lg: 0 10rpx 36rpx rgba(0,0,0,.6);
+  }
 }

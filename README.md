@@ -32,7 +32,9 @@
 ├── sitemap.json            # 站点地图配置
 ├── project.config.json     # 项目配置文件
 ├── utils/
-│   └── wordDatabase.js     # 词汇数据库和工具函数
+│   ├── gradeWordDatabase.js      # 分级词汇管理核心
+│   ├── preprocessedWordDatabase.js # 预处理词汇数据(3555词)
+│   └── enhancedWordDatabase.js   # 精选备用词汇
 └── pages/
     ├── index/              # 首页
     │   ├── index.wxml
@@ -96,7 +98,7 @@
 ## 自定义扩展
 
 ### 添加新词汇
-编辑 `utils/wordDatabase.js` 文件，在对应难度级别数组中添加新词汇：
+系统使用分级词汇管理，主要词汇来源于预处理的数据库。如需添加词汇，可编辑 `utils/enhancedWordDatabase.js` 文件：
 
 ```javascript
 {

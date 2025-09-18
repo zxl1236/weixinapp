@@ -575,6 +575,7 @@ async function loadQuestion() {
         </button>
       </div>
       ${question.phonetic ? `<div class="phonetic">${question.phonetic}</div>` : ''}
+      ${question.partOfSpeech ? `<div class="part-of-speech"><span class="pos-tag">${question.partOfSpeech}</span></div>` : ''}
       ${getK12LevelTag(question)}
     </div>
     

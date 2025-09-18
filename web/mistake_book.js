@@ -1,113 +1,120 @@
 
-// 错题本核心功能
+// 生词本核心功能
 /**
- * 添加单词到错题本
+ * 添加单词到生词本
  * @param {Object} question - 题目对象，包含word, meaning, phonetic等
  */
-function addWordToMistakeBook(question) {
+function addWordToWordBook(question) {
   if (!question || !question.word) {
-    console.warn('⚠️ 无效的题目数据，无法添加到错题本');
+    console.warn('⚠️ 无效的题目数据，无法添加到生词本');
     return;
   }
   
-  const mistakeBook = getMistakeBook();
+  const wordBook = getWordBook();
   
   // 检查是否已存在
-  const existingIndex = mistakeBook.findIndex(item => item.word === question.word);
+  const existingIndex = wordBook.findIndex(item => item.word === question.word);
   
-  const mistakeWord = {
+  const wordItem = {
     word: question.word,
     meaning: question.meaning || question.correctAnswerFull || '未知',
     phonetic: question.phonetic || '',
     partOfSpeech: question.partOfSpeech || '',
     addedAt: new Date().toISOString(),
-    wrongCount: 1
+    studyCount: 1
   };
   
   if (existingIndex >= 0) {
-    // 更新错误次数
-    mistakeBook[existingIndex].wrongCount++;
-    mistakeBook[existingIndex].addedAt = new Date().toISOString();
-    console.log(`📝 更新错题: ${question.word} (错误次数: ${mistakeBook[existingIndex].wrongCount})`);
+    // 更新学习次数
+    wordBook[existingIndex].studyCount++;
+    wordBook[existingIndex].addedAt = new Date().toISOString();
+    console.log(`📝 更新生词: ${question.word} (学习次数: ${wordBook[existingIndex].studyCount})`);
   } else {
-    // 添加新错题
-    mistakeBook.push(mistakeWord);
-    console.log(`📝 添加错题: ${question.word}`);
+    // 添加新生词
+    wordBook.push(wordItem);
+    console.log(`📝 添加生词: ${question.word}`);
   }
   
-  saveMistakeBook(mistakeBook);
+  saveWordBook(wordBook);
 }
 
 /**
- * 获取错题本数据
- * @returns {Array} 错题数组
+ * 获取生词本数据
+ * @returns {Array} 生词数组
  */
-function getMistakeBook() {
+function getWordBook() {
   try {
-    const data = localStorage.getItem('mistakeBook');
+    const data = localStorage.getItem('wordBook');
     return data ? JSON.parse(data) : [];
   } catch (error) {
-    console.error('❌ 读取错题本失败:', error);
+    console.error('❌ 读取生词本失败:', error);
     return [];
   }
 }
 
 /**
- * 保存错题本数据
- * @param {Array} mistakeBook - 错题数组
+ * 保存生词本数据
+ * @param {Array} wordBook - 生词数组
  */
-function saveMistakeBook(mistakeBook) {
+function saveWordBook(wordBook) {
   try {
-    localStorage.setItem('mistakeBook', JSON.stringify(mistakeBook));
-    console.log(`💾 错题本已保存，共${mistakeBook.length}个错题`);
+    localStorage.setItem('wordBook', JSON.stringify(wordBook));
+    console.log(`💾 生词本已保存，共${wordBook.length}个生词`);
   } catch (error) {
-    console.error('❌ 保存错题本失败:', error);
+    console.error('❌ 保存生词本失败:', error);
   }
 }
 
 /**
- * 从错题本中移除单词
+ * 从生词本中移除单词
  * @param {string} word - 要移除的单词
  */
-function removeWordFromMistakeBook(word) {
-  const mistakeBook = getMistakeBook();
-  const newMistakeBook = mistakeBook.filter(item => item.word !== word);
-  saveMistakeBook(newMistakeBook);
-  console.log(`🗑️ 已从错题本移除: ${word}`);
+function removeWordFromWordBook(word) {
+  const wordBook = getWordBook();
+  const newWordBook = wordBook.filter(item => item.word !== word);
+  saveWordBook(newWordBook);
+  console.log(`🗑️ 已从生词本移除: ${word}`);
 }
 
 /**
- * 清空错题本
+ * 清空生词本
  */
-function clearMistakeBook() {
-  localStorage.removeItem('mistakeBook');
-  console.log('🗑️ 错题本已清空');
+function clearWordBook() {
+  localStorage.removeItem('wordBook');
+  console.log('🗑️ 生词本已清空');
 }
 
 // 确保函数在全局作用域中可用
-window.addWordToMistakeBook = addWordToMistakeBook;
-window.getMistakeBook = getMistakeBook;
-window.saveMistakeBook = saveMistakeBook;
-window.removeWordFromMistakeBook = removeWordFromMistakeBook;
-window.clearMistakeBook = clearMistakeBook;
+window.addWordToWordBook = addWordToWordBook;
+window.getWordBook = getWordBook;
+window.saveWordBook = saveWordBook;
+window.removeWordFromWordBook = removeWordFromWordBook;
+window.clearWordBook = clearWordBook;
+
+// 兼容旧版本
+window.addWordToMistakeBook = addWordToWordBook;
+window.getMistakeBook = getWordBook;
+window.saveMistakeBook = saveWordBook;
+window.removeWordFromMistakeBook = removeWordFromWordBook;
+window.clearMistakeBook = clearWordBook;
 
 /**
- * 显示错题本页面并渲染错题列表。
+ * 显示生词本页面并渲染生词列表。
  */
-function showMistakeBookPage() {
-  // 检查当前页面是否有mistakeBookPage元素
-  const mistakeBookPage = document.getElementById('mistakeBookPage');
+function showWordBookPage() {
+  // 检查当前页面是否有wordBookPage元素
+  const wordBookPage = document.getElementById('wordBookPage') || document.getElementById('mistakeBookPage');
   
-  if (!mistakeBookPage) {
-    // 如果当前页面没有错题本页面元素，跳转到首页的错题本
-    console.log('🔄 当前页面无错题本元素，跳转到首页错题本');
-    window.location.href = 'index.html#mistakeBook';
+  if (!wordBookPage) {
+    // 如果当前页面没有生词本页面元素，跳转到首页的生词本
+    console.log('🔄 当前页面无生词本元素，跳转到首页生词本');
+    window.location.href = 'index.html#wordBook';
     return;
   }
   
-  // 1. 切换到错题本页面
+  // 1. 切换到生词本页面
   if (typeof showPage === 'function') {
-    showPage('mistakeBookPage');
+    showPage('wordBookPage');
   } else {
     // 如果showPage函数不存在，直接操作DOM
     // 隐藏首页
@@ -116,28 +123,28 @@ function showMistakeBookPage() {
       homePage.style.display = 'none';
     }
     
-    // 显示错题本页面
-    mistakeBookPage.classList.remove('hidden');
-    mistakeBookPage.style.display = 'block';
+    // 显示生词本页面
+    wordBookPage.classList.remove('hidden');
+    wordBookPage.style.display = 'block';
   }
 
-  // 2. 获取错题数据
-  const mistakeBook = getMistakeBook();
-  const container = document.getElementById('mistakeListContainer');
+  // 2. 获取生词数据
+  const wordBook = getWordBook();
+  const container = document.getElementById('wordListContainer') || document.getElementById('mistakeListContainer');
 
   if (!container) {
-    console.error("错题本容器 'mistakeListContainer' 未找到。");
+    console.error("生词本容器 'wordListContainer' 未找到。");
     return;
   }
 
   // 3. 动态生成HTML
-  if (mistakeBook.length === 0) {
+  if (wordBook.length === 0) {
     container.innerHTML = `
-      <div class="no-mistakes-message">
-        <div class="no-mistakes-icon">🎉</div>
-        <div class="no-mistakes-title">太棒了！</div>
-        <div class="no-mistakes-text">你的错题本是空的，说明学习效果很好！</div>
-        <button class="btn btn-primary" onclick="goHome()" style="margin-top: 20px;">开始新的测试</button>
+      <div class="no-words-message">
+        <div class="no-words-icon">📚</div>
+        <div class="no-words-title">暂无生词</div>
+        <div class="no-words-text">继续学习，生词会自动收录到这里</div>
+        <button class="btn btn-primary" onclick="goHome()" style="margin-top: 20px;">开始新的学习</button>
       </div>
     `;
     return;
@@ -145,34 +152,34 @@ function showMistakeBookPage() {
   
   // 添加功能按钮区域
   const actionButtons = `
-    <div class="mistake-book-controls">
-      <button class="btn btn-primary" onclick="startMistakeReview()">
+    <div class="word-book-controls">
+      <button class="btn btn-primary" onclick="startWordReview()">
         <span class="btn-icon">📖</span>
-        开始复习 (${Math.min(mistakeBook.length, 20)}题)
+        开始复习 (${Math.min(wordBook.length, 20)}题)
       </button>
-      <button class="btn btn-secondary" onclick="showMistakeBookStats()">
+      <button class="btn btn-secondary" onclick="showWordBookStats()">
         <span class="btn-icon">📊</span>
         查看统计
       </button>
-      <div class="mistake-count-badge">
-        共 ${mistakeBook.length} 个错题
+      <div class="word-count-badge">
+        共 ${wordBook.length} 个生词
       </div>
     </div>
   `;
 
-  // 为每个错题生成一个卡片
-  const mistakeCards = mistakeBook.map(word => `
-    <div class="mistake-item-card">
-      <div class="mistake-word-section">
-        <span class="mistake-word">${word.word}</span>
-        <span class="mistake-phonetic">${word.phonetic || ''}</span>
+  // 为每个生词生成一个卡片
+  const wordCards = wordBook.map(word => `
+    <div class="word-item-card">
+      <div class="word-word-section">
+        <span class="word-word">${word.word}</span>
+        <span class="word-phonetic">${word.phonetic || ''}</span>
       </div>
-      <div class="mistake-details-section">
-        <p class="mistake-meaning"><strong>正确释义：</strong> ${word.meaning}</p>
-        <p class="mistake-added-time"><strong>添加时间：</strong> ${new Date(word.addedAt).toLocaleString()}</p>
-        <p class="mistake-wrong-count"><strong>错误次数：</strong> ${word.wrongCount || 1}</p>
+      <div class="word-details-section">
+        <p class="word-meaning"><strong>中文意思：</strong> ${word.meaning}</p>
+        <p class="word-added-time"><strong>添加时间：</strong> ${new Date(word.addedAt).toLocaleString()}</p>
+        <p class="word-study-count"><strong>学习次数：</strong> ${word.studyCount || 1}</p>
       </div>
-      <div class="mistake-actions-section">
+      <div class="word-actions-section">
         <button class="btn-pronounce" onclick="playPronunciation('${word.word}')">🔊 发音</button>
         <button class="btn-remove" onclick="removeWordAndRefresh('${word.word}')">移除</button>
       </div>
@@ -180,50 +187,50 @@ function showMistakeBookPage() {
   `).join('');
   
   // 组合完整的HTML
-  container.innerHTML = actionButtons + mistakeCards;
+  container.innerHTML = actionButtons + wordCards;
 }
 
 /**
- * 移除一个单词后刷新错题本页面。
+ * 移除一个单词后刷新生词本页面。
  * @param {string} word - 需要移除的单词。
  */
 function removeWordAndRefresh(word) {
-  removeWordFromMistakeBook(word);
-  showMistakeBookPage(); // 刷新列表
+  removeWordFromWordBook(word);
+  showWordBookPage(); // 刷新列表
 }
 
 /**
- * 弹出确认框，询问用户是否确定要清空错题本。
+ * 弹出确认框，询问用户是否确定要清空生词本。
  */
-function confirmClearMistakeBook() {
-  const isConfirmed = confirm("你确定要清空所有错题记录吗？这个操作无法撤销。");
+function confirmClearWordBook() {
+  const isConfirmed = confirm("你确定要清空所有生词记录吗？这个操作无法撤销。");
   if (isConfirmed) {
-    clearMistakeBook();
-    showMistakeBookPage(); // 刷新列表
+    clearWordBook();
+    showWordBookPage(); // 刷新列表
   }
 }
 
 /**
- * 开始错题复习测试
+ * 开始生词复习测试
  */
-function startMistakeReview() {
-  const mistakeBook = getMistakeBook();
+function startWordReview() {
+  const wordBook = getWordBook();
   
-  if (mistakeBook.length === 0) {
-    alert('错题本为空，先去做几道题目吧！');
+  if (wordBook.length === 0) {
+    alert('生词本为空，先去学习一些单词吧！');
     return;
   }
   
-  if (mistakeBook.length < 5) {
-    alert(`错题本只有${mistakeBook.length}个错题，建议至少有5个错题再开始复习。`);
+  if (wordBook.length < 5) {
+    alert(`生词本只有${wordBook.length}个生词，建议至少有5个生词再开始复习。`);
     return;
   }
   
-  // 跳转到复习页面，传递错题数据
+  // 跳转到复习页面，传递生词数据
   const reviewData = {
-    type: 'mistake_review',
-    words: mistakeBook.slice(0, Math.min(20, mistakeBook.length)), // 最多复习20个错题
-    source: 'mistake_book'
+    type: 'word_review',
+    words: wordBook.slice(0, Math.min(20, wordBook.length)), // 最多复习20个生词
+    source: 'word_book'
   };
   
   sessionStorage.setItem('reviewData', JSON.stringify(reviewData));
@@ -231,72 +238,72 @@ function startMistakeReview() {
 }
 
 /**
- * 获取错题本统计信息
+ * 获取生词本统计信息
  */
-function getMistakeBookStats() {
-  const mistakeBook = getMistakeBook();
+function getWordBookStats() {
+  const wordBook = getWordBook();
   
-  if (mistakeBook.length === 0) {
+  if (wordBook.length === 0) {
     return {
       totalCount: 0,
       levelStats: {},
-      averageWrongCount: 0,
-      oldestMistake: null,
-      newestMistake: null
+      averageStudyCount: 0,
+      oldestWord: null,
+      newestWord: null
     };
   }
   
   // 按级别统计
   const levelStats = {};
-  let totalWrongCount = 0;
+  let totalStudyCount = 0;
   let oldestDate = new Date();
   let newestDate = new Date(0);
   let oldestWord = null;
   let newestWord = null;
   
-  mistakeBook.forEach(mistake => {
+  wordBook.forEach(word => {
     // 统计级别（如果有的话）
-    const level = mistake.level || 'unknown';
+    const level = word.level || 'unknown';
     levelStats[level] = (levelStats[level] || 0) + 1;
     
-    // 统计错误次数
-    totalWrongCount += mistake.wrongCount || 1;
+    // 统计学习次数
+    totalStudyCount += word.studyCount || 1;
     
-    // 找最早和最新的错题
-    const mistakeDate = new Date(mistake.addedAt);
-    if (mistakeDate < oldestDate) {
-      oldestDate = mistakeDate;
-      oldestWord = mistake;
+    // 找最早和最新的生词
+    const wordDate = new Date(word.addedAt);
+    if (wordDate < oldestDate) {
+      oldestDate = wordDate;
+      oldestWord = word;
     }
-    if (mistakeDate > newestDate) {
-      newestDate = mistakeDate;
-      newestWord = mistake;
+    if (wordDate > newestDate) {
+      newestDate = wordDate;
+      newestWord = word;
     }
   });
   
   return {
-    totalCount: mistakeBook.length,
+    totalCount: wordBook.length,
     levelStats: levelStats,
-    averageWrongCount: (totalWrongCount / mistakeBook.length).toFixed(1),
-    oldestMistake: oldestWord,
-    newestMistake: newestWord
+    averageStudyCount: (totalStudyCount / wordBook.length).toFixed(1),
+    oldestWord: oldestWord,
+    newestWord: newestWord
   };
 }
 
 /**
- * 显示错题本统计信息
+ * 显示生词本统计信息
  */
-function showMistakeBookStats() {
-  const stats = getMistakeBookStats();
-  const container = document.getElementById('mistakeListContainer');
+function showWordBookStats() {
+  const stats = getWordBookStats();
+  const container = document.getElementById('wordListContainer') || document.getElementById('mistakeListContainer');
   
   if (stats.totalCount === 0) {
     container.innerHTML = `
-      <div class="no-mistakes-message">
-        <div class="no-mistakes-icon">🎉</div>
-        <div class="no-mistakes-title">太棒了！</div>
-        <div class="no-mistakes-text">你的错题本是空的，说明学习效果很好！</div>
-        <button class="btn btn-primary" onclick="goHome()" style="margin-top: 20px;">开始新的测试</button>
+      <div class="no-words-message">
+        <div class="no-words-icon">📚</div>
+        <div class="no-words-title">暂无生词</div>
+        <div class="no-words-text">继续学习，生词会自动收录到这里</div>
+        <button class="btn btn-primary" onclick="goHome()" style="margin-top: 20px;">开始新的学习</button>
       </div>
     `;
     return;
@@ -321,35 +328,35 @@ function showMistakeBookStats() {
     `).join('');
   
   container.innerHTML = `
-    <div class="mistake-stats-container">
+    <div class="word-stats-container">
       <div class="stats-header">
-        <h3>📊 错题本统计</h3>
-        <button class="btn btn-secondary" onclick="showMistakeBookPage()">返回错题列表</button>
+        <h3>📊 生词本统计</h3>
+        <button class="btn btn-secondary" onclick="showWordBookPage()">返回生词列表</button>
       </div>
       
       <div class="stats-grid">
         <div class="stats-card">
           <div class="stats-card-icon">📚</div>
           <div class="stats-card-value">${stats.totalCount}</div>
-          <div class="stats-card-label">总错题数</div>
+          <div class="stats-card-label">总生词数</div>
         </div>
         
         <div class="stats-card">
           <div class="stats-card-icon">🔢</div>
-          <div class="stats-card-value">${stats.averageWrongCount}</div>
-          <div class="stats-card-label">平均错误次数</div>
+          <div class="stats-card-value">${stats.averageStudyCount}</div>
+          <div class="stats-card-label">平均学习次数</div>
         </div>
         
         <div class="stats-card">
           <div class="stats-card-icon">📅</div>
-          <div class="stats-card-value">${stats.oldestMistake ? new Date(stats.oldestMistake.addedAt).toLocaleDateString() : '-'}</div>
-          <div class="stats-card-label">最早错题</div>
+          <div class="stats-card-value">${stats.oldestWord ? new Date(stats.oldestWord.addedAt).toLocaleDateString() : '-'}</div>
+          <div class="stats-card-label">最早生词</div>
         </div>
         
         <div class="stats-card">
           <div class="stats-card-icon">🆕</div>
-          <div class="stats-card-value">${stats.newestMistake ? new Date(stats.newestMistake.addedAt).toLocaleDateString() : '-'}</div>
-          <div class="stats-card-label">最新错题</div>
+          <div class="stats-card-value">${stats.newestWord ? new Date(stats.newestWord.addedAt).toLocaleDateString() : '-'}</div>
+          <div class="stats-card-label">最新生词</div>
         </div>
       </div>
       
@@ -362,13 +369,13 @@ function showMistakeBookStats() {
         </div>
       ` : ''}
       
-      ${stats.oldestMistake ? `
-        <div class="recent-mistakes">
-          <h4>最早的错题</h4>
-          <div class="mistake-preview">
-            <span class="preview-word">${stats.oldestMistake.word}</span>
-            <span class="preview-meaning">${stats.oldestMistake.meaning}</span>
-            <span class="preview-date">${new Date(stats.oldestMistake.addedAt).toLocaleString()}</span>
+      ${stats.oldestWord ? `
+        <div class="recent-words">
+          <h4>最早的生词</h4>
+          <div class="word-preview">
+            <span class="preview-word">${stats.oldestWord.word}</span>
+            <span class="preview-meaning">${stats.oldestWord.meaning}</span>
+            <span class="preview-date">${new Date(stats.oldestWord.addedAt).toLocaleString()}</span>
           </div>
         </div>
       ` : ''}
@@ -377,9 +384,16 @@ function showMistakeBookStats() {
 }
 
 // 确保新函数也可以全局访问
-window.showMistakeBookPage = showMistakeBookPage;
-window.startMistakeReview = startMistakeReview;
-window.getMistakeBookStats = getMistakeBookStats;
-window.showMistakeBookStats = showMistakeBookStats;
-window.confirmClearMistakeBook = confirmClearMistakeBook;
+window.showWordBookPage = showWordBookPage;
+window.startWordReview = startWordReview;
+window.getWordBookStats = getWordBookStats;
+window.showWordBookStats = showWordBookStats;
+window.confirmClearWordBook = confirmClearWordBook;
 window.removeWordAndRefresh = removeWordAndRefresh;
+
+// 兼容旧版本
+window.showMistakeBookPage = showWordBookPage;
+window.startMistakeReview = startWordReview;
+window.getMistakeBookStats = getWordBookStats;
+window.showMistakeBookStats = showWordBookStats;
+window.confirmClearMistakeBook = confirmClearWordBook;

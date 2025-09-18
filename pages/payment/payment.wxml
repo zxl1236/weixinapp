@@ -1,0 +1,145 @@
+<view class="container">
+  <!-- 会员状态卡片 -->
+  <view class="membership-card {{membershipStatus.isPremium ? 'premium' : 'free'}}">
+    <view class="membership-header">
+      <view class="membership-icon">{{membershipStatus.isPremium ? '👑' : '📚'}}</view>
+      <view class="membership-info">
+        <view class="membership-title">
+          {{membershipStatus.isPremium ? '高级会员' : '免费用户'}}
+        </view>
+        <view class="membership-desc" wx:if="{{membershipStatus.isPremium}}">
+          到期时间：{{expireTimeText}}
+        </view>
+        <view class="membership-desc" wx:else>
+          升级享受全部功能
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 会员特权对比 -->
+  <view class="privilege-section">
+    <view class="section-title">🌟 会员特权对比</view>
+    
+    <view class="privilege-table">
+      <view class="privilege-header">
+        <view class="privilege-item-name">功能特权</view>
+        <view class="privilege-free">免费版</view>
+        <view class="privilege-premium">高级会员</view>
+      </view>
+      
+      <view class="privilege-row" wx:for="{{privilegeList}}" wx:key="name">
+        <view class="privilege-item-name">{{item.name}}</view>
+        <view class="privilege-free">
+          <view class="privilege-value {{item.freeStatus ? 'enabled' : 'disabled'}}">
+            {{item.free}}
+          </view>
+        </view>
+        <view class="privilege-premium">
+          <view class="privilege-value enabled">{{item.premium}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 套餐选择 -->
+  <view class="plan-section" wx:if="{{!membershipStatus.isPremium}}">
+    <view class="section-title">💎 选择套餐</view>
+    
+    <view class="plan-list">
+      <view class="plan-card {{selectedPlan === item.id ? 'selected' : ''}}" 
+            wx:for="{{planList}}" 
+            wx:key="id"
+            bindtap="selectPlan"
+            data-plan="{{item.id}}">
+        <view class="plan-header">
+          <view class="plan-name">{{item.name}}</view>
+          <view class="plan-badge" wx:if="{{item.popular}}">🔥 热门</view>
+        </view>
+        <view class="plan-price">
+          <view class="price-main">¥{{item.price}}</view>
+          <view class="price-unit">/{{item.unit}}</view>
+        </view>
+        <view class="plan-original" wx:if="{{item.originalPrice}}">
+          原价：¥{{item.originalPrice}}
+        </view>
+        <view class="plan-desc">{{item.desc}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 支付按钮 -->
+  <view class="payment-section" wx:if="{{!membershipStatus.isPremium}}">
+    <view class="payment-summary">
+      <view class="summary-text">选择：{{selectedPlanInfo.name}}</view>
+      <view class="summary-price">¥{{selectedPlanInfo.price}}</view>
+    </view>
+    
+    <button class="pay-btn" 
+            bindtap="startPayment" 
+            disabled="{{!selectedPlan || paymentLoading}}">
+      <view wx:if="{{paymentLoading}}" class="loading-text">
+        <view class="loading-icon">⏳</view>
+        支付中...
+      </view>
+      <view wx:else>
+        立即支付 ¥{{selectedPlanInfo.price}}
+      </view>
+    </button>
+    
+    <view class="payment-tips">
+      <view class="tip-item">• 支付成功后立即生效</view>
+      <view class="tip-item">• 支持微信安全支付</view>
+      <view class="tip-item">• 购买后可在个人中心查看</view>
+    </view>
+  </view>
+
+  <!-- 已是会员的续费区域 -->
+  <view class="renewal-section" wx:if="{{membershipStatus.isPremium}}">
+    <view class="renewal-info">
+      <view class="renewal-title">✨ 续费会员</view>
+      <view class="renewal-desc">继续享受高级会员特权</view>
+    </view>
+    
+    <button class="renewal-btn" bindtap="showRenewalOptions">
+      续费会员
+    </button>
+  </view>
+
+  <!-- 用户使用统计 -->
+  <view class="stats-section">
+    <view class="section-title">📊 使用统计</view>
+    
+    <view class="stats-grid">
+      <view class="stats-item">
+        <view class="stats-number">{{userStats.totalTestCount}}</view>
+        <view class="stats-label">累计测试</view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-number">{{userStats.dailyUsage.testCount}}</view>
+        <view class="stats-label">今日测试</view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-number">{{remainingTests.unlimited ? '∞' : remainingTests.count}}</view>
+        <view class="stats-label">剩余次数</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 常见问题 -->
+  <view class="faq-section">
+    <view class="section-title">❓ 常见问题</view>
+    
+    <view class="faq-list">
+      <view class="faq-item" wx:for="{{faqList}}" wx:key="question" bindtap="toggleFaq" data-index="{{index}}">
+        <view class="faq-question">
+          <view class="faq-text">{{item.question}}</view>
+          <view class="faq-arrow {{item.expanded ? 'expanded' : ''}}">▼</view>
+        </view>
+        <view class="faq-answer {{item.expanded ? 'show' : ''}}" style="{{item.expanded ? 'max-height: 200px' : ''}}">
+          {{item.answer}}
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -2,12 +2,20 @@
   "pages": [
     "pages/index/index",
     "pages/test/test",
-    "pages/result/result"
+    "pages/result/result",
+    "pages/mistake/mistake",
+    "pages/training/training",
+    "pages/gradeTest/gradeTest",
+    "pages/learning/learning",
+    "pages/calendar/calendar",
+    "pages/payment/payment",
+    "pages/progress/progress",
+    "pages/profile/profile"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#4A90E2",
-    "navigationBarTitleText": "英文词汇量测试",
+    "navigationBarTitleText": "K12词汇学习系统",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#f8f9fa",
     "enablePullDownRefresh": false
@@ -20,6 +28,36 @@
   "debug": false,
   "style": "v2",
   "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading": "requiredComponents",
+
+  "tabBar": {
+    "color": "#8B92A5",
+    "selectedColor": "#667EEA",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "custom": true,
+    "position": "bottom",
+
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/home.png",
+        "selectedIconPath": "images/home-active.png"
+      },
+      {
+        "pagePath": "pages/calendar/calendar",
+        "text": "日历",
+        "iconPath": "images/calendar.png",
+        "selectedIconPath": "images/calendar-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/profile.png",
+        "selectedIconPath": "images/profile-active.png"
+      }
+    ]
+  },
+
   "permission": {}
 }

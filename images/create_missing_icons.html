@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Missing Icons</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        canvas { border: 1px solid #ccc; margin: 10px; }
+        .icon-container { display: inline-block; margin: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Creating Missing Icons</h1>
+    
+    <div class="icon-container">
+        <h3>Book Icon</h3>
+        <canvas id="bookCanvas" width="64" height="64"></canvas>
+        <br>
+        <button onclick="downloadImage('bookCanvas', 'book-icon.png')">Download Book Icon</button>
+    </div>
+    
+    <div class="icon-container">
+        <h3>Review Icon</h3>
+        <canvas id="reviewCanvas" width="64" height="64"></canvas>
+        <br>
+        <button onclick="downloadImage('reviewCanvas', 'review-icon.png')">Download Review Icon</button>
+    </div>
+
+    <script>
+        // 创建书本图标
+        function createBookIcon() {
+            const canvas = document.getElementById('bookCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 清空画布
+            ctx.clearRect(0, 0, 64, 64);
+            
+            // 设置颜色
+            ctx.fillStyle = '#4A90E2';
+            ctx.strokeStyle = '#4A90E2';
+            ctx.lineWidth = 2;
+            
+            // 绘制书本
+            ctx.fillRect(12, 16, 40, 32);
+            ctx.strokeRect(12, 16, 40, 32);
+            
+            // 绘制书页
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(16, 20, 32, 24);
+            
+            // 绘制文字线条
+            ctx.strokeStyle = '#4A90E2';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(20, 26);
+            ctx.lineTo(44, 26);
+            ctx.moveTo(20, 30);
+            ctx.lineTo(44, 30);
+            ctx.moveTo(20, 34);
+            ctx.lineTo(38, 34);
+            ctx.stroke();
+        }
+        
+        // 创建复习图标
+        function createReviewIcon() {
+            const canvas = document.getElementById('reviewCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 清空画布
+            ctx.clearRect(0, 0, 64, 64);
+            
+            // 设置颜色
+            ctx.fillStyle = '#4A90E2';
+            ctx.strokeStyle = '#4A90E2';
+            ctx.lineWidth = 2;
+            
+            // 绘制圆形背景
+            ctx.beginPath();
+            ctx.arc(32, 32, 24, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // 绘制箭头（表示循环/复习）
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(32, 32, 16, -Math.PI/2, Math.PI/2, false);
+            ctx.stroke();
+            
+            // 绘制箭头头部
+            ctx.beginPath();
+            ctx.moveTo(44, 32);
+            ctx.lineTo(38, 26);
+            ctx.moveTo(44, 32);
+            ctx.lineTo(38, 38);
+            ctx.stroke();
+        }
+        
+        // 下载图片函数
+        function downloadImage(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // 初始化图标
+        createBookIcon();
+        createReviewIcon();
+    </script>
+</body>
+</html>
