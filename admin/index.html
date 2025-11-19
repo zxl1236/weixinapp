@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K12词汇学习系统 - 管理后台</title>
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>K12词汇学习系统 - 管理后台</h1>
+            <div class="header-actions">
+                <input type="text" id="apiKey" placeholder="输入API密钥" />
+                <button onclick="setApiKey()">设置密钥</button>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" onclick="showTab('stats')">统计概览</button>
+            <button class="tab-btn" onclick="showTab('users')">用户管理</button>
+            <button class="tab-btn" onclick="showTab('courses')">课程管理</button>
+            <button class="tab-btn" onclick="showTab('orders')">订单管理</button>
+            <button class="tab-btn" onclick="showTab('discount')">优惠码</button>
+        </nav>
+
+        <!-- 统计概览 -->
+        <div id="stats-tab" class="tab-content active">
+            <h2>统计概览</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>总用户数</h3>
+                    <p class="stat-value" id="totalUsers">-</p>
+                </div>
+                <div class="stat-card">
+                    <h3>会员用户</h3>
+                    <p class="stat-value" id="premiumUsers">-</p>
+                </div>
+                <div class="stat-card">
+                    <h3>总订单数</h3>
+                    <p class="stat-value" id="totalOrders">-</p>
+                </div>
+                <div class="stat-card">
+                    <h3>总收入</h3>
+                    <p class="stat-value" id="totalRevenue">-</p>
+                </div>
+            </div>
+            <div class="recent-orders">
+                <h3>最近订单</h3>
+                <table id="recentOrdersTable">
+                    <thead>
+                        <tr>
+                            <th>订单号</th>
+                            <th>用户</th>
+                            <th>金额</th>
+                            <th>状态</th>
+                            <th>时间</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 用户管理 -->
+        <div id="users-tab" class="tab-content">
+            <h2>用户管理</h2>
+            <div class="search-bar">
+                <input type="text" id="userSearch" placeholder="搜索用户（openid/昵称）" />
+                <select id="membershipFilter">
+                    <option value="">全部</option>
+                    <option value="free">免费用户</option>
+                    <option value="premium">会员用户</option>
+                </select>
+                <button onclick="loadUsers()">搜索</button>
+            </div>
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>OpenID</th>
+                        <th>昵称</th>
+                        <th>会员类型</th>
+                        <th>到期时间</th>
+                        <th>总测试次数</th>
+                        <th>注册时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div class="pagination" id="usersPagination"></div>
+        </div>
+
+        <!-- 课程管理 -->
+        <div id="courses-tab" class="tab-content">
+            <h2>课程管理</h2>
+            <button class="btn-primary" onclick="showCreateCourseModal()">创建课程</button>
+            <table id="coursesTable">
+                <thead>
+                    <tr>
+                        <th>年级ID</th>
+                        <th>年级名称</th>
+                        <th>阶段</th>
+                        <th>级别</th>
+                        <th>目标词汇</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- 订单管理 -->
+        <div id="orders-tab" class="tab-content">
+            <h2>订单管理</h2>
+            <div class="search-bar">
+                <select id="orderStatusFilter">
+                    <option value="">全部状态</option>
+                    <option value="pending">待支付</option>
+                    <option value="paid">已支付</option>
+                    <option value="failed">失败</option>
+                    <option value="cancelled">已取消</option>
+                </select>
+                <button onclick="loadOrders()">筛选</button>
+            </div>
+            <table id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>订单号</th>
+                        <th>用户</th>
+                        <th>套餐</th>
+                        <th>金额</th>
+                        <th>状态</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div class="pagination" id="ordersPagination"></div>
+        </div>
+
+        <!-- 优惠码管理 -->
+        <div id="discount-tab" class="tab-content">
+            <h2>优惠码管理</h2>
+            <button class="btn-primary" onclick="showCreateDiscountModal()">创建优惠码</button>
+            <table id="discountTable">
+                <thead>
+                    <tr>
+                        <th>优惠码</th>
+                        <th>类型</th>
+                        <th>优惠值</th>
+                        <th>使用次数</th>
+                        <th>有效期</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 用户编辑模态框 -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('userModal')">&times;</span>
+            <h2>编辑用户</h2>
+            <form id="userForm" onsubmit="saveUser(event)">
+                <input type="hidden" id="userId" />
+                <div class="form-group">
+                    <label>会员类型</label>
+                    <select id="userMembership" required>
+                        <option value="free">免费用户</option>
+                        <option value="premium">会员用户</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>到期时间</label>
+                    <input type="datetime-local" id="userExpireTime" />
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="closeModal('userModal')">取消</button>
+                    <button type="submit">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 课程编辑/创建模态框 -->
+    <div id="courseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('courseModal')">&times;</span>
+            <h2 id="courseModalTitle">创建课程</h2>
+            <form id="courseForm" onsubmit="saveCourse(event)">
+                <input type="hidden" id="courseId" />
+                <div class="form-group">
+                    <label>年级ID <span class="required">*</span></label>
+                    <input type="text" id="courseGradeId" required placeholder="如：grade3_1" />
+                </div>
+                <div class="form-group">
+                    <label>年级名称 <span class="required">*</span></label>
+                    <input type="text" id="courseGradeName" required placeholder="如：三年级上" />
+                </div>
+                <div class="form-group">
+                    <label>阶段 <span class="required">*</span></label>
+                    <select id="courseStage" required>
+                        <option value="primary">小学</option>
+                        <option value="junior">初中</option>
+                        <option value="senior">高中</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>级别 <span class="required">*</span></label>
+                    <input type="number" id="courseLevel" required min="1" />
+                </div>
+                <div class="form-group">
+                    <label>目标词汇数</label>
+                    <input type="number" id="courseTargetWords" min="0" />
+                </div>
+                <div class="form-group">
+                    <label>词汇总数</label>
+                    <input type="number" id="courseWordCount" min="0" />
+                </div>
+                <div class="form-group">
+                    <label>描述</label>
+                    <textarea id="courseDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="courseEnabled" checked /> 启用
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="closeModal('courseModal')">取消</button>
+                    <button type="submit">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 订单详情模态框 -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('orderModal')">&times;</span>
+            <h2>订单详情</h2>
+            <div id="orderDetailContent" class="order-detail">
+                <p>加载中...</p>
+            </div>
+            <div class="form-actions">
+                <button type="button" onclick="closeModal('orderModal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 优惠码创建模态框 -->
+    <div id="discountModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('discountModal')">&times;</span>
+            <h2>创建优惠码</h2>
+            <form id="discountForm" onsubmit="saveDiscountCode(event)">
+                <div class="form-group">
+                    <label>优惠码 <span class="required">*</span></label>
+                    <input type="text" id="discountCode" required placeholder="如：WELCOME2024" style="text-transform: uppercase;" />
+                </div>
+                <div class="form-group">
+                    <label>类型 <span class="required">*</span></label>
+                    <select id="discountType" required onchange="toggleDiscountFields()">
+                        <option value="amount">固定金额</option>
+                        <option value="percent">百分比</option>
+                    </select>
+                </div>
+                <div class="form-group" id="discountAmountGroup">
+                    <label>优惠金额（分） <span class="required">*</span></label>
+                    <input type="number" id="discountAmount" min="0" placeholder="如：1000（表示10元）" />
+                </div>
+                <div class="form-group" id="discountPercentGroup" style="display: none;">
+                    <label>优惠百分比 <span class="required">*</span></label>
+                    <input type="number" id="discountPercent" min="0" max="100" placeholder="如：10（表示10%）" />
+                </div>
+                <div class="form-group">
+                    <label>最大使用次数</label>
+                    <input type="number" id="discountMaxUsage" min="-1" value="-1" placeholder="-1表示无限制" />
+                </div>
+                <div class="form-group">
+                    <label>生效时间 <span class="required">*</span></label>
+                    <input type="datetime-local" id="discountValidFrom" required />
+                </div>
+                <div class="form-group">
+                    <label>失效时间 <span class="required">*</span></label>
+                    <input type="datetime-local" id="discountValidUntil" required />
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="discountEnabled" checked /> 启用
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="closeModal('discountModal')">取消</button>
+                    <button type="submit">创建</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="assets/js/admin.js"></script>
+</body>
+</html>
+
