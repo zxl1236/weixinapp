@@ -2,7 +2,7 @@
  * 管理后台控制器
  */
 
-const { User, Course, Order, DiscountCode } = require('../models');
+const { User, Course, Order, DiscountCode, ActivationCode } = require('../models');
 const logger = require('../utils/logger');
 
 /**
@@ -29,10 +29,66 @@ async function getUsers(req, res, next) {
 
     const total = await User.countDocuments(query);
 
+    // 为每个用户添加订单统计信息
+    const dbConfig = require('../config/database');
+    const isSQLite = dbConfig.type === 'sqlite';
+    
+    const usersWithStats = await Promise.all(
+      users.map(async (user) => {
+        let orderStats = {
+          totalOrders: 0,
+          paidOrders: 0,
+          totalSpent: 0
+        };
+
+        if (isSQLite && Order.db) {
+          // SQLite模式：直接查询数据库
+          const db = Order.db;
+          
+          // 总订单数
+          const totalOrdersRow = await db.get(
+            'SELECT COUNT(*) as count FROM orders WHERE openid = ?',
+            [user.openid]
+          );
+          orderStats.totalOrders = totalOrdersRow?.count || 0;
+
+          // 已支付订单数
+          const paidOrdersRow = await db.get(
+            'SELECT COUNT(*) as count FROM orders WHERE openid = ? AND status = ?',
+            [user.openid, 'paid']
+          );
+          orderStats.paidOrders = paidOrdersRow?.count || 0;
+
+          // 总消费金额（分）
+          const totalSpentRow = await db.get(
+            'SELECT SUM(amount) as total FROM orders WHERE openid = ? AND status = ?',
+            [user.openid, 'paid']
+          );
+          orderStats.totalSpent = totalSpentRow?.total || 0;
+        } else {
+          // MongoDB模式：使用聚合查询
+          try {
+            const orders = await Order.find({ openid: user.openid });
+            orderStats.totalOrders = orders.length;
+            const paidOrders = orders.filter(o => o.status === 'paid');
+            orderStats.paidOrders = paidOrders.length;
+            orderStats.totalSpent = paidOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
+          } catch (error) {
+            logger.warn('获取用户订单统计失败', { openid: user.openid, error: error.message });
+          }
+        }
+
+        return {
+          ...user,
+          orderStats
+        };
+      })
+    );
+
     res.json({
       success: true,
       data: {
-        users,
+        users: usersWithStats,
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
@@ -342,6 +398,87 @@ async function createDiscountCode(req, res, next) {
   }
 }
 
+/**
+ * 生成随机激活码
+ */
+function generateActivationCode(length = 10) {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 排除容易混淆的字符
+  let code = '';
+  for (let i = 0; i < length; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
+/**
+ * 获取激活码列表
+ */
+async function getActivationCodes(req, res, next) {
+  try {
+    const { used } = req.query;
+    const query = {};
+    if (used !== undefined) {
+      query.used = used === 'true';
+    }
+    
+    const codes = await ActivationCode.find(query).sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      data: codes
+    });
+  } catch (error) {
+    logger.error('获取激活码列表失败', error);
+    next(error);
+  }
+}
+
+/**
+ * 生成激活码
+ */
+async function createActivationCode(req, res, next) {
+  try {
+    const { count = 1, length = 10 } = req.body;
+    const codes = [];
+    
+    for (let i = 0; i < count; i++) {
+      let code;
+      let attempts = 0;
+      let created = false;
+      
+      // 尝试生成唯一激活码（最多尝试10次）
+      while (!created && attempts < 10) {
+        code = generateActivationCode(length);
+        try {
+          const activationCode = await ActivationCode.create({ code });
+          codes.push(activationCode);
+          created = true;
+        } catch (error) {
+          // 如果是唯一性冲突，重试
+          if (error.code === 11000 || error.message.includes('UNIQUE')) {
+            attempts++;
+            continue;
+          }
+          throw error;
+        }
+      }
+      
+      if (!created) {
+        throw new Error('生成唯一激活码失败，请重试');
+      }
+    }
+
+    res.status(201).json({
+      success: true,
+      data: codes,
+      message: `成功生成 ${codes.length} 个激活码`
+    });
+  } catch (error) {
+    logger.error('生成激活码失败', error);
+    next(error);
+  }
+}
+
 module.exports = {
   getUsers,
   getUserDetail,
@@ -354,6 +491,8 @@ module.exports = {
   getOrderDetail,
   getStats,
   getDiscountCodes,
-  createDiscountCode
+  createDiscountCode,
+  getActivationCodes,
+  createActivationCode
 };
 

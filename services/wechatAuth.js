@@ -5,6 +5,7 @@
 
 const axios = require('axios');
 const logger = require('../utils/logger');
+const wechatConfig = require('../config/wechat');
 
 /**
  * 通过 code 获取 openid 和 session_key
@@ -12,9 +13,39 @@ const logger = require('../utils/logger');
  * @returns {Promise<{openid: string, session_key: string}>}
  */
 async function code2Session(code) {
+  // 检查是否应该使用开发模式
   const appid = process.env.WECHAT_APPID;
   const secret = process.env.WECHAT_SECRET;
+  const shouldUseDevelopment = wechatConfig.isDevelopment || !appid || !secret;
 
+  // 开发模式：返回模拟数据
+  if (shouldUseDevelopment) {
+    logger.warn('当前为开发模式，微信登录功能将被模拟', {
+      reason: !appid || !secret ? '微信配置不完整' : 'NODE_ENV=development'
+    });
+    
+    if (!code) {
+      throw new Error('code 参数不能为空');
+    }
+
+    // 基于 code 生成稳定的模拟 openid（相同 code 生成相同 openid）
+    const crypto = require('crypto');
+    const hash = crypto.createHash('md5').update(code).digest('hex');
+    const mockOpenid = `mock_openid_${hash.substring(0, 16)}`;
+    const mockSessionKey = `mock_session_key_${hash.substring(16, 32)}`;
+
+    logger.info('开发模式：返回模拟登录数据', { 
+      openid: mockOpenid.substring(0, 10) + '...',
+      code: code.substring(0, 10) + '...'
+    });
+
+    return {
+      openid: mockOpenid,
+      session_key: mockSessionKey
+    };
+  }
+
+  // 生产模式：调用真实微信接口
   if (!appid || !secret) {
     throw new Error('微信配置不完整：缺少 WECHAT_APPID 或 WECHAT_SECRET');
   }

@@ -13,8 +13,8 @@ router.post('/create-order', validateOpenid, paymentController.createOrder);
 // 获取微信支付参数
 router.post('/get-params', paymentController.getPaymentParams);
 
-// 微信支付回调（需要原始body，不使用JSON解析）
-const rawBodyParser = express.raw({ type: 'application/json', limit: '10mb' });
+// 微信支付回调（需要原始body，微信支付 v2 API 使用 XML 格式）
+const rawBodyParser = express.raw({ type: ['text/xml', 'application/xml'], limit: '10mb' });
 router.post('/notify', rawBodyParser, paymentController.paymentNotify);
 
 // 支付完成确认

@@ -163,7 +163,9 @@ class DiscountCode {
         }
         
         if (this.type === 'amount') {
-          return Math.min(this.discountAmount, originalAmount);
+          // 🔧 修复：数据库存储的是分，需要转换为元
+          const discountAmountInYuan = this.discountAmount / 100;
+          return Math.min(discountAmountInYuan, originalAmount);
         } else if (this.type === 'percent') {
           return Math.round(originalAmount * this.discountPercent / 100 * 100) / 100;
         }

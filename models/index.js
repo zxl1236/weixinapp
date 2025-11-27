@@ -5,7 +5,7 @@
 
 const dbConfig = require('../config/database');
 
-let User, Course, Order, DiscountCode;
+let User, Course, Order, DiscountCode, ActivationCode;
 let dbInstance = null;
 
 // 初始化SQLite模型
@@ -16,11 +16,13 @@ function initSQLiteModels(db) {
   const SQLiteCourse = require('./sqlite/Course');
   const SQLiteOrder = require('./sqlite/Order');
   const SQLiteDiscountCode = require('./sqlite/DiscountCode');
+  const SQLiteActivationCode = require('./sqlite/ActivationCode');
   
   User = new SQLiteUser(db);
   Course = new SQLiteCourse(db);
   Order = new SQLiteOrder(db);
   DiscountCode = new SQLiteDiscountCode(db);
+  ActivationCode = new SQLiteActivationCode(db);
 }
 
 if (dbConfig.type === 'sqlite') {
@@ -43,6 +45,10 @@ if (dbConfig.type === 'sqlite') {
     get DiscountCode() {
       if (!DiscountCode) throw new Error('SQLite数据库未初始化，请先连接数据库');
       return DiscountCode;
+    },
+    get ActivationCode() {
+      if (!ActivationCode) throw new Error('SQLite数据库未初始化，请先连接数据库');
+      return ActivationCode;
     }
   };
 } else {
@@ -51,12 +57,14 @@ if (dbConfig.type === 'sqlite') {
   Course = require('./Course');
   Order = require('./Order');
   DiscountCode = require('./DiscountCode');
+  ActivationCode = require('./ActivationCode');
   
   module.exports = {
     User,
     Course,
     Order,
-    DiscountCode
+    DiscountCode,
+    ActivationCode
   };
 }
 

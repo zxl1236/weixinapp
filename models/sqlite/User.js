@@ -61,13 +61,14 @@ class User {
       const dateStr = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
       
       const result = await this.db.run(
-        `INSERT INTO users (openid, nickname, avatar, dailyUsageDate, lastActiveTime) 
-         VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+        `INSERT INTO users (openid, nickname, avatar, dailyUsageDate, lastActiveTime, isActivated) 
+         VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)`,
         [
           openid,
           userData.nickname || '',
           userData.avatar || '',
-          dateStr
+          dateStr,
+          userData.isActivated ? 1 : 0
         ]
       );
       
@@ -137,8 +138,8 @@ class User {
     const dateStr = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
     
     const result = await this.db.run(
-      `INSERT INTO users (openid, nickname, avatar, membership, membershipExpireTime, dailyUsageDate, totalTestCount) 
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO users (openid, nickname, avatar, membership, membershipExpireTime, dailyUsageDate, totalTestCount, isActivated) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         data.openid,
         data.nickname || '',
@@ -146,7 +147,8 @@ class User {
         data.membership || 'free',
         data.membershipExpireTime || null,
         dateStr,
-        data.totalTestCount || 0
+        data.totalTestCount || 0,
+        data.isActivated ? 1 : 0
       ]
     );
     
@@ -215,23 +217,32 @@ class User {
   _formatUser(row) {
     if (!row) return null;
     
+    // 安全地转换日期，处理 null/undefined 情况
+    const safeDate = (dateStr) => {
+      if (!dateStr) return null;
+      const date = new Date(dateStr);
+      return isNaN(date.getTime()) ? null : date;
+    };
+    
     const user = {
       _id: row.id,
       id: row.id,
       openid: row.openid,
-      nickname: row.nickname,
-      avatar: row.avatar,
-      membership: row.membership,
-      membershipExpireTime: row.membershipExpireTime ? new Date(row.membershipExpireTime) : null,
+      nickname: row.nickname || '',
+      avatar: row.avatar || '',
+      membership: row.membership || 'free',
+      membershipExpireTime: safeDate(row.membershipExpireTime),
       dailyUsage: {
-        date: row.dailyUsageDate,
-        testCount: row.dailyUsageTestCount
+        date: row.dailyUsageDate || null,
+        testCount: row.dailyUsageTestCount || 0
       },
-      totalTestCount: row.totalTestCount,
-      registerTime: new Date(row.registerTime),
-      lastActiveTime: new Date(row.lastActiveTime),
-      createdAt: new Date(row.createdAt),
-      updatedAt: new Date(row.updatedAt),
+      totalTestCount: row.totalTestCount || 0,
+      registerTime: safeDate(row.registerTime) || new Date(),
+      lastActiveTime: safeDate(row.lastActiveTime) || new Date(),
+      isActivated: row.isActivated === 1,
+      activatedAt: safeDate(row.activatedAt),
+      createdAt: safeDate(row.createdAt) || new Date(),
+      updatedAt: safeDate(row.updatedAt) || new Date(),
       // 方法
       checkMembershipExpired: function() {
         if (this.membership === 'premium' && this.membershipExpireTime) {
@@ -240,10 +251,13 @@ class User {
         return false;
       },
       updateLastActive: async function() {
-        await this.db.run(
-          'UPDATE users SET lastActiveTime = CURRENT_TIMESTAMP WHERE id = ?',
-          [this.id]
-        );
+        const db = this.db || user.db;
+        if (db) {
+          await db.run(
+            'UPDATE users SET lastActiveTime = CURRENT_TIMESTAMP WHERE id = ?',
+            [this.id]
+          );
+        }
         this.lastActiveTime = new Date();
         return this;
       },
@@ -253,8 +267,19 @@ class User {
       }
     };
     
-    // 绑定 db 到方法
-    user.updateLastActive = user.updateLastActive.bind({ db: this.db, ...user });
+    // 将 db 实例附加到 user 对象，供方法使用
+    user.db = this.db;
+    
+    // 重新绑定方法，确保 this 指向 user 对象
+    const self = this;
+    user.updateLastActive = async function() {
+      await self.db.run(
+        'UPDATE users SET lastActiveTime = CURRENT_TIMESTAMP WHERE id = ?',
+        [this.id]
+      );
+      this.lastActiveTime = new Date();
+      return this;
+    };
     
     return user;
   }

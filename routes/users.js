@@ -52,5 +52,8 @@ router.put('/:openid', validateOpenid, userController.updateUser);
 // 获取用户统计
 router.get('/:openid/stats', userController.getUserStats);
 
+// 验证激活码
+router.post('/activation/verify', userController.verifyActivationCode);
+
 module.exports = router;
 

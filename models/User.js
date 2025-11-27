@@ -53,6 +53,15 @@ const userSchema = new mongoose.Schema({
   lastActiveTime: {
     type: Date,
     default: Date.now
+  },
+  isActivated: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  activatedAt: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true

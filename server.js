@@ -33,8 +33,22 @@ app.use(cors({
   origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
   credentials: true
 }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+
+// 请求超时处理
+app.use((req, res, next) => {
+  // 设置30秒超时
+  req.setTimeout(30000, () => {
+    if (!res.headersSent) {
+      res.status(504).json({
+        success: false,
+        message: '请求超时'
+      });
+    }
+  });
+  next();
+});
 
 // 静态文件服务（管理后台）
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
@@ -113,13 +127,17 @@ async function startServer() {
     app.use(errorHandler);
 
     // 启动服务器
-    app.listen(PORT, () => {
+    // 监听所有网络接口（0.0.0.0），允许通过局域网IP访问
+    app.listen(PORT, '0.0.0.0', () => {
       logger.info(`服务器启动成功`, {
         port: PORT,
+        host: '0.0.0.0',
         env: process.env.NODE_ENV || 'development',
         dbType: dbConfig.type
       });
-      console.log(`\n🚀 服务器运行在 http://localhost:${PORT}`);
+      console.log(`\n🚀 服务器启动成功！`);
+      console.log(`📍 监听地址: http://0.0.0.0:${PORT} (所有网卡)`);
+      console.log(`🌐 本地访问: http://localhost:${PORT}`);
       console.log(`📊 管理后台: http://localhost:${PORT}/admin`);
       console.log(`💚 健康检查: http://localhost:${PORT}/health`);
       console.log(`💾 数据库类型: ${dbConfig.type.toUpperCase()}\n`);
@@ -131,13 +149,48 @@ async function startServer() {
 }
 
 // 处理未捕获的异常
-process.on('unhandledRejection', (error) => {
-  logger.error('未处理的Promise拒绝', error);
+process.on('unhandledRejection', (error, promise) => {
+  logger.error('未处理的Promise拒绝', {
+    error: error.message,
+    stack: error.stack,
+    promise: promise
+  });
+  // 不退出进程，但记录错误
+  // 尝试发送错误响应（如果可能）
+  console.error('未处理的Promise拒绝:', error);
 });
 
 process.on('uncaughtException', (error) => {
-  logger.error('未捕获的异常', error);
-  process.exit(1);
+  logger.error('未捕获的异常', {
+    error: error.message,
+    stack: error.stack
+  });
+  console.error('未捕获的异常:', error);
+  // 给时间记录错误，然后退出
+  setTimeout(() => {
+    console.error('由于未捕获的异常，服务器即将退出');
+    process.exit(1);
+  }, 2000);
+});
+
+// 监听进程退出信号
+process.on('SIGTERM', () => {
+  logger.info('收到SIGTERM信号，正在关闭服务器...');
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  logger.info('收到SIGINT信号，正在关闭服务器...');
+  process.exit(0);
+});
+
+// 监听警告
+process.on('warning', (warning) => {
+  logger.warn('进程警告', {
+    name: warning.name,
+    message: warning.message,
+    stack: warning.stack
+  });
 });
 
 // 启动服务器

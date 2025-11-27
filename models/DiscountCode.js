@@ -76,7 +76,13 @@ discountCodeSchema.methods.calculateDiscount = function(originalAmount) {
   }
   
   if (this.type === 'amount') {
-    return Math.min(this.discountAmount, originalAmount);
+    // 🔧 修复：MongoDB 版本可能存储的是分（与 SQLite 保持一致）
+    // 如果 discountAmount > 100，认为是存储的分，需要转换为元
+    // 否则认为是存储的元
+    const discountAmountInYuan = this.discountAmount > 100 
+      ? this.discountAmount / 100 
+      : this.discountAmount;
+    return Math.min(discountAmountInYuan, originalAmount);
   } else if (this.type === 'percent') {
     return Math.round(originalAmount * this.discountPercent / 100 * 100) / 100;
   }

@@ -55,6 +55,8 @@ class SQLiteDB {
         totalTestCount INTEGER DEFAULT 0,
         registerTime DATETIME DEFAULT CURRENT_TIMESTAMP,
         lastActiveTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+        isActivated INTEGER DEFAULT 0,
+        activatedAt DATETIME,
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
       )`,
@@ -62,6 +64,7 @@ class SQLiteDB {
       // 创建索引
       `CREATE INDEX IF NOT EXISTS idx_users_openid ON users(openid)`,
       `CREATE INDEX IF NOT EXISTS idx_users_membership ON users(membership)`,
+      `CREATE INDEX IF NOT EXISTS idx_users_isActivated ON users(isActivated)`,
       
       // 课程表
       `CREATE TABLE IF NOT EXISTS courses (
@@ -152,6 +155,26 @@ class SQLiteDB {
        AFTER UPDATE ON discount_codes
        BEGIN
          UPDATE discount_codes SET updatedAt = CURRENT_TIMESTAMP WHERE id = NEW.id;
+       END`,
+      
+      // 激活码表
+      `CREATE TABLE IF NOT EXISTS activation_codes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        code TEXT UNIQUE NOT NULL,
+        used INTEGER DEFAULT 0,
+        usedBy TEXT,
+        usedAt DATETIME,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`,
+      
+      `CREATE INDEX IF NOT EXISTS idx_activation_codes_code ON activation_codes(code)`,
+      `CREATE INDEX IF NOT EXISTS idx_activation_codes_used ON activation_codes(used)`,
+      
+      `CREATE TRIGGER IF NOT EXISTS update_activation_codes_timestamp 
+       AFTER UPDATE ON activation_codes
+       BEGIN
+         UPDATE activation_codes SET updatedAt = CURRENT_TIMESTAMP WHERE id = NEW.id;
        END`
     ];
 

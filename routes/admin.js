@@ -32,5 +32,9 @@ router.get('/stats', adminController.getStats);
 router.get('/discount-codes', adminController.getDiscountCodes);
 router.post('/discount-codes', adminController.createDiscountCode);
 
+// 激活码管理
+router.get('/activation-codes', adminController.getActivationCodes);
+router.post('/activation-codes', adminController.createActivationCode);
+
 module.exports = router;
 

@@ -109,19 +109,59 @@ async function loadUsers(page = 1) {
     const result = await apiRequest(`/users?${params}`);
     if (result && result.success) {
         const tbody = document.querySelector('#usersTable tbody');
-        tbody.innerHTML = result.data.users.map(user => `
+        tbody.innerHTML = result.data.users.map(user => {
+            // 格式化日期时间
+            const formatDateTime = (date) => {
+                if (!date) return '-';
+                const d = new Date(date);
+                return d.toLocaleString('zh-CN', { 
+                    year: 'numeric', 
+                    month: '2-digit', 
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            };
+            
+            // 格式化日期
+            const formatDate = (date) => {
+                if (!date) return '-';
+                return new Date(date).toLocaleDateString('zh-CN');
+            };
+            
+            // 头像显示
+            const avatarHtml = user.avatar 
+                ? `<img src="${user.avatar}" alt="头像" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                   <span style="display: none; width: 40px; height: 40px; border-radius: 50%; background: #ddd; align-items: center; justify-content: center; font-size: 18px;">${(user.nickname || '用户').charAt(0)}</span>`
+                : `<span style="width: 40px; height: 40px; border-radius: 50%; background: #ddd; display: inline-flex; align-items: center; justify-content: center; font-size: 18px;">${(user.nickname || '用户').charAt(0)}</span>`;
+            
+            // 订单统计
+            const orderStats = user.orderStats || { totalOrders: 0, paidOrders: 0, totalSpent: 0 };
+            const totalSpentYuan = (orderStats.totalSpent / 100).toFixed(2);
+            
+            // 今日测试次数
+            const todayTestCount = user.dailyUsage?.testCount || 0;
+            const isToday = user.dailyUsage?.date === new Date().toISOString().split('T')[0];
+            
+            return `
             <tr>
-                <td>${user.openid.substring(0, 20)}...</td>
+                <td style="text-align: center;">${avatarHtml}</td>
+                <td title="${user.openid}">${user.openid.substring(0, 20)}...</td>
                 <td>${user.nickname || '-'}</td>
-                <td>${user.membership === 'premium' ? '会员' : '免费'}</td>
-                <td>${user.membershipExpireTime ? new Date(user.membershipExpireTime).toLocaleDateString() : '-'}</td>
-                <td>${user.totalTestCount}</td>
-                <td>${new Date(user.registerTime).toLocaleDateString()}</td>
+                <td><span class="status-badge ${user.membership === 'premium' ? 'status-paid' : ''}">${user.membership === 'premium' ? '会员' : '免费'}</span></td>
+                <td>${formatDate(user.membershipExpireTime)}</td>
+                <td>${user.totalTestCount || 0}</td>
+                <td>${isToday ? todayTestCount : '-'}</td>
+                <td>${orderStats.totalOrders || 0} <span style="color: #666; font-size: 12px;">(${orderStats.paidOrders || 0}已付)</span></td>
+                <td>¥${totalSpentYuan}</td>
+                <td title="${formatDateTime(user.lastActiveTime)}">${formatDateTime(user.lastActiveTime)}</td>
+                <td>${formatDate(user.registerTime)}</td>
                 <td>
                     <button class="btn-edit" onclick="editUser('${user._id}')">编辑</button>
                 </td>
             </tr>
-        `).join('');
+        `;
+        }).join('');
 
         // 分页
         renderPagination('usersPagination', result.data.pagination, loadUsers);
