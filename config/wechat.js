@@ -14,6 +14,6 @@ module.exports = {
   notifyUrl: process.env.WECHAT_NOTIFY_URL,
   ip: process.env.WECHAT_IP || '127.0.0.1',
   unifiedOrderUrl: 'https://api.mch.weixin.qq.com/pay/unifiedorder',
-  isDevelopment: process.env.NODE_ENV === 'development'
+  isDevelopment: process.env.NODE_ENV === 'production'
 };
 

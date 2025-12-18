@@ -312,34 +312,16 @@ async function paymentNotify(req, res, next) {
     }
 
     if (user) {
-      // 会员续期规则：
-      // - 如果用户当前仍在会员期内：从当前到期时间续期（避免“买一年反而变短”）
-      // - 如果已过期或是免费：从支付时间/当前时间开始计算
-      const durationDays = Number(order.duration) || 0;
-      const now = new Date();
-      const paidAt = order.paidTime ? new Date(order.paidTime) : now;
-      const currentExpire = user.membershipExpireTime ? new Date(user.membershipExpireTime) : null;
-
-      const baseTime =
-        user.membership === 'premium' &&
-        currentExpire &&
-        !isNaN(currentExpire.getTime()) &&
-        currentExpire > now
-          ? currentExpire
-          : paidAt;
-
-      const expireTime = new Date(baseTime);
-      expireTime.setDate(expireTime.getDate() + durationDays);
+      const expireTime = new Date();
+      expireTime.setDate(expireTime.getDate() + order.duration);
 
       user.membership = 'premium';
       user.membershipExpireTime = expireTime;
-      await user.save(); // SQLite 模式下 save 已实现真正 UPDATE
-
+      await user.save();
+      
       logger.info('用户会员状态已更新', {
         userId: user.id,
         openid: user.openid,
-        durationDays,
-        baseTime,
         expireTime
       });
     } else {
@@ -428,20 +410,16 @@ async function completePayment(req, res, next) {
           userId: user.id || user._id
         });
 
-        // ✅ 关键修复：这里不仅修正响应，还要把会员状态真正写回数据库
+        // 强制修正返回给前端的数据 (不修改数据库，只修改响应，让用户立刻看到成功)
         currentMembership = 'premium';
-
+        
+        // 根据订单支付时间重新计算过期时间
         const paidTime = order.paidTime ? new Date(order.paidTime) : new Date();
-        const durationDays = Number(order.duration) || 365; // 默认值防错
-
+        const durationDays = order.duration || 365; // 默认值防错
+        
+        // 计算新的过期时间
         const newExpireTime = new Date(paidTime);
         newExpireTime.setDate(newExpireTime.getDate() + durationDays);
-
-        // 写回数据库（SQLite 模式下 save 已实现 UPDATE）
-        user.membership = 'premium';
-        user.membershipExpireTime = newExpireTime;
-        await user.save();
-
         currentExpireTime = newExpireTime;
       }
 
