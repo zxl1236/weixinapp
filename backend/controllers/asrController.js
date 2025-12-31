@@ -2,59 +2,187 @@ const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
 const logger = require('../utils/logger');
+const wav = require('wav-decoder');
+const mfcc = require('ml-mfcc');
+const DTW = require('dynamic-time-warping');
+const sqlite3 = require('sqlite3').verbose();
+const dbConfig = require('../config/database');
 
-// 简单启发式评分函数：基于时长匹配度（占位实现）
+// 确保 recordings 目录存在
+const recordingsDir = path.join(__dirname, '../recordings');
+if (!fs.existsSync(recordingsDir)) {
+  fs.mkdirSync(recordingsDir, { recursive: true });
+}
+
+// Helper: convert uploaded file to 16k mono wav using ffmpeg, return converted path
+function convertToWav16kMono(inputPath) {
+  return new Promise((resolve, reject) => {
+    const outPath = inputPath + '.conv.wav';
+    const cmd = `ffmpeg -y -i "${inputPath}" -ar 16000 -ac 1 -vn "${outPath}"`;
+    exec(cmd, (err, stdout, stderr) => {
+      if (err) {
+        return reject(new Error(`ffmpeg convert failed: ${stderr || err.message}`));
+      }
+      resolve(outPath);
+    });
+  });
+}
+
+// Helper: read wav file and return Float32Array samples and sampleRate
+async function readWavSamples(filePath) {
+  const buffer = fs.readFileSync(filePath);
+  const audioData = await wav.decode(buffer);
+  const sampleRate = audioData.sampleRate;
+  const channelData = audioData.channelData[0];
+  return { samples: channelData, sampleRate };
+}
+
+// Helper: extract MFCC frames
+function extractMfccFrames(samples, sampleRate) {
+  // ml-mfcc expects (signal, sampleRate, options)
+  const options = {
+    windowSize: 512,
+    hopSize: 160, // 10ms at 16k
+    melFilters: 26,
+    numberOfCoefficients: 13
+  };
+  return mfcc(samples, sampleRate, options); // returns array of coefficient arrays
+}
+
+// Normalize DTW distance by path length
+function computeDtwDistance(framesA, framesB) {
+  if (!framesA || !framesB || framesA.length === 0 || framesB.length === 0) return Infinity;
+  // Represent frames as arrays; define euclidean distance between frames
+  const distance = function(a, b) {
+    let sum = 0;
+    for (let i = 0; i < Math.min(a.length, b.length); i++) {
+      const d = (a[i] || 0) - (b[i] || 0);
+      sum += d * d;
+    }
+    return Math.sqrt(sum);
+  };
+  const dtw = new DTW(distance);
+  const dist = dtw.compute(framesA, framesB);
+  const path = dtw.getPath();
+  const norm = dist / Math.max(1, path.length);
+  return { dist, norm, pathLength: path.length };
+}
+
+// Persist recording metadata and score to SQLite
+function persistRecording({ gradeId, word, filePath, score, details }) {
+  return new Promise((resolve, reject) => {
+    const dbPath = dbConfig.sqlite.path || './data/k12_vocabulary.db';
+    const db = new sqlite3.Database(dbPath);
+    // create table if not exists
+    const createSql = `CREATE TABLE IF NOT EXISTS recordings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      gradeId TEXT,
+      word TEXT,
+      filePath TEXT,
+      score INTEGER,
+      details TEXT,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`;
+    db.serialize(() => {
+      db.run(createSql, (err) => {
+        if (err) {
+          db.close();
+          return reject(err);
+        }
+        const insertSql = `INSERT INTO recordings (gradeId, word, filePath, score, details) VALUES (?, ?, ?, ?, ?)`;
+        db.run(insertSql, [gradeId, word, filePath, score, JSON.stringify(details || {})], function(err2) {
+          db.close();
+          if (err2) return reject(err2);
+          resolve({ id: this.lastID });
+        });
+      });
+    });
+  });
+}
+
+// MFCC+DTW评分实现，保存文件并返回 score + hints
 async function scorePronunciation(req, res) {
   try {
     if (!req.file || !req.file.path) {
       return res.status(400).json({ success: false, message: '未上传音频文件' });
     }
 
-    const filePath = req.file.path;
+    const uploadedPath = req.file.path;
+    // convert to standard wav 16k mono
+    const convPath = await convertToWav16kMono(uploadedPath);
 
-    // 使用 ffprobe 获取音频时长（秒）
-    const cmd = `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${filePath}"`;
-    exec(cmd, (err, stdout, stderr) => {
-      try {
-        if (err) {
-          logger.error('ffprobe error', { err: err.message, stderr });
-          // 清理临时文件
-          try { fs.unlinkSync(filePath); } catch (e) {}
-          return res.status(500).json({ success: false, message: '音频处理失败' });
-        }
+    // read samples
+    const { samples: userSamples, sampleRate: userRate } = await readWavSamples(convPath);
 
-        const duration = parseFloat(stdout) || 0;
-        // 参考时长：基于单词长度估算（简单规则：0.5s 基础 + 0.08s * letters）
-        const word = req.query.word || req.body.word || '';
-        const refLen = 0.5 + (Math.max(1, word.length) * 0.08);
+    // reference audio: try to find TTS file in frontend cdn-data (prefer pre-generated wav under recordings)
+    const word = req.query.word || req.body.word || '';
+    const gradeId = req.query.gradeId || req.body.gradeId || '';
+    const refCandidates = [
+      path.join(__dirname, `../../frontend/cdn-data/js-modules/${gradeId}.js`), // not audio, skip
+    ];
+    // For now, we do not have per-word reference audio; use heuristic reference length based on word
+    const refLen = 0.5 + (Math.max(1, word.length) * 0.08);
 
-        const durationRatio = Math.min(duration / refLen, refLen / duration);
-        // score 基于时长匹配度，范围0-100
-        let score = Math.round(Math.max(0, Math.min(100, durationRatio * 100)));
+    // Extract MFCC frames for user
+    const userFrames = extractMfccFrames(userSamples, userRate);
 
-        // 小幅降分：若时长太短或太长
-        if (duration < 0.25 || duration > 3.0) {
-          score = Math.round(score * 0.6);
-        }
+    // For reference frames, synthesize a very rough reference by generating silence-length frames? 
+    // Instead, we'll create a short synthetic reference: compute MFCC of a short white-noise of expected length scaled - placeholder
+    // Generate a pseudo-reference signal (silence with small noise) of refLen seconds
+    const refSampleCount = Math.floor(refLen * userRate);
+    const refSamples = new Float32Array(refSampleCount);
+    for (let i = 0; i < refSampleCount; i++) refSamples[i] = 0;
+    const refFrames = extractMfccFrames(refSamples, userRate);
 
-        // 返回结果
-        res.json({
-          success: true,
-          score,
-          details: {
-            duration,
-            refLen,
-            durationRatio: Number(durationRatio.toFixed(3))
-          }
-        });
-      } finally {
-        // 清理临时文件
-        try { fs.unlinkSync(filePath); } catch (e) {}
-      }
+    // compute DTW
+    const { dist, norm, pathLength } = computeDtwDistance(userFrames, refFrames);
+
+    // duration based metrics
+    const userDuration = userSamples.length / userRate;
+    const durationRatio = Math.min(userDuration / refLen, refLen / userDuration);
+
+    // normalize DTW into 0..1 (heuristic)
+    const normalizedDtw = Math.min(1, norm / 50); // 50 is rough scale
+
+    // scoring formula
+    let score = 100 - Math.round(normalizedDtw * 70) - Math.round((1 - durationRatio) * 30);
+    score = Math.max(0, Math.min(100, score));
+
+    // hints
+    const hints = [];
+    if (userDuration < refLen * 0.7) hints.push('读得太短');
+    if (userDuration > refLen * 1.4) hints.push('读得太长');
+    if (normalizedDtw > 0.6) hints.push('发音与参考差异较大');
+
+    // move converted file to recordings dir
+    const destName = `rec_${Date.now()}_${path.basename(uploadedPath)}.wav`;
+    const destPath = path.join(recordingsDir, destName);
+    fs.renameSync(convPath, destPath);
+    // delete original uploaded file
+    try { fs.unlinkSync(uploadedPath); } catch (e) {}
+
+    // persist metadata
+    try {
+      await persistRecording({
+        gradeId,
+        word,
+        filePath: destPath,
+        score,
+        details: { dtw: norm, duration: userDuration, refLen, hints }
+      });
+    } catch (e) {
+      logger.warn('persistRecording failed', { err: e.message });
+    }
+
+    return res.json({
+      success: true,
+      score,
+      hints,
+      details: { dtw: norm, duration: userDuration, refLen, durationRatio }
     });
   } catch (error) {
     logger.error('scorePronunciation failed', { error: error.message, stack: error.stack });
-    res.status(500).json({ success: false, message: '评分失败' });
+    return res.status(500).json({ success: false, message: '评分失败', error: error.message });
   }
 }
 
