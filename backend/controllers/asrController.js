@@ -3,7 +3,7 @@ const path = require('path');
 const { exec } = require('child_process');
 const logger = require('../utils/logger');
 const wav = require('wav-decoder');
-const mfcc = require('ml-mfcc');
+const Meyda = require('meyda');
 // Inline DTW implementation will be used instead of external dependency
 const sqlite3 = require('sqlite3').verbose();
 const dbConfig = require('../config/database');
@@ -37,16 +37,35 @@ async function readWavSamples(filePath) {
   return { samples: channelData, sampleRate };
 }
 
-// Helper: extract MFCC frames
+// Helper: extract MFCC frames using Meyda
 function extractMfccFrames(samples, sampleRate) {
-  // ml-mfcc expects (signal, sampleRate, options)
-  const options = {
-    windowSize: 512,
-    hopSize: 160, // 10ms at 16k
-    melFilters: 26,
-    numberOfCoefficients: 13
-  };
-  return mfcc(samples, sampleRate, options); // returns array of coefficient arrays
+  const bufferSize = 512; // frame size
+  const hopSize = 160; // ~10ms hop at 16kHz
+  const mfccFrames = [];
+
+  // Meyda.extract expects a plain Array
+  const signal = Array.from(samples || []);
+
+  for (let i = 0; i + bufferSize <= signal.length; i += hopSize) {
+    const frame = signal.slice(i, i + bufferSize);
+    try {
+      const mfcc = Meyda.extract('mfcc', frame, {
+        bufferSize: bufferSize,
+        sampleRate: sampleRate,
+        melBands: 26,
+        numberOfMFCCCoefficients: 13,
+      });
+      if (mfcc && Array.isArray(mfcc)) {
+        mfccFrames.push(mfcc);
+      }
+    } catch (e) {
+      // on error, push zeros to keep alignment
+      const zeros = new Array(13).fill(0);
+      mfccFrames.push(zeros);
+    }
+  }
+
+  return mfccFrames;
 }
 
 // Classic DTW implementation (Euclidean distance between frames)
