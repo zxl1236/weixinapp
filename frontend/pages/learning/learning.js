@@ -107,7 +107,7 @@ Page({
     followScore: null,         // 跟读评分：0-100
     isRecording: false,        // 是否正在录音
     isScoring: false,          // 是否正在上传/评分
-    recordingTempFilePath: ''  // 临时录音文件路径
+    recordingTempFilePath: '',  // 临时录音文件路径
 
     // 年级切换器
 
