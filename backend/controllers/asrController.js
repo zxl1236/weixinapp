@@ -4,7 +4,7 @@ const { exec } = require('child_process');
 const logger = require('../utils/logger');
 const wav = require('wav-decoder');
 const mfcc = require('ml-mfcc');
-const DTW = require('dynamic-time-warping');
+// Inline DTW implementation will be used instead of external dependency
 const sqlite3 = require('sqlite3').verbose();
 const dbConfig = require('../config/database');
 
@@ -49,23 +49,61 @@ function extractMfccFrames(samples, sampleRate) {
   return mfcc(samples, sampleRate, options); // returns array of coefficient arrays
 }
 
-// Normalize DTW distance by path length
+// Classic DTW implementation (Euclidean distance between frames)
 function computeDtwDistance(framesA, framesB) {
-  if (!framesA || !framesB || framesA.length === 0 || framesB.length === 0) return Infinity;
-  // Represent frames as arrays; define euclidean distance between frames
-  const distance = function(a, b) {
+  if (!framesA || !framesB || framesA.length === 0 || framesB.length === 0) {
+    return { dist: Infinity, norm: Infinity, pathLength: 0 };
+  }
+
+  const n = framesA.length;
+  const m = framesB.length;
+
+  // distance between two frames (arrays)
+  function frameDist(a, b) {
     let sum = 0;
-    for (let i = 0; i < Math.min(a.length, b.length); i++) {
+    const len = Math.min(a.length, b.length);
+    for (let i = 0; i < len; i++) {
       const d = (a[i] || 0) - (b[i] || 0);
       sum += d * d;
     }
     return Math.sqrt(sum);
-  };
-  const dtw = new DTW(distance);
-  const dist = dtw.compute(framesA, framesB);
-  const path = dtw.getPath();
-  const norm = dist / Math.max(1, path.length);
-  return { dist, norm, pathLength: path.length };
+  }
+
+  // initialize matrix with Infinity
+  const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(Infinity));
+  dp[0][0] = 0;
+
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j <= m; j++) {
+      const cost = frameDist(framesA[i - 1], framesB[j - 1]);
+      dp[i][j] = cost + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+
+  const dist = dp[n][m];
+
+  // backtrack to find path length
+  let i = n, j = m;
+  let pathLength = 0;
+  while (i > 0 && j > 0) {
+    pathLength++;
+    const choices = [
+      { val: dp[i - 1][j - 1], ni: i - 1, nj: j - 1 },
+      { val: dp[i - 1][j], ni: i - 1, nj: j },
+      { val: dp[i][j - 1], ni: i, nj: j - 1 }
+    ];
+    let minChoice = choices[0];
+    for (let k = 1; k < choices.length; k++) {
+      if (choices[k].val < minChoice.val) minChoice = choices[k];
+    }
+    i = minChoice.ni;
+    j = minChoice.nj;
+  }
+  // account for remaining steps
+  pathLength += i + j;
+
+  const norm = dist / Math.max(1, pathLength);
+  return { dist, norm, pathLength };
 }
 
 // Persist recording metadata and score to SQLite
