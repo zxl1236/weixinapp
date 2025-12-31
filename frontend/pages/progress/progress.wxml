@@ -1,0 +1,136 @@
+<!--学习进度页面-->
+<view class="container">
+  <!-- 精简头部 -->
+  <view class="header">
+    <button class="back-btn" bindtap="goBack">← 返回</button>
+    <view class="title">{{gradeName}}学习进度</view>
+  </view>
+
+  <!-- 核心数据展示 -->
+  <view class="core-stats">
+    <view class="mastery-display">
+      <!-- 环形进度图 -->
+      <view class="ring-chart">
+        <view class="ring-container">
+          <view class="ring-progress" style="--progress: {{stats.masteryRate}}%;"></view>
+          <view class="ring-center">
+            <view class="mastery-percent">{{stats.masteryRate}}%</view>
+            <view class="mastery-label">掌握率</view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 统计信息 -->
+      <view class="stats-info">
+        <view class="total-words">共{{stats.totalWords}}个词汇</view>
+        <view class="mastered-count">已掌握{{stats.masteredCount}}个</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 详细统计 -->
+  <view class="detailed-stats">
+    <view class="stats-title">学习状态分布</view>
+    
+    <view class="stat-item mastered-item" bindtap="showWordList" data-type="mastered">
+      <view class="stat-left">
+        <view class="stat-dot mastered-dot"></view>
+        <view class="stat-text">
+          <view class="stat-name">已掌握</view>
+          <view class="stat-desc">完全掌握的单词</view>
+        </view>
+      </view>
+      <view class="stat-right">
+        <view class="stat-count">{{stats.masteredCount}}</view>
+        <view class="stat-arrow">→</view>
+      </view>
+    </view>
+
+    <view class="stat-item error-item" bindtap="showWordList" data-type="withErrors" wx:if="{{stats.withErrorsCount > 0}}">
+      <view class="stat-left">
+        <view class="stat-dot error-dot"></view>
+        <view class="stat-text">
+          <view class="stat-name">需复习</view>
+          <view class="stat-desc">答错过的单词</view>
+        </view>
+      </view>
+      <view class="stat-right">
+        <view class="stat-count">{{stats.withErrorsCount}}</view>
+        <view class="stat-arrow">→</view>
+      </view>
+    </view>
+
+    <view class="stat-item learning-item" bindtap="showWordList" data-type="learning" wx:if="{{stats.learningCount > 0}}">
+      <view class="stat-left">
+        <view class="stat-dot learning-dot"></view>
+        <view class="stat-text">
+          <view class="stat-name">学习中</view>
+          <view class="stat-desc">正在学习的单词</view>
+        </view>
+      </view>
+      <view class="stat-right">
+        <view class="stat-count">{{stats.learningCount}}</view>
+        <view class="stat-arrow">→</view>
+      </view>
+    </view>
+
+    <view class="stat-item unlearned-item" bindtap="showWordList" data-type="unlearned">
+      <view class="stat-left">
+        <view class="stat-dot unlearned-dot"></view>
+        <view class="stat-text">
+          <view class="stat-name">未学习</view>
+          <view class="stat-desc">尚未开始学习</view>
+        </view>
+      </view>
+      <view class="stat-right">
+        <view class="stat-count">{{stats.unlearnedCount}}</view>
+        <view class="stat-arrow">→</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 单词列表弹窗 -->
+  <view class="word-list-modal" wx:if="{{showWordList}}" bindtap="hideWordList">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <view class="modal-title">{{currentListTitle}}</view>
+        <button class="close-btn" bindtap="hideWordList">×</button>
+      </view>
+      
+      <view class="modal-body">
+        <view class="word-count-info">共 {{currentWordList.length}} 个单词</view>
+        
+        <scroll-view class="word-list" wx:if="{{currentWordList.length > 0}}" scroll-y="true" style="max-height: 60vh;">
+          <view class="word-item" wx:for="{{currentWordList}}" wx:key="index" wx:for-item="word" wx:for-index="idx">
+            <view class="word-main">
+              <view class="word-english">{{word.word}}</view>
+              <view class="word-phonetic" wx:if="{{word.phonetic}}">{{word.phonetic}}</view>
+            </view>
+            <view class="word-chinese">{{word.meaning || word.chinese || '暂无释义'}}</view>
+            <view class="word-status {{word.status}}">
+              <text wx:if="{{word.status === 'mastered'}}">✅</text>
+              <text wx:elif="{{word.status === 'withErrors'}}">⚠️</text>
+              <text wx:elif="{{word.status === 'learning'}}">📖</text>
+              <text wx:else="">⭕</text>
+            </view>
+          </view>
+        </scroll-view>
+        
+        <view class="empty-list" wx:else="">
+          <view class="empty-icon">📭</view>
+          <view class="empty-text">暂无相关单词</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 精简操作 -->
+  <view class="main-actions">
+    <button class="main-action-btn learn-btn" bindtap="startLearning" wx:if="{{stats.unlearnedCount > 0}}">
+      开始学习
+    </button>
+    <button class="main-action-btn review-btn" bindtap="reviewErrors" wx:if="{{stats.withErrorsCount > 0}}">
+      复习错词
+    </button>
+  </view>
+</view>

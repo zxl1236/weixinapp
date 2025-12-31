@@ -2,21 +2,6 @@
 .env
 .env.local
 .env.production
-
-# Windows
-[Dd]esktop.ini
-Thumbs.db
-$RECYCLE.BIN/
-
-# macOS
-.DS_Store
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-
-# Node.js
-node_modules/
 .env.development
 
 # 数据库文件
@@ -60,4 +45,3 @@ Thumbs.db
 tmp/
 temp/
 *.tmp
->>>>>>> 9dab021d28f5db1276f54ee28bc9bdf60e2de304

@@ -1,0 +1,115 @@
+<!--pages/learningComplete/learningComplete.wxml-->
+<view class="container">
+  <!-- 升级提示区域 -->
+  <view class="upgrade-prompt" wx:if="{{showUpgradePrompt}}">
+    <view class="upgrade-icon">🎓</view>
+    <view class="upgrade-title">体验内容已经结束</view>
+    <view class="upgrade-desc">您已学完免费版的30个单词</view>
+    <view class="upgrade-content">
+      <view class="upgrade-text">升级会员即可解锁：</view>
+      <view class="upgrade-features">
+        <view class="feature-item">✨ 全部K12年级词汇</view>
+        <view class="feature-item">✨ 无限测试次数</view>
+        <view class="feature-item">✨ 无限生词本容量</view>
+        <view class="feature-item">✨ 详细学习报告</view>
+        <view class="feature-item">✨ 云端数据同步</view>
+      </view>
+    </view>
+    
+    <!-- 升级选项按钮 -->
+    <view class="upgrade-options">
+      <button class="upgrade-option-btn activation-btn" bindtap="goToActivation">
+        <view class="option-icon">🔑</view>
+        <view class="option-content">
+          <view class="option-title">激活码激活</view>
+          <view class="option-desc">永久激活账户</view>
+        </view>
+      </button>
+      
+      <button class="upgrade-option-btn payment-btn" bindtap="goToPayment">
+        <view class="option-icon">💚</view>
+        <view class="option-content">
+          <view class="option-title">微信支付</view>
+          <view class="option-desc">¥29.9 月度会员</view>
+        </view>
+      </button>
+    </view>
+    
+    <button class="upgrade-back-btn" bindtap="goHome">
+      <view class="upgrade-back-text">返回首页</view>
+    </button>
+  </view>
+
+  <!-- 正常完成页面（未达到限制时显示） -->
+  <view wx:if="{{!showUpgradePrompt}}">
+    <!-- 完成动画区域 -->
+    <view class="completion-animation">
+      <view class="celebration-icon">🎉</view>
+      <view class="completion-title">恭喜完成！</view>
+      <view class="completion-subtitle">您已学完{{gradeName}}的所有单词和短语</view>
+    </view>
+
+    <!-- 统计信息 -->
+    <view class="stats-section" wx:if="{{showStats}}">
+      <view class="stats-title">学习成果</view>
+      <view class="stats-grid">
+        <view class="stat-item">
+          <view class="stat-number">{{totalWords}}</view>
+          <view class="stat-label">总单词数</view>
+        </view>
+        <view class="stat-item">
+          <view class="stat-number">{{masteredWords}}</view>
+          <view class="stat-label">已掌握</view>
+        </view>
+        <view class="stat-item">
+          <view class="stat-number">{{studyDays}}</view>
+          <view class="stat-label">学习天数</view>
+        </view>
+      </view>
+      <view class="completion-time">完成时间：{{completionTime}}</view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button class="action-btn primary" bindtap="restartLearning">
+        <view class="btn-icon">🔄</view>
+        <view class="btn-content">
+          <view class="btn-text">重新学习</view>
+          <view class="btn-desc">重新学习当前年级</view>
+        </view>
+      </button>
+
+      <button class="action-btn secondary" bindtap="goToMistakeWords">
+        <view class="btn-icon">📚</view>
+        <view class="btn-content">
+          <view class="btn-text">生词本</view>
+          <view class="btn-desc">继续学习生词</view>
+        </view>
+      </button>
+
+      <button class="action-btn secondary" bindtap="selectOtherGrade">
+        <view class="btn-icon">📖</view>
+        <view class="btn-content">
+          <view class="btn-text">其他年级</view>
+          <view class="btn-desc">选择其他年级学习</view>
+        </view>
+      </button>
+
+      <button class="action-btn secondary" bindtap="viewStats">
+        <view class="btn-icon">📊</view>
+        <view class="btn-content">
+          <view class="btn-text">学习统计</view>
+          <view class="btn-desc">查看详细统计</view>
+        </view>
+      </button>
+    </view>
+
+    <!-- 底部导航 -->
+    <view class="bottom-nav">
+      <button class="nav-btn" bindtap="goHome">
+        <view class="nav-icon">🏠</view>
+        <view class="nav-text">返回首页</view>
+      </button>
+    </view>
+  </view>
+</view>

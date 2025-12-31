@@ -1,0 +1,129 @@
+<view class="container">
+  <!-- 页面头部 -->
+  <view class="header">
+    <view class="grade-info">
+      <view class="grade-name">{{gradeName}}</view>
+      <view class="word-count">共 {{totalCount}} 个单词</view>
+    </view>
+  </view>
+
+  <!-- 搜索和排序栏 -->
+  <view class="toolbar">
+    <view class="search-box">
+      <input 
+        class="search-input" 
+        type="text" 
+        placeholder="搜索单词或含义..." 
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+      />
+      <view class="search-icon">🔍</view>
+    </view>
+    
+    <view class="sort-buttons">
+      <button 
+        class="sort-btn {{sortType === 'serial' ? 'active' : ''}}"
+        bindtap="changeSortType"
+        data-type="serial"
+        size="mini"
+      >
+        按序号
+      </button>
+      <button 
+        class="sort-btn {{sortType === 'word' ? 'active' : ''}}"
+        bindtap="changeSortType"
+        data-type="word"
+        size="mini"
+      >
+        按单词
+      </button>
+      <button 
+        class="sort-btn {{sortType === 'meaning' ? 'active' : ''}}"
+        bindtap="changeSortType"
+        data-type="meaning"
+        size="mini"
+      >
+        按含义
+      </button>
+    </view>
+  </view>
+
+  <!-- 单词列表 -->
+  <view class="word-list" wx:if="{{!loading}}">
+    <view class="list-header">
+      <text>显示 {{showingCount}} / {{totalCount}} 个单词</text>
+    </view>
+    
+    <view 
+      class="word-card" 
+      wx:for="{{filteredWords}}" 
+      wx:key="serialNumber"
+    >
+      <view class="word-header">
+        <view class="word-serial">#{{item.serialNumber || index + 1}}</view>
+        <view class="word-text">{{item.word}}</view>
+        <button class="word-pronunciation-btn {{playingWordId === item.word ? 'playing' : ''}}" 
+                bindtap="playWordPronunciation" 
+                data-word="{{item.word}}"
+                data-grade="{{gradeId}}"
+                disabled="{{playingWordId === item.word}}">
+          <view class="pronunciation-circle"></view>
+          <view class="pronunciation-waveform">
+            <view class="waveform-bar"></view>
+            <view class="waveform-bar"></view>
+            <view class="waveform-bar"></view>
+            <view class="waveform-bar"></view>
+            <view class="waveform-bar"></view>
+          </view>
+        </button>
+      </view>
+      
+      <view class="word-phonetic" wx:if="{{item.phonetic}}">
+        {{item.phonetic}}
+      </view>
+      
+      <view class="word-meaning">
+        {{item.meaning}}
+      </view>
+      
+      <view class="word-highlight" wx:if="{{item.highlightLetters || item.highlightPhonetic}}">
+        <text wx:if="{{item.highlightLetters}}" class="highlight-item">
+          字母: {{item.highlightLetters}}
+        </text>
+        <text wx:if="{{item.highlightPhonetic}}" class="highlight-item">
+          音标: {{item.highlightPhonetic}}
+        </text>
+      </view>
+      
+      <view class="word-note" wx:if="{{item.note}}">
+        <text class="note-label">备注:</text>
+        <text class="note-text">{{item.note}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-text">加载单词中...</view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-container" wx:if="{{!loading && filteredWords.length === 0}}">
+    <view class="empty-icon">📝</view>
+    <view class="empty-text">
+      <text wx:if="{{searchKeyword}}">未找到匹配的单词</text>
+      <text wx:else>暂无单词数据</text>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="footer-actions" wx:if="{{!loading && filteredWords.length > 0}}">
+    <button class="export-btn" bindtap="exportToPDF">
+      📄 导出PDF
+    </button>
+    <button class="back-btn" bindtap="goBack">
+      返回
+    </button>
+  </view>
+</view>
+

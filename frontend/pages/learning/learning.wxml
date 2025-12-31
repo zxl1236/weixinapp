@@ -1,0 +1,372 @@
+<view class="learning-container" style="position: relative; left: 0rpx; top: 0rpx">
+
+  <!-- 顶部导航栏 -->
+  <view class="modern-header" style="height: 66rpx; display: flex; box-sizing: border-box; background: #f4f5f7 !important; left: 1rpx; top: 1rpx; position: relative; align-items: center; justify-content: space-between; padding: 0 30rpx;">
+    <view class="header-left">
+      <button class="back-btn" bindtap="goBack" style="position: relative; top: 11rpx; left: -86rpx">
+        <text class="back-icon">←</text>
+      </button>
+    </view>
+    <view class="header-center">
+  
+    </view>
+    <view class="header-right">
+      <button class="regroup-btn" bindtap="showRegroupModal" style="position: relative; top: -9rpx;">
+        <text class="regroup-icon" style="width: 74rpx; height: 41rpx; display: block; box-sizing: border-box; left: -1rpx; top: 21rpx; position: relative">📋</text>
+      </button>
+    </view>
+  </view>
+  
+
+  <!-- 简化的进度条 - 只在认读练习时显示 -->
+  <view class="progress-container" wx:if="{{currentPhase === 1}}">
+    <view class="progress-bar" style="width: {{progress.percentage}}%"></view>
+  </view>
+  
+
+  <!-- ====== 认识阶段训练界面 ====== -->
+  <view wx:if="{{phase === 'phase0' && currentWord}}" class="main-content">
+    <view class="modern-word-card" style="width: 620rpx; height: 1018rpx; display: flex; box-sizing: border-box; left: 1rpx; top: 56rpx; position: relative">
+      
+      <!-- 单词主体区域 -->
+      <view class="word-main-section">
+        <view class="word-display">
+          <!-- 分段高亮显示单词 -->
+          <view class="word-text-container {{isLongWord ? 'long-word' : ''}}" wx:if="{{highlightedWord && highlightedWord.length > 0}}">
+            <text wx:for="{{highlightedWord}}" wx:key="index" 
+                  class="{{item.highlight ? 'word-text-highlight' : 'word-text-normal'}}">
+              {{item.text}}
+            </text>
+          </view>
+          <!-- 如果没有高亮数据，显示原单词 -->
+          <text class="word-text word-text-normal {{isLongWord ? 'long-word' : ''}}" wx:else style="position: relative; left: 1rpx; top: 27rpx">{{currentWord.word}}</text>
+          <!-- 分段高亮显示音标 -->
+          <view class="phonetic-text-container" wx:if="{{currentWord.phonetic && highlightedPhonetic && highlightedPhonetic.length > 0}}"><text wx:for="{{highlightedPhonetic}}" wx:key="index" class="{{item.highlight ? 'phonetic-text-highlight' : 'phonetic-text-normal'}}">{{item.text}}</text></view>
+          <!-- 如果没有高亮数据，显示原音标 -->
+          <text class="phonetic-text" wx:if="{{currentWord.phonetic && (!highlightedPhonetic || highlightedPhonetic.length === 0)}}" style="position: relative; left: -19rpx; top: 35rpx">{{currentWord.phonetic}}</text>
+          <!-- 规则备注（红色内容） -->
+          <view class="rule-note" wx:if="{{currentWord.rule || currentWord.note || currentWord.highlightPhonetic}}" style="position: relative; left: 0rpx; top: 8rpx">
+            <text class="rule-note-text">{{currentWord.note || currentWord.rule || currentWord.highlightPhonetic}}</text>
+          </view>
+        </view>
+        
+        <!-- 发音按钮 -->
+        <button class="modern-pronunciation-btn {{isPlaying ? 'playing' : ''}}" 
+                bindtap="playCurrentWordPronunciation" 
+                disabled="{{isPlaying}}" style="position: relative; left: 4rpx; top: 23rpx">
+          <view class="pronunciation-circle"></view>
+          <view class="pronunciation-waveform">
+            <view class="waveform-bar"></view>
+            <view class="waveform-bar"></view>
+            <view class="waveform-bar"></view>
+            <view class="waveform-bar"></view>
+            <view class="waveform-bar"></view>
+          </view>
+        </button>
+      </view>
+
+      <!-- 操作按钮区域 -->
+      <view class="action-buttons">
+        <button class="modern-btn mastered-btn" bindtap="markAsMastered" disabled="{{isProcessing}}" style="position: relative; left: -25rpx; top: 204rpx">
+          <text class="btn-icon">✓</text>
+          <text class="btn-label">会拼读，会中文</text>
+        </button>
+        <button class="modern-btn practice-btn" bindtap="markAsNeedLearning" disabled="{{isProcessing}}" style="position: relative; left: 11rpx; top: 203rpx">
+          <text class="btn-icon">?</text>
+          <text class="btn-label">不会,收藏练习</text>
+        </button>
+      </view>
+
+      <!-- 进度指示 -->
+      <view class="progress-indicator">
+        <text class="progress-text" style="position: relative; left: 0rpx; top: 254rpx">{{recognitionDone}}/{{currentGroupWords.length}}</text>
+      </view>
+      
+      <!-- 中文翻译（带词性，和释义同一行） -->
+      <view class="word-info-card" style="position: relative; left: 2rpx; top: -241rpx">
+        <view class="word-meaning-text {{currentWord.meaning && currentWord.meaning.length > 15 ? 'long-text' : ''}}">
+          <text wx:if="{{currentWord.partOfSpeech}}" class="part-of-speech">{{currentWord.partOfSpeech}}</text>
+          <text>{{currentWord.meaning}}</text>
+        </view>
+      </view>
+      
+    </view>
+  </view>
+
+  <!-- ====== 过滤结果统计界面 ====== -->
+  <view wx:if="{{showFilterResult}}">
+    <view class="filter-result-container">
+      <!-- 进度指示器 -->
+      <view class="progress-indicator">
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{(currentGroup / totalGroups) * 100}}%;"></view>
+        </view>
+        <view class="progress-text">第 {{currentGroup}} / {{totalGroups}} 组</view>
+      </view>
+      
+      <!-- 标题 -->
+      <view class="result-title">
+        <text class="title-text">第{{currentGroup}}组过滤完成</text>
+        <text class="subtitle-text">查看你的掌握情况</text>
+      </view>
+
+      <!-- 统计卡片 -->
+      <view class="stats-cards">
+        <view class="stat-card mastered-card" style="width: 310rpx; height: 262rpx; display: flex; box-sizing: border-box; left: -162rpx; top: -17rpx; position: relative">
+          <view class="stat-number">{{masteredCount}}</view>
+          <view class="stat-label" style="font-weight: 100;">本组已掌握</view>
+          <view class="stat-subtitle">累计: {{accumulatedMasteredCount}}</view>
+          <view class="stat-icon">✅</view>
+        </view>
+        <view class="stat-card learning-card" style="width: 224rpx; height: 210rpx; display: flex; box-sizing: border-box; left: 179rpx; top: -329rpx; position: relative">
+          <view class="stat-number">{{needLearningCount}}</view>
+          <view class="stat-label" style="font-weight: 100;">本组需学习</view>
+          <view class="stat-subtitle">累计: {{accumulatedNeedLearningCount}}</view>
+          <view class="stat-icon">📚</view>
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="result-actions">
+        <!-- 继续过滤下一组按钮 - 当还有下一组或有更多单词可以学习时显示 -->
+        <button class="action-btn continue-btn" bindtap="continueToNextGroup" wx:if="{{currentGroup < totalGroups || hasMoreWordsToLearn}}">
+          <text class="btn-icon">➡️</text>
+          <text class="btn-text">继续过滤下一组</text>
+        </button>
+        
+        <!-- 开始学习不会的单词按钮 - 当有需要学习的单词时显示 -->
+        <button class="action-btn start-learning-btn" bindtap="startLearningUnfamiliarWords" wx:if="{{accumulatedNeedLearningCount > 0}}">
+          <text class="btn-icon">📚</text>
+          <text class="btn-text">开始学习不会的 ({{accumulatedNeedLearningCount}}个)</text>
+        </button>
+        
+        <!-- 全部掌握完成学习按钮 - 只在所有组都完成且没有需要学习的单词时显示 -->
+        <button class="action-btn finish-btn" bindtap="finishFiltering" wx:if="{{currentGroup >= totalGroups && accumulatedNeedLearningCount === 0 && !hasMoreWordsToLearn}}" style="position: relative; left: -7rpx; top: -214rpx">
+          <text class="btn-icon">🎉</text>
+          <text class="btn-text">全部掌握，完成学习</text>
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- ====== 学习界面 ====== -->
+  <view wx:if="{{(phase === 'phase1' || phase === 'phase2') && currentWord}}" class="main-content">
+    <view class="modern-word-card learning-card">
+      
+      <!-- 简化的单词显示区域 -->
+      <view class="word-display-section" style="width: 520rpx; display: block; box-sizing: border-box">
+        <view class="word-main">
+          <!-- 分段高亮显示单词 -->
+          <view class="word-text-container {{isLongWord ? 'long-word' : ''}}" wx:if="{{highlightedWord && highlightedWord.length > 0}}">
+            <text wx:for="{{highlightedWord}}" wx:key="index" 
+                  class="{{item.highlight ? 'word-text-highlight' : 'word-text-normal'}}">
+              {{item.text}}
+            </text>
+          </view>
+          <!-- 如果没有高亮数据，显示原单词 -->
+          <text class="word-text word-text-normal {{isLongWord ? 'long-word' : ''}}" wx:else>{{currentWord.word}}</text>
+          <!-- 分段高亮显示音标 -->
+          <view class="phonetic-text-container" wx:if="{{currentWord.phonetic && highlightedPhonetic && highlightedPhonetic.length > 0}}"><text wx:for="{{highlightedPhonetic}}" wx:key="index" class="{{item.highlight ? 'phonetic-text-highlight' : 'phonetic-text-normal'}}">{{item.text}}</text></view>
+          <!-- 如果没有高亮数据，显示原音标 -->
+          <text class="phonetic-text" wx:if="{{currentWord.phonetic && (!highlightedPhonetic || highlightedPhonetic.length === 0)}}">{{currentWord.phonetic}}</text>
+          <!-- 规则备注（红色内容） -->
+          <view class="rule-note" wx:if="{{currentWord.rule || currentWord.note || currentWord.highlightPhonetic}}" style="position: relative; left: 0rpx; top: 8rpx">
+            <text class="rule-note-text">{{currentWord.note || currentWord.rule || currentWord.highlightPhonetic}}</text>
+          </view>
+        </view>
+        
+        <view class="word-meaning {{currentWord.meaning && currentWord.meaning.length > 15 ? 'long-text' : ''}}">
+          <text class="meaning-text">
+            <text wx:if="{{currentWord.partOfSpeech}}" class="part-of-speech">{{currentWord.partOfSpeech}}</text>
+            <text>{{currentWord.meaning}}</text>
+          </text>
+        </view>
+      </view>
+
+      <!-- 四选一测试界面 - 测试模式或正常学习模式 -->
+      <view class="choice-test-section" wx:if="{{currentPhase === 1 && choiceOptions && choiceOptions.length > 0}}">
+        <view class="choice-title">请选择正确的含义：</view>
+        <view class="choice-list">
+          <view 
+            class="choice-item {{selectedAnswer === item ? (choiceCorrect ? 'correct' : 'wrong') : ''}} {{selectedAnswer === item ? 'selected' : ''}}"
+            wx:for="{{choiceOptions}}" 
+            wx:key="index"
+            bindtap="selectChoice"
+            data-answer="{{item}}"
+          >
+            <text class="choice-label">{{['A', 'B', 'C', 'D'][index]}}.</text>
+            <text class="choice-text">{{item}}</text>
+          </view>
+        </view>
+        <view class="choice-hint" wx:if="{{selectedAnswer}}">
+          <text wx:if="{{choiceCorrect}}" class="hint-correct">✓ 回答正确！</text>
+          <text wx:else class="hint-wrong">✗ 回答错误，正确答案：{{currentWord.meaning}}</text>
+        </view>
+      </view>
+
+      <!-- 认读练习 - 简化界面（没有选项时显示） -->
+      <view class="reading-practice-section" wx:if="{{currentPhase === 1 && (!choiceOptions || choiceOptions.length === 0)}}">
+        <!-- 核心操作区域 -->
+        <view class="reading-actions">
+          <button class="listen-btn {{isPlaying ? 'playing' : ''}}" bindtap="playCurrentWordPronunciation" disabled="{{isPlaying}}">
+            <view class="pronunciation-circle"></view>
+            <view class="pronunciation-waveform">
+              <view class="waveform-bar"></view>
+              <view class="waveform-bar"></view>
+              <view class="waveform-bar"></view>
+              <view class="waveform-bar"></view>
+              <view class="waveform-bar"></view>
+            </view>
+            <text class="listen-text">{{isPlaying ? '播放中...' : '听发音'}}</text>
+          </button>
+          
+          <button class="continue-btn" bindtap="markAsUnderstood">
+            <text class="continue-text">我记住了</text>
+            <text class="continue-arrow">→</text>
+          </button>
+        </view>
+      
+      <!-- 简化的提示文字 -->
+      <view class="reading-hint">
+        <text class="hint-text">听发音，跟读单词，加深记忆</text>
+      </view>
+
+      <!-- 内联自我评估触发（放在发音控件下方） -->
+      <view class="self-assessment-inline" style="text-align: center; margin-top: 18rpx;">
+        <button class="modern-btn self-assessment-trigger-btn small" bindtap="startSelfAssessment">📊 自我评估</button>
+      </view>
+      </view>
+
+
+      <!-- 自我评估功能 -->
+      <view class="self-assessment-section" wx:if="{{showSelfAssessment}}">
+        <view class="assessment-title">请给自己打分：</view>
+        <view class="assessment-stars">
+          <view class="star-item" wx:for="{{[1,2,3,4,5]}}" wx:key="index"
+                bindtap="selectSelfAssessmentScore" data-score="{{index + 1}}">
+            <text class="star-icon {{selfAssessmentScore >= index + 1 ? 'star-selected' : ''}}">★</text>
+          </view>
+        </view>
+        <view class="assessment-hint" wx:if="{{selfAssessmentScore}}">
+          <text class="score-text">你的评分：{{selfAssessmentScore}} 分</text>
+        </view>
+        <view class="assessment-actions">
+          <button class="assessment-btn cancel-btn" bindtap="cancelSelfAssessment">取消</button>
+          <button class="assessment-btn confirm-btn" bindtap="confirmSelfAssessment"
+                  disabled="{{!selfAssessmentScore}}">确认</button>
+        </view>
+      </view>
+
+      <!-- 底部操作按钮 -->
+      <view class="bottom-actions">
+        <button class="modern-btn self-assessment-trigger-btn" bindtap="startSelfAssessment">📊 自我评估</button>
+        <button class="modern-btn outline-btn" bindtap="skipWord">跳过</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- ====== 词性分类训练界面 ====== -->
+  <view wx:if="{{phase === 'wordType' && currentWord}}">
+    <view class="word-card wordtype-card">
+      <!-- 核心单词区域 -->
+      <view class="word-core-section">
+        <!-- 分段高亮显示单词 -->
+        <view class="word-text-container {{isLongWord ? 'long-word' : ''}}" wx:if="{{highlightedWord && highlightedWord.length > 0}}">
+          <text wx:for="{{highlightedWord}}" wx:key="index" 
+                class="{{item.highlight ? 'word-text-highlight' : 'word-text-normal'}}">
+            {{item.text}}
+          </text>
+        </view>
+        <!-- 如果没有高亮数据，显示原单词 -->
+        <view class="word-main {{isLongWord ? 'long-word' : ''}}" wx:else>{{currentWord.word}}</view>
+        <!-- 分段高亮显示音标 -->
+        <view class="word-phonetic phonetic-text-container" wx:if="{{currentWord.phonetic && highlightedPhonetic && highlightedPhonetic.length > 0}}"><text wx:for="{{highlightedPhonetic}}" wx:key="index" class="{{item.highlight ? 'phonetic-text-highlight' : 'phonetic-text-normal'}}">{{item.text}}</text></view>
+        <!-- 如果没有高亮数据，显示原音标 -->
+        <view class="word-phonetic" wx:if="{{currentWord.phonetic && (!highlightedPhonetic || highlightedPhonetic.length === 0)}}">{{currentWord.phonetic}}</view>
+        <!-- 规则备注（红色内容） -->
+        <view class="rule-note" wx:if="{{currentWord.rule || currentWord.note || currentWord.highlightPhonetic}}" style="position: relative; left: 0rpx; top: 8rpx">
+          <text class="rule-note-text">{{currentWord.note || currentWord.rule || currentWord.highlightPhonetic}}</text>
+        </view>
+        
+        <!-- 读音播放按钮 -->
+        <button class="pronunciation-btn-simple {{isPlaying ? 'playing' : ''}}" 
+                bindtap="playCurrentWordPronunciation" 
+                disabled="{{isPlaying}}">
+          <view class="pronunciation-circle"></view>
+          <view class="pronunciation-waveform">
+            <view class="waveform-bar"></view>
+            <view class="waveform-bar"></view>
+            <view class="waveform-bar"></view>
+            <view class="waveform-bar"></view>
+            <view class="waveform-bar"></view>
+          </view>
+          <text class="pronunciation-text">{{isPlaying ? '播放中...' : '点击听发音'}}</text>
+        </button>
+      </view>
+
+      <!-- 含义显示 -->
+      <view class="word-info-container">
+        <view class="word-info-row">
+          <view class="word-type" wx:if="{{shouldShowWordType(currentWord) && currentWord.wordType}}">
+            <text class="type-label">{{currentWord.wordType === 'noun' ? '名词' : 
+                                       currentWord.wordType === 'verb' ? '动词' : 
+                                       currentWord.wordType === 'adjective' ? '形容词' : '未知'}}</text>
+          </view>
+          <view class="word-meaning {{currentWord.meaning && currentWord.meaning.length > 15 ? 'long-text' : ''}}">{{currentWord.meaning}}</view>
+        </view>
+      </view>
+      
+      <!-- 词性指示器 -->
+      <view class="wordtype-indicator">
+        <view class="wordtype {{currentWordType === 0 ? 'active' : ''}}">名词</view>
+        <view class="wordtype-line"></view>
+        <view class="wordtype {{currentWordType === 1 ? 'active' : ''}}">动词</view>
+        <view class="wordtype-line"></view>
+        <view class="wordtype {{currentWordType === 2 ? 'active' : ''}}">形容词</view>
+        <view class="wordtype-line"></view>
+        <view class="wordtype {{currentWordType === 3 ? 'active' : ''}}">短语</view>
+      </view>
+
+      <!-- 当前词性信息 -->
+      <view class="wordtype-info">
+        <text class="info-text">当前训练：{{['名词', '动词', '形容词', '短语'][currentWordType]}}</text>
+        <text class="info-text">单词数量：{{wordTypeWords.length}}</text>
+      </view>
+
+
+      <!-- 底部操作按钮 -->
+      <view class="bottom-actions">
+        <button class="nav-btn" bindtap="skipWord">跳过</button>
+        <button class="finish-btn" bindtap="nextWord">下一个</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- ====== 结束页 ====== -->
+  <view wx:if="{{phase==='done'}}">
+    <view class="word-card">
+      <view class="word-main" style="position: relative; left: 102rpx; top: 16rpx">训练完成 🎉</view>
+      <view class="meaning-text" style="position: relative; left: 102rpx; top: 10rpx">
+        正确率 {{accuracy}}% · 平均反应 {{avgTime}}s · 已清空到期 {{cleared}} 个
+      </view>
+      <view class="browse-content">
+        <button class="finish-btn" bindtap="exportReport">生成学习报告</button>
+      </view>
+    </view>
+
+    <view class="bottom-actions">
+      <button class="nav-btn" bindtap="restartSession" style="position: relative; left: -47rpx; top: 1rpx">再来一节</button>
+      <button class="finish-btn" bindtap="backHome" style="position: relative; left: -41rpx; top: -2rpx">返回首页</button>
+      <button class="nav-btn" bindtap="reviewPlan" style="position: relative; left: -32rpx; top: -2rpx">明日到期 {{tomorrowDue}} 词</button>
+    </view>
+  </view>
+
+
+  <!-- 加载 -->
+  <view class="loading-container" wx:if="{{loading}}" style="height: 1018rpx; display: flex; box-sizing: border-box">
+    <view class="loading-text">正在安排本节训练...</view>
+  </view>
+
+
+</view>
+

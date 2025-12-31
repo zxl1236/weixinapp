@@ -1,0 +1,100 @@
+<!--pages/learningSettings/learningSettings.wxml-->
+<view class="container">
+  <!-- 头部 -->
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="back-icon">←</text>
+    </view>
+    <view class="title">学习设置</view>
+    <view class="placeholder"></view>
+  </view>
+
+  <!-- 年级信息 -->
+  <view class="grade-info">
+    <view class="grade-name">{{gradeName}}</view>
+    <view class="grade-stats">
+      <text>总单词: {{learningStats.totalWords}}</text>
+      <text>已学: {{learningStats.learnedWords}}</text>
+      <text>进度: {{learningStats.progress}}%</text>
+    </view>
+  </view>
+
+  <!-- 继续学习选项 -->
+  <view class="continue-section" wx:if="{{hasContinueLearning}}">
+    <view class="section-title">继续学习</view>
+    <view class="continue-card" bindtap="continueLearning">
+      <view class="continue-info">
+        <view class="continue-title">继续上次学习</view>
+        <view class="continue-desc">进度: {{continueLearningInfo.progress}}%</view>
+      </view>
+      <view class="continue-arrow">→</view>
+    </view>
+  </view>
+
+  <!-- 学习设置 -->
+  <view class="settings-section">
+    <view class="section-title">学习设置</view>
+    
+    <!-- 学习数量选择 -->
+    <view class="setting-group">
+      <view class="setting-label">每组学习单词数</view>
+      <view class="quantity-options">
+        <view 
+          class="quantity-option {{selectedQuantityValue === item.value ? 'selected' : ''}}"
+          wx:for="{{quantityOptions}}"
+          wx:key="value"
+          bindtap="selectQuantity"
+          data-quantity="{{item.value}}"
+        >
+          <view class="option-label">{{item.label}}</view>
+          <view class="option-desc">{{item.desc}}</view>
+        </view>
+      </view>
+      
+      <!-- 自定义输入框 -->
+      <view class="custom-input-section" wx:if="{{showCustomInput}}">
+        <view class="custom-input-label">请输入单词数量（1-100）</view>
+        <input 
+          class="custom-input" 
+          type="number" 
+          placeholder="请输入数量"
+          value="{{customQuantity}}"
+          bindinput="onCustomQuantityInput"
+          maxlength="3"
+        />
+        <view class="custom-input-buttons">
+          <button class="btn-cancel" bindtap="cancelCustomQuantity">取消</button>
+          <button class="btn-confirm" bindtap="confirmCustomQuantity">确认</button>
+        </view>
+      </view>
+      
+      <!-- 显示当前选择的自定义数量 -->
+      <view class="custom-quantity-display" wx:if="{{isCustomQuantity}}">
+        <text>当前选择: {{selectedQuantity}}个单词/组</text>
+      </view>
+    </view>
+
+    <!-- 学习模式选择 -->
+    <view class="setting-group">
+      <view class="setting-label">学习模式</view>
+      <view class="mode-options">
+        <view 
+          class="mode-option {{selectedMode === item.value ? 'selected' : ''}}"
+          wx:for="{{learningModes}}"
+          wx:key="value"
+          bindtap="selectMode"
+          data-mode="{{item.value}}"
+        >
+          <view class="option-label">{{item.label}}</view>
+          <view class="option-desc">{{item.desc}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <button class="btn-secondary" bindtap="viewProgress">查看进度</button>
+    <button class="btn-primary" bindtap="startNewLearning">开始学习</button>
+  </view>
+</view>

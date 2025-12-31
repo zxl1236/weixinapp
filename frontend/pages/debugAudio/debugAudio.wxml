@@ -1,0 +1,50 @@
+<view class="page">
+  <view class="card">
+    <view class="title">全量发音回归测试</view>
+    <view class="desc">按顺序遍历勾选年级的所有单词，逐个播放并记录失败项（仅开发调试使用）。</view>
+
+    <view class="grade-section">
+      <view class="subtitle">选择要测试的年级</view>
+      <checkbox-group bindchange="onGradeChange">
+        <block wx:for="{{gradeOptions}}" wx:key="gradeId">
+          <label class="grade-item">
+            <checkbox value="{{item.gradeId}}" checked="{{item.checked}}" />
+            <text class="grade-text">{{item.label}}</text>
+          </label>
+        </block>
+      </checkbox-group>
+      <button class="rebuild-btn" size="mini" bindtap="rebuildWithSelectedGrades">
+        重新构建任务（按勾选年级）
+      </button>
+    </view>
+
+    <view class="info">
+      <view>总任务数：{{total}}</view>
+      <view>当前进度：{{currentIndex}} / {{total}}</view>
+      <view>当前年级：{{currentTask.gradeId || '-'}}</view>
+      <view>当前单词：{{currentTask.word || '-'}}</view>
+      <view>失败数量：{{failures.length}}</view>
+    </view>
+
+    <view class="btn-row">
+      <button type="primary" bindtap="start">开始测试</button>
+      <button bindtap="stopAll">停止</button>
+      <button bindtap="clearFailures">清空失败列表</button>
+    </view>
+  </view>
+
+  <view class="fail-card" wx:if="{{failures.length}}">
+    <view class="subtitle">失败列表（仅显示前 50 条，完整见控制台）</view>
+    <scroll-view scroll-y="true" style="max-height: 400rpx;">
+      <block wx:for="{{failures.slice(0, 50)}}" wx:key="index">
+        <view class="fail-item">
+          <view class="fail-line">[{{item.gradeId}}] {{item.word}}</view>
+          <view class="fail-reason">{{item.reason}}</view>
+        </view>
+      </block>
+    </scroll-view>
+    <button class="export-btn" bindtap="exportFailures">打印失败JSON到控制台</button>
+  </view>
+</view>
+
+

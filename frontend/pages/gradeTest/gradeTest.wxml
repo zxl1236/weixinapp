@@ -1,0 +1,135 @@
+<!--水平测试页面-->
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="header">
+    <view class="page-title">📊 水平测试</view>
+    <view class="page-subtitle">评估各年级教材词汇掌握情况</view>
+  </view>
+
+  <!-- 模式说明 -->
+  <view class="mode-explanation">
+    <view class="mode-title">🎯 测试说明</view>
+    <view class="mode-desc">通过少量题目快速评估对每本书的掌握情况，建议按顺序测试</view>
+  </view>
+
+  <!-- 阶段选择 -->
+  <view class="stage-selection" wx:if="{{!showGradeList}}">
+    <view class="stage-list">
+      <view 
+        class="stage-card" 
+        wx:for="{{stages}}" 
+        wx:key="id"
+        bindtap="selectStage"
+        data-stage="{{item.id}}"
+      >
+        <view class="stage-icon">{{item.icon}}</view>
+        <view class="stage-info">
+          <view class="stage-name">{{item.name}}</view>
+          <view class="stage-desc">{{item.description}}</view>
+          <view class="stage-count">共{{item.grades.length}}个年级</view>
+        </view>
+        <view class="stage-arrow">➤</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 年级选择视图 -->
+  <view class="grade-selection" wx:if="{{showGradeList && selectedStageData}}">
+    <!-- 返回按钮 -->
+    <view class="back-header">
+      <button class="back-btn" bindtap="backToStages">
+        ← 返回阶段选择
+      </button>
+    </view>
+
+    <!-- 当前阶段信息 -->
+    <view class="current-stage-info">
+      <view class="stage-badge">
+        <text class="stage-icon-small">{{selectedStageData.icon}}</text>
+        <text class="stage-name-small">{{selectedStageData.name}}</text>
+      </view>
+      <view class="stage-desc-small">{{selectedStageData.description}}</view>
+    </view>
+
+    <!-- 年级列表 -->
+    <view class="grade-list">
+      <view 
+        class="grade-card" 
+        wx:for="{{selectedStageData.grades}}" 
+        wx:key="id"
+      >
+        <view class="grade-info">
+          <view class="grade-name">{{item.name}}</view>
+          <view class="grade-stats">
+            <text class="word-count">词汇量: {{item.totalWords || 96}}</text>
+            <view class="mastery-info">
+              <text class="mastery-rate">掌握率: {{item.mastery || 0}}%</text>
+            </view>
+          </view>
+        </view>
+        
+        <view class="grade-actions">
+          <button 
+            class="test-btn" 
+            bindtap="startGradeTest"
+            data-grade="{{item.id}}"
+          >
+            水平测试
+          </button>
+          <button 
+            class="train-btn" 
+            bindtap="startGradeTraining"
+            data-grade="{{item.id}}"
+          >
+            开始训练
+          </button>
+          <button 
+            class="view-btn" 
+            bindtap="viewWordList"
+            data-grade="{{item.id}}"
+          >
+            查看单词
+          </button>
+          <button 
+            class="progress-btn" 
+            bindtap="toggleProgress"
+            data-grade="{{item.id}}"
+          >
+            查看进度
+          </button>
+        </view>
+        
+        <!-- 展开的进度详情 -->
+        <view class="progress-detail" wx:if="{{expandedGrade === item.id}}">
+          <view class="progress-item mastered">
+            <text class="progress-label">已掌握:</text>
+            <text class="progress-value">{{item.mastered || 0}}</text>
+          </view>
+          <view class="progress-item incorrect">
+            <text class="progress-label">答错:</text>
+            <text class="progress-value">{{item.incorrect || 2}}</text>
+          </view>
+          <view class="progress-item unlearned">
+            <text class="progress-label">未学习:</text>
+            <text class="progress-value">{{item.unlearned || 94}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部提示 -->
+  <view class="footer-tips" wx:if="{{!showGradeList}}">
+    <view class="tip-item">
+      💡 选择学习阶段开始测试
+    </view>
+    <view class="tip-item">
+      📈 建议按顺序测试，了解每本书的掌握情况
+    </view>
+  </view>
+
+  <!-- 返回按钮 -->
+  <view class="back-btn" bindtap="goHome">
+    ← 返回首页
+  </view>
+</view>

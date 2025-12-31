@@ -1,0 +1,62 @@
+<!--水平测试页面-->
+<view class="level-test-container">
+  <!-- 加载中 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-text">正在加载词汇数据...</view>
+  </view>
+
+  <!-- 测试界面 -->
+  <view class="test-container" wx:if="{{!loading && currentWord}}">
+    <!-- 进度信息 -->
+    <view class="progress-bar">
+      <view class="progress-text">
+        <text class="current-index">{{currentIndex + 1}}</text>
+        <text class="separator">/</text>
+        <text class="total-count">{{testWords.length}}</text>
+      </view>
+      <view class="progress-line">
+        <view class="progress-fill" style="width: {{((currentIndex + 1) / testWords.length) * 100}}%"></view>
+      </view>
+    </view>
+
+    <!-- 单词显示区域 -->
+    <view class="word-display-section">
+      <view class="word-text">{{currentWord.word}}</view>
+      <view class="word-phonetic" wx:if="{{currentWord.phonetic}}">{{currentWord.phonetic}}</view>
+    </view>
+
+    <!-- 答案输入区域 -->
+    <view class="answer-section">
+      <view class="input-label">请输入中文含义：</view>
+      <input 
+        class="answer-input {{showResult ? (isCorrect ? 'correct' : 'wrong') : ''}}"
+        type="text"
+        placeholder="请输入中文含义"
+        value="{{userInput}}"
+        bindinput="onInputChange"
+        disabled="{{showResult}}"
+        confirm-type="done"
+        bindconfirm="submitAnswer"
+      />
+      
+      <!-- 结果显示 -->
+      <view class="result-display" wx:if="{{showResult}}">
+        <view class="result-message {{isCorrect ? 'correct' : 'wrong'}}">
+          <text wx:if="{{isCorrect}}">✓ 回答正确！</text>
+          <text wx:else>✗ 回答错误，正确答案：{{currentWord.meaning}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button class="submit-btn" bindtap="submitAnswer" disabled="{{showResult || !userInput}}">
+        提交答案
+      </button>
+      <button class="skip-btn" bindtap="skipWord" disabled="{{showResult}}">
+        跳过
+      </button>
+    </view>
+  </view>
+</view>
+

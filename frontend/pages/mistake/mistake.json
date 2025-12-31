@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "📖 生词本",
+  "navigationBarBackgroundColor": "#4A90E2",
+  "navigationBarTextStyle": "white",
+  "enablePullDownRefresh": false,
+  "usingComponents": {}
+}
