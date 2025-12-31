@@ -263,10 +263,32 @@ Page({
           console.error('下载PDF失败:', err);
 
           let errorMessage = '网络连接失败，请检查网络后重试';
-          if (err.errMsg && err.errMsg.includes('timeout')) {
-            errorMessage = '请求超时，请检查网络连接后重试';
-          } else if (err.errMsg && err.errMsg.includes('fail')) {
-            errorMessage = '网络请求失败，请稍后重试';
+
+          // 检查HTTP状态码
+          if (err.statusCode) {
+            console.error('HTTP状态码:', err.statusCode);
+            if (err.statusCode === 400) {
+              errorMessage = '请求参数错误，请刷新页面重试';
+            } else if (err.statusCode === 404) {
+              errorMessage = '未找到单词数据，请稍后重试';
+            } else if (err.statusCode === 500) {
+              errorMessage = '服务器内部错误，请稍后重试';
+            } else if (err.statusCode === 502) {
+              errorMessage = '服务器网关错误，可能服务器暂时不可用，请稍后重试';
+            } else if (err.statusCode === 503) {
+              errorMessage = '服务暂时不可用，请稍后重试';
+            } else if (err.statusCode === 504) {
+              errorMessage = '请求超时，服务器响应缓慢，请稍后重试';
+            } else if (err.statusCode >= 500) {
+              errorMessage = `服务器错误 (${err.statusCode})，请稍后重试`;
+            }
+          } else {
+            // 检查错误消息
+            if (err.errMsg && err.errMsg.includes('timeout')) {
+              errorMessage = '请求超时，请检查网络连接后重试';
+            } else if (err.errMsg && err.errMsg.includes('fail')) {
+              errorMessage = '网络请求失败，请稍后重试';
+            }
           }
 
           wx.showModal({

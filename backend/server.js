@@ -38,12 +38,12 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
 // 请求超时处理
 app.use((req, res, next) => {
-  // 设置30秒超时
-  req.setTimeout(30000, () => {
+  // 设置120秒超时（PDF生成可能需要较长时间）
+  req.setTimeout(120000, () => {
     if (!res.headersSent) {
       res.status(504).json({
         success: false,
-        message: '请求超时'
+        message: '请求超时，请稍后重试'
       });
     }
   });
