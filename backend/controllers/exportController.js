@@ -13,6 +13,29 @@ const fs = require('fs');
 const LOCAL_DATA_DIR = path.join(__dirname, '../../frontend/cdn-data/js-modules');
 
 /**
+ * 生成对 HTTP header 安全的 Content-Disposition 值（支持中文）
+ * 返回示例: attachment; filename="ascii-fallback.pdf"; filename*=UTF-8''%E4%B8%AD%E6%96%87.pdf
+ */
+function buildContentDisposition(filename) {
+  // 防止 header 注入/非法字符：移除 CRLF
+  const safe = String(filename || 'export.pdf').replace(/[\r\n]/g, ' ').trim();
+
+  // ASCII 兜底名（避免非 ASCII 直接进 header）
+  const fallback = safe
+    .replace(/[^\x20-\x7E]/g, '_')      // 非 ASCII -> _
+    .replace(/[\\\/:*?"<>|]/g, '_')     // 文件名非法字符 -> _
+    .replace(/\s+/g, ' ')
+    .trim() || 'export.pdf';
+
+  // RFC5987：支持中文
+  const encoded = encodeURIComponent(safe)
+    .replace(/['()]/g, escape)
+    .replace(/\*/g, '%2A');
+
+  return `attachment; filename="${fallback}"; filename*=UTF-8''${encoded}`;
+}
+
+/**
  * 从本地文件加载年级单词数据
  */
 async function loadGradeWords(gradeId) {
@@ -90,28 +113,9 @@ async function exportWordsToPDF(req, res, next) {
       bufferPages: true // 启用页面缓冲以支持更好的字体处理
     });
 
-    // 设置响应头（使用安全的 Content-Disposition 构建器，避免非 ASCII 导致的 header 错误）
-    function buildContentDispositionFilename(filename) {
-      // 1) 防止 header 注入：去掉 CR/LF
-      const safe = String(filename).replace(/[\r\n]/g, ' ').trim();
-
-      // 2) ASCII fallback（给旧浏览器/某些客户端）
-      const asciiFallback = safe
-        .replace(/[^\x20-\x7E]/g, '_')           // 非 ASCII -> _
-        .replace(/[\\\/:*?"<>|]/g, '_')          // Windows 非法文件名字符
-        .replace(/\s+/g, ' ')
-        .trim() || 'export.pdf';
-
-      // 3) RFC 5987 编码（支持中文等 UTF-8）
-      const encoded = encodeURIComponent(safe)
-        .replace(/['()]/g, escape)
-        .replace(/\*/g, '%2A');
-
-      return `attachment; filename="${asciiFallback}"; filename*=UTF-8''${encoded}`;
-    }
-
-    const filename = `词汇表_${gradeId}.pdf`;
-    res.setHeader('Content-Disposition', buildContentDispositionFilename(filename));
+    // 设置响应头（使用顶部的 buildContentDisposition 函数，避免非 ASCII 导致的 header 错误）
+    const filename = `${gradeName}_词汇表.pdf`;
+    res.setHeader('Content-Disposition', buildContentDisposition(filename));
     res.setHeader('Content-Type', 'application/pdf');
 
     // 将PDF流管道到响应
