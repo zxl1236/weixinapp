@@ -21,6 +21,7 @@ const {
 } = require('./utils/commonUtils.js');
 const { buildTTSUrl } = require('./utils/audioUtils.js');
 const AudioManager = require('../../utils/audioManager.js');
+const { getApiUrl } = require('../../utils/apiConfig.js');
 
 // 引入业务模块
 const createDataSyncModule = require('./modules/dataSync.js');
@@ -102,6 +103,11 @@ Page({
     selfAssessmentHistory: [],     // 自我评估历史记录
     learnedWords: [],      // 已学习的单词列表
     
+    // 跟读功能状态
+    followScore: null,         // 跟读评分：0-100
+    isRecording: false,        // 是否正在录音
+    isScoring: false,          // 是否正在上传/评分
+    recordingTempFilePath: ''  // 临时录音文件路径
 
     // 年级切换器
 
@@ -2870,6 +2876,107 @@ Page({
       AudioManager.playWord(wordId, {
       gradeId: gradeId,
       word: word
+    });
+  },
+
+  /* ================ 跟读录音与评分 ================ */
+  toggleRecording() {
+    if (this.data.isRecording) {
+      this.stopRecording();
+    } else {
+      this.startRecording();
+    }
+  },
+
+  startRecording() {
+    try {
+      const recorder = wx.getRecorderManager();
+      const options = {
+        duration: 3000,
+        sampleRate: 16000,
+        numberOfChannels: 1,
+        format: 'wav',
+        encodeBitRate: 96000
+      };
+
+      recorder.onStart(() => {
+        this.setData({ isRecording: true, followScore: null });
+      });
+
+      recorder.onError((err) => {
+        console.error('录音错误', err);
+        wx.showToast({ title: '录音失败', icon: 'none' });
+        this.setData({ isRecording: false });
+      });
+
+      recorder.onStop((res) => {
+        const { tempFilePath } = res;
+        this.setData({ isRecording: false, recordingTempFilePath: tempFilePath });
+        // 上传评分
+        this.uploadRecording(tempFilePath);
+      });
+
+      recorder.start(options);
+      // 保存实例以便 stop 使用
+      this._recorder = recorder;
+    } catch (e) {
+      console.error('startRecording error', e);
+      wx.showToast({ title: '无法开始录音', icon: 'none' });
+    }
+  },
+
+  stopRecording() {
+    try {
+      if (this._recorder) {
+        this._recorder.stop();
+      } else {
+        this.setData({ isRecording: false });
+      }
+    } catch (e) {
+      console.error('stopRecording error', e);
+      this.setData({ isRecording: false });
+    }
+  },
+
+  uploadRecording(tempFilePath) {
+    if (!tempFilePath) return;
+    this.setData({ isScoring: true });
+    const gradeId = this.data.gradeId || '';
+    const word = this.data.currentWord?.word || '';
+    const apiUrl = getApiUrl(`/api/asr/score?gradeId=${encodeURIComponent(gradeId)}&word=${encodeURIComponent(word)}`);
+
+    wx.uploadFile({
+      url: apiUrl,
+      filePath: tempFilePath,
+      name: 'audio',
+      formData: {
+        word: word
+      },
+      success: (res) => {
+        try {
+          const data = JSON.parse(res.data);
+          if (data && data.success && typeof data.score === 'number') {
+            this.setData({ followScore: Math.round(data.score) });
+            if (data.score < 60) {
+              wx.showToast({ title: '得分偏低，建议再读一遍', icon: 'none', duration: 2000 });
+            } else {
+              wx.showToast({ title: `得分 ${Math.round(data.score)}`, icon: 'success', duration: 1200 });
+            }
+          } else {
+            wx.showToast({ title: '评分失败', icon: 'none' });
+          }
+        } catch (e) {
+          console.error('解析评分响应失败', e, res);
+          wx.showToast({ title: '评分返回异常', icon: 'none' });
+        }
+      },
+      fail: (err) => {
+        console.error('上传评分失败', err);
+        wx.showToast({ title: '上传失败', icon: 'none' });
+      },
+      complete: () => {
+        this.setData({ isScoring: false, recordingTempFilePath: '' });
+      }
     });
   },
 

@@ -224,6 +224,17 @@
             <text class="continue-text">我记住了</text>
             <text class="continue-arrow">→</text>
           </button>
+          
+          <!-- 跟读录音按钮 -->
+          <button class="record-btn {{isRecording ? 'recording' : ''}}" bindtap="toggleRecording" disabled="{{isScoring}}" style="margin-left:20rpx">
+            <text wx:if="{{!isRecording}}">录音</text>
+            <text wx:if="{{isRecording}}">停止</text>
+          </button>
+
+          <!-- 跟读得分展示 -->
+          <view class="follow-score" wx:if="{{followScore !== null}}" style="margin-left:20rpx; display:flex; align-items:center;">
+            <text class="score-text">{{followScore}} 分</text>
+          </view>
         </view>
       
       <!-- 简化的提示文字 -->
