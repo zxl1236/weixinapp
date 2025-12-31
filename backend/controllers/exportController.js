@@ -90,12 +90,29 @@ async function exportWordsToPDF(req, res, next) {
       bufferPages: true // 启用页面缓冲以支持更好的字体处理
     });
 
-    // 设置响应头
-    res.setHeader('Content-Type', 'application/pdf');
+    // 设置响应头（使用安全的 Content-Disposition 构建器，避免非 ASCII 导致的 header 错误）
+    function buildContentDispositionFilename(filename) {
+      // 1) 防止 header 注入：去掉 CR/LF
+      const safe = String(filename).replace(/[\r\n]/g, ' ').trim();
 
-    // 使用安全的英文文件名
-    const safeFileName = `${gradeId.replace('grade', '')}-words`;
-    res.setHeader('Content-Disposition', `attachment; filename="${safeFileName}.pdf"`);
+      // 2) ASCII fallback（给旧浏览器/某些客户端）
+      const asciiFallback = safe
+        .replace(/[^\x20-\x7E]/g, '_')           // 非 ASCII -> _
+        .replace(/[\\\/:*?"<>|]/g, '_')          // Windows 非法文件名字符
+        .replace(/\s+/g, ' ')
+        .trim() || 'export.pdf';
+
+      // 3) RFC 5987 编码（支持中文等 UTF-8）
+      const encoded = encodeURIComponent(safe)
+        .replace(/['()]/g, escape)
+        .replace(/\*/g, '%2A');
+
+      return `attachment; filename="${asciiFallback}"; filename*=UTF-8''${encoded}`;
+    }
+
+    const filename = `词汇表_${gradeId}.pdf`;
+    res.setHeader('Content-Disposition', buildContentDispositionFilename(filename));
+    res.setHeader('Content-Type', 'application/pdf');
 
     // 将PDF流管道到响应
     doc.pipe(res);
