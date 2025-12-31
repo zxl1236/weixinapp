@@ -61,3 +61,8 @@ tmp/
 temp/
 *.tmp
 >>>>>>> 9dab021d28f5db1276f54ee28bc9bdf60e2de304
+
+# ignore sqlite runtime files
+data/*.db
+data/*.db-wal
+data/*.db-shm
