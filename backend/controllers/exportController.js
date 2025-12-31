@@ -55,6 +55,7 @@ async function loadGradeWords(gradeId) {
  */
 async function exportWordsToPDF(req, res, next) {
   const { gradeId } = req.query;
+  const startTime = Date.now();
 
   try {
     
@@ -227,13 +228,23 @@ async function exportWordsToPDF(req, res, next) {
     // 结束PDF
     doc.end();
 
-    logger.info('PDF生成成功', { gradeId, wordCount: words.length, gradeName });
+    const processingTime = Date.now() - startTime;
+    logger.info('PDF生成成功', {
+      gradeId,
+      wordCount: words.length,
+      gradeName,
+      processingTimeMs: processingTime,
+      processingTimeSec: Math.round(processingTime / 1000)
+    });
   } catch (error) {
+    const processingTime = Date.now() - startTime;
     logger.error('生成PDF失败', {
       error: error.message,
       stack: error.stack,
       gradeId: gradeId || 'unknown',
-      errorType: error.constructor.name
+      errorType: error.constructor.name,
+      processingTimeMs: processingTime,
+      processingTimeSec: Math.round(processingTime / 1000)
     });
 
     if (!res.headersSent) {
