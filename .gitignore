@@ -1,3 +1,8 @@
+# 环境变量文件（包含敏感信息）
+.env
+.env.local
+.env.production
+
 # Windows
 [Dd]esktop.ini
 Thumbs.db
@@ -12,3 +17,47 @@ $RECYCLE.BIN/
 
 # Node.js
 node_modules/
+.env.development
+
+# 数据库文件
+data/*.db
+data/*.db-shm
+data/*.db-wal
+*.db
+*.db-shm
+*.db-wal
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 证书文件（包含敏感信息）
+certs/
+*.pem
+*.key
+*.cert
+
+# 日志文件
+logs/
+*.log
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE 文件
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+>>>>>>> 9dab021d28f5db1276f54ee28bc9bdf60e2de304
