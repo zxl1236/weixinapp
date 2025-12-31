@@ -1,0 +1,690 @@
+/* pages/mistake/mistake.wxss */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f5f7ff 0%, #ffffff 40%, #ffffff 100%);
+  padding: 0 24rpx 40rpx;
+  box-sizing: border-box;
+}
+
+/* =================== 头部样式 =================== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 30rpx;
+  background: #f8f9fa;
+  border-bottom: 1rpx solid #e9ecef;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 12rpx;
+  border-radius: 8rpx;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 10;
+  min-width: 64rpx;
+  min-height: 64rpx;
+  box-sizing: border-box;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.header-left:active {
+  background-color: rgba(0, 0, 0, 0.08);
+  transform: scale(0.95);
+}
+
+.back-icon {
+  font-size: 40rpx;
+  color: #333333;
+  font-weight: bold;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #333333;
+  text-align: center;
+  flex: 1;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.word-count {
+  background: #e9ecef;
+  color: #333333;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+/* =================== 统计信息样式 =================== */
+.stats-section {
+  display: flex;
+  justify-content: space-between;
+  margin: 24rpx 0 36rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 28rpx 32rpx;
+  box-shadow: 0 12rpx 36rpx rgba(15, 23, 42, 0.08);
+}
+
+.stats-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+  flex: 1;
+}
+
+.stats-number {
+  font-size: 42rpx;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1;
+}
+
+.stats-label {
+  font-size: 24rpx;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* =================== 生词卡片样式 - 使用学习页面的卡片样式 =================== */
+.main-content {
+  padding: 4rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.modern-word-card {
+  background: #ffffff;
+  border-radius: 32rpx;
+  padding: 12rpx 36rpx;
+  box-shadow: 
+    0 12rpx 48rpx rgba(0, 0, 0, 0.12),
+    0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+  position: relative;
+  max-width: 600rpx;
+  width: 100%;
+  border: 1rpx solid rgba(255, 255, 255, 0.2);
+  min-height: auto;
+  overflow: visible;
+  animation: slideUp 0.3s ease-out;
+}
+
+.modern-word-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  border-radius: 32rpx 32rpx 0 0;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.word-main-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+  width: 100%;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.word-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+  padding: 8rpx 0;
+}
+
+.word-text {
+  font-size: 106rpx;
+  font-weight: 800;
+  color: #1a202c;
+  text-align: center;
+  line-height: 1.1;
+  letter-spacing: 2rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 长单词样式 - 超过7个字母时使用较小字体 */
+.word-text.long-word {
+  font-size: 78rpx !important;
+}
+
+.phonetic-text {
+  font-size: 46rpx;
+  color: #131314 !important;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  font-weight: 500;
+  background: rgba(224, 227, 233, 0.15);
+  padding: 10rpx 18rpx;
+  border-radius: 16rpx;
+  display: inline-block;
+  margin-top: 12rpx;
+  letter-spacing: 1rpx;
+}
+
+.word-grade-tag {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 8rpx 16rpx;
+  border-radius: 16rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  margin-top: 8rpx;
+}
+
+/* 现代化发音按钮 - 缩小尺寸 */
+.modern-pronunciation-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 6rpx 18rpx rgba(102, 126, 234, 0.35),
+    0 3rpx 8rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  margin-top: 16rpx;
+}
+
+.modern-pronunciation-btn::after {
+  border: none;
+}
+
+.modern-pronunciation-btn:active {
+  transform: scale(0.92);
+  box-shadow: 
+    0 3rpx 10rpx rgba(102, 126, 234, 0.3),
+    0 2rpx 5rpx rgba(0, 0, 0, 0.08);
+}
+
+.modern-pronunciation-btn.playing {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+.pronunciation-icon {
+  font-size: 32rpx;
+  color: white;
+}
+
+/* 简化的头部导航样式 */
+.simple-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  background: transparent;
+  border-bottom: 1rpx solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.back-btn {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8rpx !important;
+  padding: 12rpx !important;
+  margin: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  min-width: 60rpx;
+  min-height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.back-btn::after {
+  display: none !important;
+}
+
+.back-icon {
+  font-size: 36rpx;
+  color: #333333;
+  font-weight: bold;
+  line-height: 1;
+}
+
+/* 暂停按钮样式 - 修复椭圆覆盖问题 */
+.header-icon-btn {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8rpx !important;
+  padding: 12rpx !important;
+  margin: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  position: relative;
+  z-index: 10;
+  min-width: 60rpx;
+  min-height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.header-icon-btn::after {
+  display: none !important;
+}
+
+.icon-text {
+  font-size: 32rpx;
+  color: #333333;
+  font-weight: bold;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* =================== 单词信息卡片样式 =================== */
+.word-info-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border-radius: 24rpx;
+  padding: 24rpx 20rpx;
+  width: 100%;
+  box-shadow: 
+    0 8rpx 32rpx rgba(0, 0, 0, 0.08),
+    0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: visible;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 12rpx;
+  flex-shrink: 0;
+  min-height: auto;
+}
+
+.word-info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+.word-meaning-text {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1a202c;
+  text-align: center;
+  line-height: 1.4;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+  letter-spacing: 1rpx;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: normal;
+  padding: 12rpx 16rpx;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60rpx;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+/* 长文本特殊处理 */
+.word-meaning-text.long-text {
+  font-size: 32rpx;
+  line-height: 1.6;
+  padding: 20rpx 24rpx;
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.9), rgba(241, 245, 249, 0.8));
+  border-radius: 16rpx;
+  border: 1rpx solid rgba(226, 232, 240, 0.6);
+  margin: 8rpx 0;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  white-space: pre-line;
+  word-break: break-word;
+  text-align: center;
+  max-width: 100%;
+  min-height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.word-meaning-text.long-text::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa, #3b82f6);
+  border-radius: 16rpx 16rpx 0 0;
+}
+
+/* =================== 操作按钮样式 =================== */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  width: 100%;
+  margin-top: 20rpx;
+}
+
+.modern-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 16rpx;
+  padding: 18rpx 28rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 6rpx 18rpx rgba(102, 126, 234, 0.35),
+    0 3rpx 8rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  width: auto;
+  min-width: 200rpx;
+  margin: 0 auto;
+}
+
+.modern-btn::after {
+  border: none;
+}
+
+.modern-btn:active {
+  transform: scale(0.95);
+  box-shadow: 
+    0 3rpx 10rpx rgba(102, 126, 234, 0.3),
+    0 2rpx 5rpx rgba(0, 0, 0, 0.08);
+}
+
+.modern-btn.show-answer-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.btn-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: white;
+}
+
+.mastery-buttons {
+  display: flex;
+  gap: 20rpx;
+}
+
+.mastery-btn {
+  flex: 1;
+  border: none;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mastered-btn {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+  box-shadow: 0 6rpx 20rpx rgba(39, 174, 96, 0.4), 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.mastered-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2rpx 8rpx rgba(39, 174, 96, 0.4);
+}
+
+.unmastered-btn {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  color: white;
+  box-shadow: 0 6rpx 20rpx rgba(231, 76, 60, 0.4), 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.unmastered-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2rpx 8rpx rgba(231, 76, 60, 0.4);
+}
+
+/* =================== 导航控制样式 =================== */
+.navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 28rpx;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 24rpx;
+  padding: 18rpx 24rpx;
+  box-shadow: 0 10rpx 30rpx rgba(15, 23, 42, 0.08);
+}
+
+.nav-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12rpx;
+  padding: 14rpx 26rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6rpx 16rpx rgba(102, 126, 234, 0.4), 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+}
+
+.nav-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.4);
+}
+
+.nav-btn.disabled {
+  background: #ccc;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.nav-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.nav-text {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+/* =================== 重新测试按钮样式 =================== */
+.retest-section {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.retest-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 999rpx;
+  padding: 24rpx 72rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.45), 0 3rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.retest-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 3rpx 12rpx rgba(102, 126, 234, 0.45);
+}
+
+.exit-retest-section {
+  margin: 30rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.exit-retest-btn {
+  background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+  color: white;
+  border: none;
+  border-radius: 20rpx;
+  padding: 24rpx 48rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8rpx 24rpx rgba(149, 165, 166, 0.4), 0 3rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.exit-retest-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 3rpx 12rpx rgba(149, 165, 166, 0.4);
+}
+
+/* =================== 空状态样式 =================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 40rpx;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 30rpx;
+  opacity: 0.6;
+}
+
+.empty-text {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 16rpx;
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: #666666;
+  line-height: 1.5;
+}
+
+/* =================== 进度指示器 =================== */
+.progress-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10rpx 28rpx;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.15);
+  border: 1rpx solid rgba(102, 126, 234, 0.2);
+  width: auto;
+  min-width: 120rpx;
+}
+
+.progress-text {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #667eea;
+  letter-spacing: 2rpx;
+}
+
+/* =================== 左滑提示 =================== */
+.swipe-hint {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 24rpx;
+  padding: 12rpx 20rpx;
+  background: rgba(102, 126, 234, 0.08);
+  border-radius: 16rpx;
+  border: 1rpx solid rgba(102, 126, 234, 0.15);
+}
+
+.hint-text {
+  font-size: 22rpx;
+  color: #667eea;
+  font-weight: 500;
+  opacity: 0.85;
+}

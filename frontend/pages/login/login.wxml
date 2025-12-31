@@ -1,0 +1,57 @@
+<view class="login-page">
+  <view class="login-container">
+    <!-- Logo/标题区域 -->
+    <view class="login-header">
+      <view class="logo-icon">📚</view>
+      <view class="app-title">K12词汇学习系统</view>
+      <view class="welcome-text">欢迎使用，请先完善个人信息</view>
+    </view>
+
+    <!-- 登录表单 -->
+    <view class="login-form">
+      <!-- 头像选择（可选） -->
+      <view class="form-item">
+        <view class="form-label">头像（可选）</view>
+        <button class="avatar-button" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+          <view class="avatar-preview">
+            <image wx:if="{{avatarUrl}}" src="{{avatarUrl}}" class="avatar-img" mode="aspectFill"></image>
+            <view wx:else class="avatar-placeholder">
+              <text class="avatar-icon">👤</text>
+            </view>
+            <view class="avatar-edit-badge">📷</view>
+          </view>
+        </button>
+      </view>
+
+      <!-- 昵称输入（必填） -->
+      <view class="form-item">
+        <view class="form-label">昵称 <text class="required">*</text></view>
+        <input 
+          class="nickname-input" 
+          type="nickname" 
+          placeholder="请输入您的昵称（必填）"
+          value="{{nickname}}"
+          bindinput="onNicknameInput"
+          maxlength="20"
+        />
+        <view class="input-tip">昵称将用于显示您的学习记录</view>
+      </view>
+
+      <!-- 登录按钮 -->
+      <button 
+        class="login-button {{canLogin ? '' : 'disabled'}}" 
+        type="primary"
+        bindtap="handleLogin"
+        disabled="{{!canLogin || isLogging}}"
+      >
+        {{isLogging ? '登录中...' : '开始学习'}}
+      </button>
+
+      <!-- 提示信息 -->
+      <view class="login-tip">
+        <text>登录即表示您同意使用本学习系统</text>
+      </view>
+    </view>
+  </view>
+</view>
+

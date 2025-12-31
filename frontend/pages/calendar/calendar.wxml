@@ -1,0 +1,114 @@
+<!--学习日历页面-->
+<!-- 新增 calendar-page 方便作用域管理 -->
+<view class="container calendar-page">
+  <!-- 页面标题 -->
+  <view class="header glass-header">
+    <text class="title">学习日历</text>
+    <!-- 可选副标题 -->
+    <!-- <text class="subtitle">坚持一点点，每天都看得见</text> -->
+  </view>
+
+  <!-- 学习总数据 -->
+  <view class="stats-card glass-card">
+    <text class="stats-title">学习总数据</text>
+    <view class="stats-row">
+      <view class="stat-item">
+        <view class="stat-number-group">
+          <text class="stat-number">{{studyStats.totalWords}}</text>
+          <text class="stat-unit">个</text>
+        </view>
+        <text class="stat-label">共学习</text>
+      </view>
+      <view class="stat-item">
+        <view class="stat-number-group">
+          <text class="stat-number">{{studyStats.totalMastered || 0}}</text>
+          <text class="stat-unit">个</text>
+        </view>
+        <text class="stat-label">累计掌握</text>
+      </view>
+      <view class="stat-item">
+        <view class="stat-number-group">
+          <text class="stat-number">{{studyStats.continuousDays}}</text>
+          <text class="stat-unit">天</text>
+        </view>
+        <text class="stat-label">坚持天数</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 日历主体 -->
+  <view class="calendar-container glass-card">
+    <!-- 月份导航 -->
+    <view class="month-nav">
+      <view class="nav-btn" bindtap="prevMonth">
+        <text class="nav-icon">‹</text>
+      </view>
+      <text class="month-text">{{currentYear}}年{{currentMonth}}月</text>
+      <view class="nav-btn" bindtap="nextMonth">
+        <text class="nav-icon">›</text>
+      </view>
+      <!-- 用 button 支持 hover-class 按压动画 -->
+      <button class="today-btn btn" hover-class="btn-press" bindtap="goToToday" style="width: 212rpx; display: block; box-sizing: border-box; left: 0rpx; top: 0rpx">
+        <text class="today-text">回到今天</text>
+      </button>
+    </view>
+
+    <!-- 星期标题 -->
+    <view class="week-header">
+      <text class="week-day">日</text>
+      <text class="week-day">一</text>
+      <text class="week-day">二</text>
+      <text class="week-day">三</text>
+      <text class="week-day">四</text>
+      <text class="week-day">五</text>
+      <text class="week-day">六</text>
+    </view>
+
+    <!-- 日历网格 -->
+    <view class="calendar-grid">
+      <view 
+        wx:for="{{calendarDays}}" 
+        wx:key="index"
+        class="calendar-day {{item.isCurrentMonth ? '' : 'other-month'}} {{item.isToday ? 'today' : ''}} {{item.hasStudy ? 'has-study' : ''}} intensity-{{item.intensity || 0}}"
+        bindtap="{{item.date ? 'onDayTap' : ''}}"
+        data-date="{{item.date}}"
+      >
+        <text class="day-number">{{item.day}}</text>
+        <view wx:if="{{item.hasStudy}}" class="study-indicator">
+          <text class="study-count">{{item.studyCount || '学'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 选中日期信息 -->
+    <view class="selected-date" wx:if="{{selectedDate}}">
+      <text class="selected-date-text">{{selectedDateText}}</text>
+    </view>
+  </view>
+
+  <!-- 复习提醒卡片 -->
+  <view class="review-reminder gradient-pink" wx:if="{{reviewStats.needsReviewCount > 0}}">
+    <view class="reminder-content">
+      <text class="reminder-title">📚 复习提醒</text>
+      <text class="reminder-subtitle">有 {{reviewStats.needsReviewCount}} 个单词需要复习</text>
+    </view>
+    <button class="reminder-action btn" hover-class="btn-press" bindtap="startReview">
+      <text class="action-text">开始复习</text>
+    </button>
+  </view>
+
+  <!-- 简化的学习记录卡片 -->
+  <view class="simple-records">
+    <view class="simple-record" bindtap="goToStudyRecord">
+      <view class="record-icon">📚</view>
+      <text class="record-text">学习记录已学{{studyStats.totalWords}}个</text>
+      <text class="record-arrow">›</text>
+    </view>
+
+    <view class="simple-record" bindtap="goToReviewRecord">
+      <view class="record-icon">🎯</view>
+      <text class="record-text">错题复习{{reviewStats.mistakeCount}}个错题待复习</text>
+      <text class="record-arrow">›</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,8 @@
+<!-- 占位组件模板 -->
+<view class="placeholder-container">
+  <view class="placeholder-content">
+    <view class="placeholder-spinner"></view>
+    <text class="placeholder-text">{{text}}</text>
+  </view>
+</view>
+

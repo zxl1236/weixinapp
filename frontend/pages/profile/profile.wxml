@@ -1,0 +1,127 @@
+<!-- pages/profile/profile.wxml -->
+<view class="profile-page">
+  <!-- 授权弹窗 -->
+  <view class="auth-modal" wx:if="{{showAuthModal}}">
+    <view class="auth-overlay" bindtap="closeAuthModal"></view>
+    <view class="auth-content">
+      <view class="auth-header">
+        <view class="auth-icon">👤</view>
+        <view class="auth-title">完善个人信息</view>
+        <view class="auth-desc">授权获取您的昵称和头像，为您提供更好的个性化学习体验</view>
+      </view>
+      <view class="auth-buttons">
+        <button class="auth-btn auth-btn-primary" bindtap="onGetUserProfile">
+          使用微信头像和昵称
+        </button>
+        <button class="auth-btn auth-btn-secondary" bindtap="closeAuthModal">
+          稍后再说
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <view class="profile-container">
+
+    <!-- 用户卡片 -->
+    <view class="user-card">
+      <view class="user-header">
+        <view class="avatar-section">
+          <!-- 头像选择按钮（新API：chooseAvatar） -->
+          <button class="avatar-button" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+            <view class="user-avatar">
+              <image src="{{userInfo.avatar || userInfo.avatarUrl || defaultAvatar}}" class="avatar-img" mode="aspectFill"></image>
+              <view class="avatar-edit-icon">📷</view>
+            </view>
+          </button>
+          <text class="avatar-tip" style="position: relative; left: -102rpx; top: 31rpx">点击图片更换头像</text>
+        </view>
+        
+        <view class="user-info" style="position: relative; left: -44rpx; top: 1rpx">
+          <!-- 昵称输入（新API：type="nickname"） -->
+          <view class="nickname-wrapper">
+            <input 
+              class="user-name-input" 
+              type="nickname" 
+              placeholder="请输入昵称"
+              value="{{userInfo.nickname || userInfo.nickName || ''}}"
+              bindchange="onInputChange"
+              bindblur="onNicknameBlur"
+              maxlength="20"
+            />
+          </view>
+          <text class="user-desc">{{hasUserInfo ? '继续加油学习吧！' : '请设置头像和昵称'}}</text>
+          <text class="user-id" wx:if="{{userInfo.id}}">ID：{{userInfo.id}}</text>
+          <!-- 保存并同步按钮 -->
+          <button 
+            class="submit-button" 
+            type="primary"
+            bindtap="submitUserInfo"
+            style="position: relative; left: -9rpx; top: 12rpx; margin-top: 16rpx;">
+            保存并同步
+          </button>
+        </view>
+      </view>
+    </view>
+
+  <!-- 学习统计 -->
+    <view class="section">
+    
+      
+      <!-- 总进度显示 -->
+      <view class="stats-group">
+        
+        <view class="stats-capsule">
+          
+          <view class="divider"></view>
+          
+        </view>
+      </view>
+      
+      <!-- 统计信息 -->
+      <view class="stats-group">
+        <view class="stats-group-title">当前年级</view>
+        <view class="stats-capsule">
+          <view class="cap">
+            <text class="cap-num">{{studyStats.currentGradeWords || 0}}</text>
+            <text class="cap-label">年级词汇量</text>
+          </view>
+          <view class="divider"></view>
+          <view class="cap">
+            <text class="cap-num">{{studyStats.currentGradeMastered || 0}}</text>
+            <text class="cap-label">年级掌握</text>
+          </view>
+          <view class="divider"></view>
+          <view class="cap">
+            <text class="cap-num">{{studyStats.studyDays || 0}}</text>
+            <text class="cap-label">学习天数</text>
+      </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+    <view class="section">
+    <view class="section-title">功能菜单</view>
+    <view class="menu-list">
+        <block wx:for="{{menuItems}}" wx:key="index">
+      <view 
+        class="menu-item"
+        data-url="{{item.url}}"
+        bindtap="navigateToPage"
+        hover-class="menu-item-press"
+      >
+        <view class="menu-icon">
+          <image src="{{item.icon}}" class="icon-img" mode="aspectFit"></image>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">{{item.title}}</text>
+          <text class="menu-subtitle">{{item.subtitle}}</text>
+        </view>
+            <text class="menu-arrow">›</text>
+        </view>
+        </block>
+      </view>
+    </view>
+
+  </view>
+</view>

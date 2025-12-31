@@ -312,7 +312,7 @@ async function paymentNotify(req, res, next) {
     }
 
     if (user) {
-      // 会员到期时间规则：始终从付款成功后开始计算，固定为365天（一年）
+       // 会员到期时间规则：始终从付款成功后开始计算，固定为365天（一年）
       const durationDays = Number(order.duration) || 365; // 默认365天
       const paidAt = order.paidTime ? new Date(order.paidTime) : new Date();
 

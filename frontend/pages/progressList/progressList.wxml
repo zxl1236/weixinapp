@@ -1,0 +1,86 @@
+<!-- pages/progressList/progressList.wxml -->
+<view class="progress-list-page">
+  <view class="progress-list-container">
+    
+    <!-- 页面标题 -->
+    <view class="page-header">
+      <text class="page-title">学习进度</text>
+      <text class="page-subtitle">查看各年级学习情况</text>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-container" wx:if="{{loading}}">
+      <text class="loading-text">加载中...</text>
+    </view>
+
+    <!-- 年级列表 -->
+    <view class="stages-list" wx:else>
+      <block wx:for="{{stages}}" wx:key="id">
+        <view class="stage-section">
+          <!-- 阶段标题 -->
+          <view class="stage-header">
+            <text class="stage-icon">{{item.icon}}</text>
+            <view class="stage-info">
+              <text class="stage-name">{{item.name}}</text>
+              <text class="stage-desc">{{item.description}}</text>
+            </view>
+          </view>
+
+          <!-- 年级列表 -->
+          <view class="grades-list">
+            <view
+              class="grade-item"
+              wx:for="{{item.grades}}"
+              wx:for-item="grade"
+              wx:key="id"
+              data-gradeid="{{grade.id}}"
+              data-gradename="{{grade.name}}"
+              bindtap="navigateToGradeProgress"
+              hover-class="grade-item-press"
+            >
+              <view class="grade-content">
+                <view class="grade-header">
+                  <text class="grade-name">{{grade.name}}</text>
+                  <text class="grade-mastery-rate">{{grade.masteryRate || 0}}%</text>
+                </view>
+                
+                <view class="grade-stats">
+                  <view class="stat-item">
+                    <text class="stat-label">总词汇</text>
+                    <text class="stat-value">{{grade.totalWords || 0}}</text>
+                  </view>
+                  <view class="stat-divider"></view>
+                  <view class="stat-item">
+                    <text class="stat-label">已掌握</text>
+                    <text class="stat-value">{{grade.mastered || 0}}</text>
+                  </view>
+                </view>
+
+                <!-- 进度条 -->
+                <view class="progress-bar-container">
+                  <view class="progress-bar-bg">
+                    <view 
+                      class="progress-bar-fill" 
+                      style="width: {{grade.masteryRate || 0}}%"
+                    ></view>
+                  </view>
+                </view>
+              </view>
+
+              <text class="grade-arrow">›</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-container" wx:if="{{!loading && stages.length === 0}}">
+      <text class="empty-icon">📚</text>
+      <text class="empty-text">暂无学习进度</text>
+      <text class="empty-hint">快去开始学习吧！</text>
+    </view>
+
+  </view>
+</view>
+

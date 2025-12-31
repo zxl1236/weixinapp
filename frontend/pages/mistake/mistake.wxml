@@ -1,0 +1,80 @@
+<!--pages/mistake/mistake.wxml-->
+<view class="container">
+  <!-- 简化的头部导航 -->
+  <view class="simple-header">
+    <button class="back-btn" bindtap="goBack">
+      <text class="back-icon">←</text>
+    </button>
+    <button class="header-icon-btn" bindtap="togglePause">
+      <text class="icon-text">{{isPaused ? '▶️' : '⏸️'}}</text>
+    </button>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-section">
+    <view class="stats-item">
+      <text class="stats-number">{{words.length}}</text>
+      <text class="stats-label">生词总数</text>
+    </view>
+  </view>
+
+  <!-- 生词卡片 - 使用学习页面的卡片样式 -->
+  <view class="main-content" wx:if="{{words.length > 0}}">
+    <!-- 进度指示器 -->
+    <view class="progress-indicator">
+      <text class="progress-text">{{currentIndex + 1}}/{{words.length}}</text>
+    </view>
+    
+    <view class="modern-word-card" bindtouchstart="onWordTouchStart" bindtouchend="onWordTouchEnd">
+      
+      <!-- 单词主体区域 -->
+      <view class="word-main-section">
+        <view class="word-display">
+          <!-- 单词文本 -->
+          <text class="word-text {{isLongWord ? 'long-word' : ''}}">{{words[currentIndex].word}}</text>
+          
+          <!-- 音标显示 -->
+          <text class="phonetic-text" wx:if="{{words[currentIndex].pronunciation}}">{{words[currentIndex].pronunciation}}</text>
+          
+          <!-- 年级标签 -->
+          <view class="word-grade-tag" wx:if="{{showGradeTags && getWordGradeTag(words[currentIndex])}}">
+            {{getWordGradeTag(words[currentIndex])}}
+          </view>
+        </view>
+        
+        <!-- 发音按钮 -->
+        <button class="modern-pronunciation-btn {{isPlaying ? 'playing' : ''}}" 
+                bindtap="playPronunciation" 
+                disabled="{{isPlaying}}">
+          <text class="pronunciation-icon">🔊</text>
+        </button>
+      </view>
+
+      <!-- 单词信息卡片 -->
+      <view class="0宁波 " wx:if="{{showAnswer}}">
+        <view class="word-meaning-text {{words[currentIndex].meaning && words[currentIndex].meaning.length > 15 ? 'long-text' : ''}}">
+          {{words[currentIndex].meaning}}
+        </view>
+      </view>
+
+      <!-- 操作按钮区域 -->
+      <view class="action-buttons">
+        <button class="modern-btn show-answer-btn" bindtap="toggleAnswer">
+          <text class="btn-label">{{showAnswer ? '隐藏答案' : '显示答案'}}</text>
+        </button>
+      </view>
+      
+      <!-- 左滑提示 -->
+      <view class="swipe-hint">
+        <text class="hint-text">💡 已掌握可以左滑移出生词本</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{words.length === 0}}">
+    <text class="empty-icon">📚</text>
+    <text class="empty-text">暂无生词</text>
+    <text class="empty-desc">去练习中积累生词吧</text>
+  </view>
+</view>

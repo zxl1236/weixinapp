@@ -1,0 +1,273 @@
+/* pages/learningSettings/learningSettings.wxss */
+.container {
+  padding: 0;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* 头部 */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 30rpx;
+  background-color: #fff;
+  border-bottom: 1rpx solid #eee;
+}
+
+.back-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-icon {
+  font-size: 36rpx;
+  color: #333;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.placeholder {
+  width: 60rpx;
+}
+
+/* 年级信息 */
+.grade-info {
+  background-color: #fff;
+  padding: 40rpx 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.grade-name {
+  font-size: 48rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.grade-stats {
+  display: flex;
+  gap: 40rpx;
+}
+
+.grade-stats text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 继续学习选项 */
+.continue-section {
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  padding: 0 30rpx 20rpx;
+}
+
+.continue-card {
+  background-color: #fff;
+  margin: 0 30rpx;
+  padding: 30rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.continue-info {
+  flex: 1;
+}
+
+.continue-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.continue-desc {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.continue-arrow {
+  font-size: 32rpx;
+  color: #007aff;
+}
+
+/* 学习设置 */
+.settings-section {
+  background-color: #fff;
+  margin: 0 30rpx 20rpx;
+  border-radius: 16rpx;
+  padding: 30rpx;
+}
+
+.setting-group {
+  margin-bottom: 40rpx;
+}
+
+.setting-group:last-child {
+  margin-bottom: 0;
+}
+
+.setting-label {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+/* 学习数量选项 */
+.quantity-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20rpx;
+}
+
+.quantity-option {
+  padding: 24rpx;
+  border: 2rpx solid #eee;
+  border-radius: 12rpx;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.quantity-option.selected {
+  border-color: #007aff;
+  background-color: #f0f8ff;
+}
+
+.option-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.option-desc {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 学习模式选项 */
+.mode-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.mode-option {
+  padding: 24rpx;
+  border: 2rpx solid #eee;
+  border-radius: 12rpx;
+  transition: all 0.3s ease;
+}
+
+.mode-option.selected {
+  border-color: #007aff;
+  background-color: #f0f8ff;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  padding: 40rpx 30rpx;
+  display: flex;
+  gap: 20rpx;
+}
+
+.btn-primary {
+  flex: 1;
+  background-color: #007aff;
+  color: #fff;
+  border: none;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.btn-secondary {
+  flex: 1;
+  background-color: #fff;
+  color: #007aff;
+  border: 2rpx solid #007aff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+/* 自定义输入区域 */
+.custom-input-section {
+  margin-top: 20rpx;
+  padding: 20rpx;
+  background-color: #f8f8f8;
+  border-radius: 12rpx;
+}
+
+.custom-input-label {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+}
+
+.custom-input {
+  width: 100%;
+  padding: 20rpx;
+  background-color: #fff;
+  border: 2rpx solid #eee;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  margin-bottom: 20rpx;
+}
+
+.custom-input-buttons {
+  display: flex;
+  gap: 16rpx;
+}
+
+.btn-cancel {
+  flex: 1;
+  background-color: #fff;
+  color: #666;
+  border: 2rpx solid #ddd;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  font-size: 28rpx;
+}
+
+.btn-confirm {
+  flex: 1;
+  background-color: #007aff;
+  color: #fff;
+  border: none;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  font-size: 28rpx;
+}
+
+.custom-quantity-display {
+  margin-top: 16rpx;
+  padding: 16rpx;
+  background-color: #f0f8ff;
+  border-radius: 8rpx;
+  text-align: center;
+}
+
+.custom-quantity-display text {
+  font-size: 28rpx;
+  color: #007aff;
+  font-weight: 600;
+}

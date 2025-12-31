@@ -1,127 +1,165 @@
-# 英文词汇量测试小程序
+# K12 词汇学习系统
 
-一个简单高效的英文词汇量测试微信小程序，帮助用户快速评估自己的英语词汇水平。
+面向 K12 阶段的词汇学习 / 评测微信小程序，集成会员体系、云端数据同步与后台运营工具。
 
-## 功能特点
+<p align="left">
+  <strong>技术栈</strong>：微信小程序 · Node.js · Express · SQLite/MongoDB · 微信支付 · 宝塔/Nginx
+</p>
 
-- 🎯 **科学测试**: 基于词频和难度科学设计的题目，涵盖从基础到专家级的词汇
-- ⚡ **快速评估**: 支持10题、20题、30题三种测试模式，3-5分钟完成
-- 📊 **详细报告**: 提供词汇量等级、学习建议和错题分析
-- 📱 **响应式设计**: 适配微信小程序，界面简洁美观
-- 📈 **进度追踪**: 记录测试历史，支持进步对比
-- 🔄 **智能推荐**: 根据测试结果提供个性化学习建议
+---
 
-## 词汇等级
+## ⭐️ 主要特性
 
-| 等级 | 词汇量范围 | 描述 |
-|------|------------|------|
-| 专家级 | 12000+ | 词汇量达到专家水平 |
-| 高级 | 8000-12000 | 拥有很强的英语词汇基础 |
-| 中高级 | 6000-8000 | 词汇量相当不错 |
-| 中级 | 4000-6000 | 有良好的词汇基础 |
-| 初中级 | 2000-4000 | 词汇量正在发展中 |
-| 初级 | 1000-2000 | 建议继续学习基础词汇 |
-| 入门级 | 500-1000 | 建议从基础词汇开始学习 |
+| 模块 | 能力 |
+| --- | --- |
+| 学习体验 | 按年级/阶段的分组学习、错题本、水平测试、学习日历、动画交互 |
+| 会员体系 | 免费/付费权限、测试次数与词汇范围限制、激活码/优惠码 |
+| 支付系统 | 微信支付 API v2，创建订单、统一下单、回调验证、订单查询 |
+| 数据同步 | 本地缓存 + 云端统计，支持 SQLite 或 MongoDB 存储 |
+| 后台运营 | `/admin` Web 管理台，统计总览、用户/课程/订单/优惠码管理 |
+| 辅助工具 | `check-deploy.js`、`verify-wechat-config.js`、`fix-database.js` 等自动化脚本 |
 
-## 项目结构
+---
+
+## 📁 仓库结构（摘录）
 
 ```
-├── app.js                  # 小程序入口文件
-├── app.json                # 小程序配置文件
-├── app.wxss                # 全局样式文件
-├── sitemap.json            # 站点地图配置
-├── project.config.json     # 项目配置文件
-├── utils/
-│   ├── gradeWordDatabase.js      # 分级词汇管理核心
-│   ├── preprocessedWordDatabase.js # 预处理词汇数据(3555词)
-│   └── enhancedWordDatabase.js   # 精选备用词汇
-└── pages/
-    ├── index/              # 首页
-    │   ├── index.wxml
-    │   ├── index.wxss
-    │   └── index.js
-    ├── test/               # 测试页面
-    │   ├── test.wxml
-    │   ├── test.wxss
-    │   └── test.js
-    └── result/             # 结果页面
-        ├── result.wxml
-        ├── result.wxss
-        └── result.js
+├── frontend/                  # 微信小程序
+│   ├── pages/                 # 学习、测试、主页等页面
+│   ├── utils/                 # apiConfig、paymentService、userManager...
+│   ├── check-deploy.js        # 上线前自检脚本
+│   └── docs/                  # 产品/部署文档
+├── backend/                   # Node.js 服务
+│   ├── server.js              # 入口，自动选择 SQLite / MongoDB
+│   ├── routes/                # users、payment、admin ...
+│   ├── controllers/           # User/Payment/Admin 业务
+│   ├── services/wechatPay.js  # 微信支付封装（统一下单、回调验签）
+│   ├── scripts/               # fix-database、create-activation-code 等脚本
+│   ├── admin/                 # 运营后台（静态页面）
+│   └── verify-wechat-config.js# 快速校验 .env 必填项
+├── README.md
+└── ...
 ```
 
-## 安装部署
+---
 
-### 1. 准备工作
-- 注册微信小程序账号
-- 下载微信开发者工具
+## ⚙️ 本地快速开始
 
-### 2. 导入项目
-1. 打开微信开发者工具
-2. 选择"导入项目"
-3. 选择项目文件夹
-4. 填写您的小程序AppID
+```bash
+# 1. 克隆仓库
+git clone <repo-url>
 
-### 3. 配置修改
-在 `project.config.json` 中修改：
-```json
-{
-  "appid": "您的小程序AppID"
-}
+# 2. 安装前端依赖（按需）
+cd frontend
+npm install           # 或者直接在微信开发者工具里构建
+
+# 3. 安装后端依赖
+cd ../backend
+npm install
+cp env.example .env   # 填写真实 AppID、商户号、API Key 等
+
+# 4. 启动服务
+npm run dev           # 或 npm start
+# 默认监听 http://localhost:3000
 ```
 
-### 4. 预览测试
-1. 点击"编译"按钮
-2. 使用模拟器或真机预览
-3. 测试各项功能
+> 如启用 SQLite，首次启动会在 `backend/data/` 下生成 `k12_vocabulary.db`。  
+> 若切换 MongoDB，设置 `DB_TYPE=mongodb` 与 `MONGODB_URI` 即可。
 
-### 5. 发布上线
-1. 点击"上传"按钮
-2. 在微信公众平台提交审核
-3. 审核通过后发布
+---
 
-## 技术特性
+## 🔐 必填环境变量（backend/.env）
 
-- **数据存储**: 使用微信小程序本地存储保存测试历史
-- **用户体验**: 支持触觉反馈、加载动画、错题分析
-- **分享功能**: 支持分享到微信好友和朋友圈
-- **性能优化**: 懒加载、页面预加载、资源压缩
+| 键 | 说明 |
+| --- | --- |
+| `NODE_ENV` | `development` / `production` |
+| `WECHAT_APPID` / `WECHAT_SECRET` | 小程序 AppID & Secret，用于登录 code2Session |
+| `WECHAT_MCHID` / `WECHAT_API_KEY` | 微信支付商户号 & APIv2 密钥 |
+| `WECHAT_NOTIFY_URL` | 支付回调 URL（必须为公网 HTTPS） |
+| `WECHAT_CERT_PATH` / `WECHAT_KEY_PATH` | `apiclient_cert.pem` / `apiclient_key.pem` 路径 |
+| `ADMIN_API_KEY` | 管理后台访问密钥 |
+| `ALLOWED_ORIGINS` | 允许的跨域源 |
 
-## 词汇数据
+辅助脚本：
 
-包含超过40个精选英文单词，涵盖：
-- **基础级别** (Level 1-3): 日常生活常用词汇
-- **中级级别** (Level 4-6): 学术和职场词汇
-- **高级级别** (Level 7-9): 高级阅读和写作词汇
-- **专家级别** (Level 10-12): 专业和学术高难度词汇
-
-## 自定义扩展
-
-### 添加新词汇
-系统使用分级词汇管理，主要词汇来源于预处理的数据库。如需添加词汇，可编辑 `utils/enhancedWordDatabase.js` 文件：
-
-```javascript
-{
-  word: 'example',
-  meaning: '例子',
-  options: ['例子', '模型', '样本', '案例'],
-  level: 1
-}
+```bash
+node verify-wechat-config.js   # 检查 .env 是否填好
+node fix-database.js           # 修复 SQLite 表结构
 ```
 
-### 修改测试逻辑
-在 `pages/test/test.js` 中可以调整：
-- 题目数量
-- 评分标准
-- 难度分布
+---
 
-### 样式定制
-修改对应的 `.wxss` 文件来调整界面样式。
+## 🚀 上线流程
 
-## 许可证
+### 1. 前端
+1. `frontend/utils/apiConfig.js`：`USE_DEV=false`，`PROD_API_BASE=https://your-domain.com`
+2. `frontend/utils/paymentService.js`：`isDevelopment=false`，填写真实 `appId/mchId`
+3. 运行 `node check-deploy.js` 确认配置、日志、关键文件无误
+4. 使用微信开发者工具上传构建，填写版本说明并提交审核
+
+### 2. 后端（symbol 服务器示例）
+```bash
+cd /www/wwwroot/k12-backend/backend
+npm install --production
+pm2 start server.js --name k12-backend
+pm2 save && pm2 startup
+```
+- 把 `.env`、`certs/`、`data/` 上传到服务器
+- Nginx/宝塔配置：域名 → HTTPS → 反向代理 `127.0.0.1:3000`
+- 访问 `https://your-domain.com/health`，确认返回 `{status:'ok'}`  
+
+### 3. 微信后台
+- 公众平台：开发设置中添加 `https://your-domain.com` 为 request 合法域名
+- 微信支付商户平台：设置 APIv2 密钥、证书、回调 URL，与 `.env` 保持一致
+- 审核通过后“全量发布”，真机走一遍登录+支付验证
+
+---
+
+## 🧾 管理后台
+
+- 地址：`https://your-domain.com/admin`
+- 首次使用需输入 `.env` 中的 `ADMIN_API_KEY`
+- 功能：统计仪表盘、用户/课程/订单/优惠码/激活码管理、操作日志
+
+---
+
+## 🧰 常用命令
+
+```bash
+# 前端上线自检
+cd frontend && node check-deploy.js
+
+# 修复 SQLite 表结构
+cd backend && node fix-database.js
+
+# 校验微信配置
+cd backend && node verify-wechat-config.js
+
+# PM2 管理
+pm2 restart k12-backend
+pm2 logs k12-backend
+```
+
+---
+
+## 🛡️ 部署拓扑 & 运维建议
+
+```
+Mini Program ─HTTP(S)─> Nginx/宝塔 ─> Node.js backend ─> SQLite/MongoDB
+                       └────────────> 微信支付（notify 回调）
+```
+
+- 推荐服务器：2 核 CPU / 2 GB RAM / 40 GB SSD
+- Node.js 18+，使用 PM2 托管
+- 定期备份：`backend/data/`、`backend/certs/`、`backend/.env`
+- 监控：`pm2 status`、`pm2 logs`、`https://your-domain.com/health`
+
+---
+
+## 📄 许可证
 
 MIT License
 
-## 联系方式
+---
 
-如有问题或建议，请提交Issue或联系开发者。
+如需在 README 中补充产品截图、接口文档或 FAQ，可继续 PR/提交 Issue。欢迎贡献！ 🙌

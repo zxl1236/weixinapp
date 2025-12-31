@@ -1,0 +1,189 @@
+<view class="container">
+  <!-- 会员状态卡片 -->
+  <view class="membership-card {{membershipStatus.isPremium ? 'premium' : 'free'}}">
+    <view class="membership-header">
+      <view class="membership-icon">{{membershipStatus.isPremium ? '👑' : '📚'}}</view>
+      <view class="membership-info">
+        <view class="membership-title">
+          {{membershipStatus.isPremium ? '高级会员' : '免费用户'}}
+        </view>
+        <view class="membership-desc" wx:if="{{membershipStatus.isPremium}}">
+          到期时间：{{expireTimeText}}
+        </view>
+        <view class="membership-desc" wx:else>
+          {{freeLimitDesc || '免费版存在功能限制，升级解锁全部功能'}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 会员特权对比 -->
+  <view class="privilege-section">
+    <view class="section-title">🌟 会员特权对比</view>
+    
+    <view class="privilege-table">
+      <view class="privilege-header">
+        <view class="privilege-item-name">功能特权</view>
+        <view class="privilege-free">免费版</view>
+        <view class="privilege-premium">高级会员</view>
+      </view>
+      
+      <view class="privilege-row" wx:for="{{privilegeList}}" wx:key="name">
+        <view class="privilege-item-name">{{item.name}}</view>
+        <view class="privilege-free">
+          <view class="privilege-value {{item.freeStatus ? 'enabled' : 'disabled'}}">
+            {{item.free}}
+          </view>
+        </view>
+        <view class="privilege-premium">
+          <view class="privilege-value enabled">{{item.premium}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+    <!-- 价格和支付选项区域 -->
+    <view class="price-section" wx:if="{{!membershipStatus.isPremium}}">
+      <view class="section-title">💎 会员价格</view>
+      
+      <view class="price-card">
+        <view class="price-info">
+          <view class="price-label">永久会员</view>
+          <view class="price-display">
+            <view class="price-original" wx:if="{{discountAmount > 0}}">
+              ¥{{basePrice}}
+            </view>
+            <view class="price-final">¥{{finalPrice}}</view>
+          </view>
+          <view class="price-desc">解锁全部功能</view>
+        </view>
+      </view>
+
+      <!-- 支付方式选择 -->
+      <view class="payment-options">
+  
+        <view class="option-btn {{selectedPaymentType === 'wechat' ? 'active' : ''}}" 
+              bindtap="selectPaymentType" 
+              data-type="wechat">
+          <view class="option-icon">💚</view>
+          <view class="option-content">
+            <view class="option-title">微信支付</view>
+            <view class="option-desc">安全便捷，立即开通</view>
+          </view>
+        </view>
+      </view>
+
+    
+
+      <!-- 优惠码输入（仅在选择微信支付时显示） -->
+      <view class="discount-section" wx:if="{{selectedPaymentType === 'wechat'}}">
+        <view class="discount-label">优惠码（可选）</view>
+        <view class="discount-input-wrapper">
+          <input 
+            class="discount-input {{discountCodeValid ? 'valid' : ''}} {{discountCodeError ? 'error' : ''}}"
+            type="text"
+            placeholder="请输入优惠码"
+            value="{{discountCode}}"
+            bindinput="onDiscountCodeInput"
+            maxlength="20"
+          />
+          <button 
+            class="discount-btn"
+            bindtap="validateDiscountCode"
+            disabled="{{!discountCode}}">
+            验证
+          </button>
+        </view>
+        <view class="discount-message">
+          <text wx:if="{{discountCodeValid}}" class="discount-success">
+            优惠码已应用，已优惠¥{{discountAmount}}
+          </text>
+          <text wx:if="{{discountCodeError && !discountCodeValid}}" class="discount-error">
+            {{discountCodeError}}
+          </text>
+        </view>
+      </view>
+    </view>
+
+  <!-- 支付按钮（仅在选择微信支付时显示） -->
+  <view class="payment-section" wx:if="{{!membershipStatus.isPremium && selectedPaymentType === 'wechat'}}">
+    <view class="payment-summary">
+      <view class="summary-text">永久会员</view>
+      <view class="summary-price-wrapper">
+        <text wx:if="{{discountAmount > 0}}" class="summary-original-price">¥{{basePrice}}</text>
+        <text class="summary-price">¥{{finalPrice}}</text>
+      </view>
+    </view>
+    
+    <button class="pay-btn" 
+            bindtap="startPayment" 
+            disabled="{{paymentLoading}}">
+      <view wx:if="{{paymentLoading}}" class="loading-text">
+        <view class="loading-icon">⏳</view>
+        支付中...
+      </view>
+      <view wx:else>
+        <view class="pay-btn-main">
+          <text class="pay-btn-icon">💚</text>
+          <text class="pay-btn-text">微信支付 ¥{{finalPrice}}</text>
+        </view>
+        <view class="pay-btn-subtitle">微信安全支付</view>
+      </view>
+    </button>
+    
+    <view class="payment-tips">
+      <view class="tip-item">• 支付成功后立即生效</view>
+      <view class="tip-item">• 支持微信安全支付</view>
+      <view class="tip-item">• 购买后可在个人中心查看</view>
+    </view>
+  </view>
+
+  <!-- 已是会员的续费区域 -->
+  <view class="renewal-section" wx:if="{{membershipStatus.isPremium}}">
+    <view class="renewal-info">
+      <view class="renewal-title">✨ 续费会员</view>
+      <view class="renewal-desc">继续享受高级会员特权</view>
+    </view>
+    
+    <button class="renewal-btn" bindtap="showRenewalOptions">
+      续费会员
+    </button>
+  </view>
+
+  <!-- 用户使用统计 -->
+  <view class="stats-section">
+    <view class="section-title">📊 使用统计</view>
+    
+    <view class="stats-grid">
+      <view class="stats-item">
+        <view class="stats-number">{{userStats.totalTestCount}}</view>
+        <view class="stats-label">累计测试</view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-number">{{userStats.dailyUsage.testCount}}</view>
+        <view class="stats-label">今日测试</view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-number">{{remainingTests.unlimited ? '∞' : remainingTests.count}}</view>
+        <view class="stats-label">剩余次数</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 常见问题 -->
+  <view class="faq-section">
+    <view class="section-title">❓ 常见问题</view>
+    
+    <view class="faq-list">
+      <view class="faq-item" wx:for="{{faqList}}" wx:key="question" bindtap="toggleFaq" data-index="{{index}}">
+        <view class="faq-question">
+          <view class="faq-text">{{item.question}}</view>
+          <view class="faq-arrow {{item.expanded ? 'expanded' : ''}}">▼</view>
+        </view>
+        <view class="faq-answer {{item.expanded ? 'show' : ''}}" style="{{item.expanded ? 'max-height: 200px' : ''}}">
+          {{item.answer}}
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

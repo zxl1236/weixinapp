@@ -1,0 +1,250 @@
+<view class="container">
+  <!-- 全屏授权弹窗 -->
+  <view class="auth-modal" wx:if="{{showAuthModal}}">
+    <view class="auth-overlay" bindtap="closeAuthModal"></view>
+    <view class="auth-content">
+      <view class="auth-header">
+        <view class="auth-icon">👤</view>
+        <view class="auth-title">完善个人信息</view>
+        <view class="auth-desc">授权获取您的昵称和头像，为您提供更好的个性化学习体验</view>
+      </view>
+      <view class="auth-buttons">
+        <button class="auth-btn auth-btn-primary" bindtap="getUserProfile" style="display: flex; align-items: center; justify-content: center; position: relative; left: 2rpx; top: 0rpx;">
+  授权登录
+</button>
+
+<button class="auth-btn auth-btn-secondary" bindtap="closeAuthModal" style="display: flex; align-items: center; justify-content: center; position: relative; left: 6rpx; top: 4rpx;">
+  稍后再说
+</button>
+
+      </view>
+    </view>
+  </view>
+
+  <!-- 头部区域 -->
+  <view class="header hero">
+    <view class="title">同步自然拼读专项训练</view>
+    <view class="subtitle">认、读、拼三合一，练好基本功！</view>
+  </view>
+
+  <!-- 会员状态区域 -->
+  <view class="membership-status">
+    <view class="status-card {{membershipStatus.isPremium ? 'premium glass' : 'free bordered'}}">
+      <view class="status-info">
+        <view class="status-icon">{{membershipStatus.isPremium ? '👑' : '📚'}}</view>
+        <view class="status-text">
+          <view class="status-title">{{membershipStatus.isPremium ? '高级会员' : '免费用户'}}</view>
+          <view class="status-desc" wx:if="{{membershipStatus.isPremium}}">享受无限制学习权益</view>
+          <view class="status-desc" wx:else>今日剩余测试次数：{{remainingTests}}</view>
+        </view>
+      </view>
+      <view class="status-action">
+        <button class="status-btn {{membershipStatus.isPremium ? 'manage ghost' : 'upgrade primary'}}"
+                bindtap="{{membershipStatus.isPremium ? 'goToPayment' : 'goToUpgrade'}}"
+                size="mini">
+          {{membershipStatus.isPremium ? '管理' : '升级'}}
+        </button>
+      </view>
+    </view>
+    
+    <!-- 未登录提示 -->
+    <view class="login-prompt" wx:if="{{false}}">
+      <view class="login-prompt-card">
+        <view class="login-prompt-icon">⚠️</view>
+        <view class="login-prompt-text">
+          <view class="login-prompt-title">未登录</view>
+          <view class="login-prompt-desc">请先登录以使用完整功能</view>
+        </view>
+        <button class="login-prompt-btn" bindtap="reLogin" size="mini" type="primary">重新登录</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 学习统计区域 -->
+  <view class="learning-stats" wx:if="{{learningStats.totalWordsLearned > 0 || learningStats.totalSessions > 0}}">
+    <view class="stats-card">
+      <view class="stats-header">
+        <view class="stats-title">📊 学习统计</view>
+      </view>
+      <view class="stats-content">
+        <view class="stat-item">
+          <view class="stat-number">{{learningStats.totalWordsLearned || 0}}</view>
+          <view class="stat-label">共学习</view>
+        </view>
+        <view class="stat-item">
+          <view class="stat-number">{{learningStats.totalMastered || 0}}</view>
+          <view class="stat-label">累计掌握</view>
+        </view>
+        <view class="stat-item">
+          <view class="stat-number">{{learningStats.currentStreak || 0}}</view>
+          <view class="stat-label">连续学习天数</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 年级选择区域 -->
+  <view class="grade-selection" wx:if="{{!currentGrade || isFirstTime}}">
+    <view class="selection-card">
+      <view class="selection-header">
+        <view class="selection-title">🎯 选择您的年级</view>
+        <view class="selection-desc">请选择您要学习的年级，开始您的学习之旅</view>
+      </view>
+      <view class="selection-content">
+        <view class="grade-group" wx:for="{{gradeGroups}}" wx:key="stage">
+          <view class="group-title">{{item.stage}}</view>
+          <view class="grade-buttons">
+            <button class="grade-btn {{item.grades && item.grades.indexOf(currentGrade) > -1 ? 'active' : ''}}"
+                    wx:for="{{item.grades}}" wx:for-item="grade" wx:key="grade"
+                    bindtap="selectGrade" data-grade="{{grade}}"
+                    size="mini">
+              {{gradeNames[grade]}}
+            </button>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 年级切换下拉框 -->
+  <view class="grade-dropdown" wx:if="{{currentGrade && !isFirstTime}}">
+    <view class="dropdown-container">
+      <view class="dropdown-label">当前年级：</view>
+      <view class="dropdown-selector" bindtap="toggleDropdown">
+        <view class="dropdown-display">
+          <text class="dropdown-text">{{currentGradeName}}</text>
+          <text class="dropdown-arrow {{dropdownOpen ? 'open' : ''}}">▼</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 下拉选项 -->
+    <view class="dropdown-options {{dropdownOpen ? 'show' : ''}}" wx:if="{{dropdownOpen}}">
+      <view class="dropdown-overlay" bindtap="closeDropdown"></view>
+      <view class="dropdown-menu">
+        <view class="dropdown-header">
+          <text class="dropdown-title">选择年级</text>
+          <text class="dropdown-close" bindtap="closeDropdown">✕</text>
+        </view>
+        <view class="dropdown-content">
+          <view class="grade-group" wx:for="{{gradeGroups}}" wx:key="stage">
+            <view class="group-title">{{item.stage}}</view>
+            <view class="grade-options">
+              <view class="grade-option {{grade === currentGrade ? 'active' : ''}}"
+                    wx:for="{{item.grades}}" wx:for-item="grade" wx:key="grade"
+                    bindtap="selectGradeFromDropdown" data-grade="{{grade}}">
+                <text class="grade-name">{{gradeNames[grade]}}</text>
+                <text class="grade-check" wx:if="{{grade === currentGrade}}">✓</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 继续学习区域 - 优先显示 -->
+  <view class="continue-learning-section" wx:if="{{continueLearning && currentGrade && !isFirstTime}}">
+    <view class="continue-card" bindtap="continueLearning">
+      <view class="continue-icon">📖</view>
+      <view class="continue-content">
+        <view class="continue-title">继续学习 {{continueLearning.gradeName}}</view>
+        <view class="continue-subtitle">第{{continueLearning.currentPhase}}阶段 · 已掌握 {{continueLearning.masteredWords || 0}}/{{continueLearning.totalWords || 0}} 个单词</view>
+        <view class="continue-progress">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{continueLearning.masteryProgress || 0}}%;"></view>
+          </view>
+          <view class="progress-text">{{continueLearning.masteryProgress || 0}}%</view>
+        </view>
+      </view>
+      <view class="continue-arrow">→</view>
+    </view>
+  </view>
+
+  <!-- 开始新学习区域 - 当没有继续学习时显示 -->
+  <view class="start-learning-section" wx:if="{{!continueLearning && currentGrade && !isFirstTime}}">
+    <view class="start-card" bindtap="startNewLearning">
+      <view class="start-icon">🚀</view>
+      <view class="start-content">
+        <view class="start-title">开始学习 {{currentGradeName}}</view>
+        <view class="start-subtitle">开始您的词汇学习之旅</view>
+      </view>
+      <view class="start-arrow">→</view>
+    </view>
+  </view>
+
+  <!-- 个性化快速访问区域 -->
+  <view class="quick-access" wx:if="{{showQuickAccess && currentGrade && !isFirstTime}}">
+
+    <!-- 常用年级 -->
+    <view class="favorite-grades" wx:if="{{favoriteGrades.length > 0}}">
+      
+      <view class="favorite-list">
+        
+      </view>
+    </view>
+
+    <!-- 最近学习 -->
+    <view class="recent-learning" wx:if="{{recentLearning.length > 0}}">
+      
+      <view class="recent-list">
+        
+      </view>
+    </view>
+  </view>
+
+
+  <!-- 切换显示模式按钮 -->
+  
+
+  <!-- 学习工具 -->
+  <view class="tools-section">
+    <view class="section-title">学习工具</view>
+    <view class="tools-grid">
+      <view class="tool-item" bindtap="goToLevelTest">
+        <view class="tool-icon">📊</view>
+        <view class="tool-name">水平测试</view>
+      </view>
+
+      <view class="tool-item" bindtap="showWordBook">
+        <view class="tool-icon">📖</view>
+        <view class="tool-name">生词本</view>
+      </view>
+
+      <view class="tool-item" bindtap="goToDebugAudio">
+        <view class="tool-icon">🔊</view>
+        <view class="tool-name">发音测试</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 测试历史 -->
+  <view class="history-section" wx:if="{{testHistory.length > 0}}">
+    <view class="section-header">
+      <view class="section-title">测试历史</view>
+      <button class="clear-btn ghost" bindtap="clearAllHistory" size="mini">清空</button>
+    </view>
+
+    <view class="history-list">
+      <view wx:for="{{testHistory}}" wx:key="id" class="history-item">
+        <view class="history-dot"></view>
+        <view class="history-info">
+          <view class="history-level">{{item.level}}</view>
+          <view class="history-score">得分：{{item.score}}</view>
+          <view class="history-date">{{item.date}}</view>
+        </view>
+        <button class="delete-btn danger" bindtap="deleteHistory" data-id="{{item.id}}" size="mini">删除</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 升级提示 - 已隐藏 -->
+  <!-- <view class="upgrade-section" wx:if="{{!isPremium}}">
+    <view class="upgrade-card">
+      <view class="upgrade-title">🎯 升级会员</view>
+      <view class="upgrade-desc">解锁所有功能，无限次测试</view>
+      <view class="upgrade-desc">今日剩余测试次数：{{remainingTests}}</view>
+      <button class="upgrade-btn primary" bindtap="goToUpgrade">立即升级</button>
+    </view>
+  </view> -->
+</view>
