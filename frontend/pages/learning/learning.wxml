@@ -3,7 +3,7 @@
   <!-- 顶部导航栏 -->
   <view class="modern-header" style="height: 66rpx; display: flex; box-sizing: border-box; background: #f4f5f7 !important; left: 1rpx; top: 1rpx; position: relative; align-items: center; justify-content: space-between; padding: 0 30rpx;">
     <view class="header-left">
-      <button class="back-btn" bindtap="goBack" style="position: relative; top: 11rpx; left: -86rpx">
+      <button class="back-btn" bindtap="goBack" style="position: relative; top: -10rpx; left: -83rpx">
         <text class="back-icon">←</text>
       </button>
     </view>
@@ -12,7 +12,7 @@
     </view>
     <view class="header-right">
       <button class="regroup-btn" bindtap="showRegroupModal" style="position: relative; top: -9rpx;">
-        <text class="regroup-icon" style="width: 74rpx; height: 41rpx; display: block; box-sizing: border-box; left: -1rpx; top: 21rpx; position: relative">📋</text>
+        <text class="regroup-icon" style="width: 74rpx; height: 41rpx; display: block; box-sizing: border-box; left: 37rpx; top: 1rpx; position: relative">📋</text>
       </button>
     </view>
   </view>
@@ -26,7 +26,7 @@
 
   <!-- ====== 认识阶段训练界面 ====== -->
   <view wx:if="{{phase === 'phase0' && currentWord}}" class="main-content">
-    <view class="modern-word-card" style="width: 620rpx; height: 1018rpx; display: flex; box-sizing: border-box; left: 1rpx; top: 56rpx; position: relative">
+    <view class="modern-word-card" style="width: 583rpx; height: 965rpx; display: flex; box-sizing: border-box; left: 2rpx; top: 34rpx; position: relative">
       
       <!-- 单词主体区域 -->
       <view class="word-main-section">
@@ -39,13 +39,13 @@
             </text>
           </view>
           <!-- 如果没有高亮数据，显示原单词 -->
-          <text class="word-text word-text-normal {{isLongWord ? 'long-word' : ''}}" wx:else style="position: relative; left: 1rpx; top: 27rpx">{{currentWord.word}}</text>
+          <text class="word-text word-text-normal {{isLongWord ? 'long-word' : ''}}" wx:else style="position: relative; left: 3rpx; top: 75rpx">{{currentWord.word}}</text>
           <!-- 分段高亮显示音标 -->
           <view class="phonetic-text-container" wx:if="{{currentWord.phonetic && highlightedPhonetic && highlightedPhonetic.length > 0}}"><text wx:for="{{highlightedPhonetic}}" wx:key="index" class="{{item.highlight ? 'phonetic-text-highlight' : 'phonetic-text-normal'}}">{{item.text}}</text></view>
           <!-- 如果没有高亮数据，显示原音标 -->
-          <text class="phonetic-text" wx:if="{{currentWord.phonetic && (!highlightedPhonetic || highlightedPhonetic.length === 0)}}" style="position: relative; left: -19rpx; top: 35rpx">{{currentWord.phonetic}}</text>
+          <text class="phonetic-text" wx:if="{{currentWord.phonetic && (!highlightedPhonetic || highlightedPhonetic.length === 0)}}" style="position: relative; left: -15rpx; top: 82rpx">{{currentWord.phonetic}}</text>
           <!-- 规则备注（红色内容） -->
-          <view class="rule-note" wx:if="{{currentWord.rule || currentWord.note || currentWord.highlightPhonetic}}" style="position: relative; left: 0rpx; top: 8rpx">
+          <view class="rule-note" wx:if="{{currentWord.rule || currentWord.note || currentWord.highlightPhonetic}}" style="position: relative; left: 2rpx; top: 74rpx">
             <text class="rule-note-text">{{currentWord.note || currentWord.rule || currentWord.highlightPhonetic}}</text>
           </view>
         </view>
@@ -53,7 +53,7 @@
         <!-- 发音按钮 -->
         <button class="modern-pronunciation-btn {{isPlaying ? 'playing' : ''}}" 
                 bindtap="playCurrentWordPronunciation" 
-                disabled="{{isPlaying}}" style="position: relative; left: 4rpx; top: 23rpx">
+                disabled="{{isPlaying}}" style="position: relative; left: 9rpx; top: 76rpx">
           <view class="pronunciation-circle"></view>
           <view class="pronunciation-waveform">
             <view class="waveform-bar"></view>
@@ -63,15 +63,30 @@
             <view class="waveform-bar"></view>
           </view>
         </button>
+        <!-- 跟读录音（移入卡片内） -->
+        <view class="inline-record-box" style="display:flex; justify-content:center; align-items:center; margin-top: 26rpx; flex-direction:column;">
+          <view style="background: #ffffff; padding: 8rpx 18rpx; border-radius: 22rpx; box-shadow: 0 8rpx 20rpx rgba(0,0,0,0.06); display: flex; align-items: center; position: relative; left: 0rpx; top: 342rpx">
+            <button class="record-btn small {{isRecording ? 'recording' : ''}}" bindtap="toggleRecording" disabled="{{isScoring}}" style="background: linear-gradient(90deg,#ff7a45,#ff5722); color: #fff; padding: 12rpx 36rpx; border-radius: 16rpx; font-size: 28rpx; line-height: 28rpx; position: relative; left: 0rpx; top: 0rpx">
+              <text wx:if="{{!isRecording}}">跟读——Ai打分</text>
+              <text wx:if="{{isRecording}}">停止</text>
+            </button>
+            <view class="follow-score" wx:if="{{followScore !== null}}" style="margin-left:14rpx; display:flex; align-items:center;">
+              <text class="score-text" style="font-weight:700; font-size:24rpx; color:#0b9f6b;">{{followScore}} 分</text>
+            </view>
+          </view>
+          <view class="score-error" wx:if="{{followScoreError}}" style="margin-top:8rpx; color:#ff4d4f; font-size:20rpx; max-width:420rpx; text-align:center;">
+            <text>{{followScoreError}}</text>
+          </view>
+        </view>
       </view>
 
       <!-- 操作按钮区域 -->
-      <view class="action-buttons">
-        <button class="modern-btn mastered-btn" bindtap="markAsMastered" disabled="{{isProcessing}}" style="position: relative; left: -25rpx; top: 204rpx">
+      <view class="action-buttons" style="position: relative; left: 0rpx; top: -73rpx">
+        <button class="modern-btn mastered-btn" bindtap="markAsMastered" disabled="{{isProcessing}}" style="position: relative; left: -25rpx; top: 140rpx">
           <text class="btn-icon">✓</text>
           <text class="btn-label">会拼读，会中文</text>
         </button>
-        <button class="modern-btn practice-btn" bindtap="markAsNeedLearning" disabled="{{isProcessing}}" style="position: relative; left: 11rpx; top: 203rpx">
+        <button class="modern-btn practice-btn" bindtap="markAsNeedLearning" disabled="{{isProcessing}}" style="position: relative; left: 11rpx; top: 140rpx">
           <text class="btn-icon">?</text>
           <text class="btn-label">不会,收藏练习</text>
         </button>
@@ -79,11 +94,11 @@
 
       <!-- 进度指示 -->
       <view class="progress-indicator">
-        <text class="progress-text" style="position: relative; left: 0rpx; top: 254rpx">{{recognitionDone}}/{{currentGroupWords.length}}</text>
+        <text class="progress-text" style="position: relative; left: 0rpx; top: 139rpx">{{recognitionDone}}/{{currentGroupWords.length}}</text>
       </view>
       
       <!-- 中文翻译（带词性，和释义同一行） -->
-      <view class="word-info-card" style="position: relative; left: 2rpx; top: -241rpx">
+      <view class="word-info-card" style="position: relative; left: 3rpx; top: -344rpx">
         <view class="word-meaning-text {{currentWord.meaning && currentWord.meaning.length > 15 ? 'long-text' : ''}}">
           <text wx:if="{{currentWord.partOfSpeech}}" class="part-of-speech">{{currentWord.partOfSpeech}}</text>
           <text>{{currentWord.meaning}}</text>
@@ -225,15 +240,20 @@
             <text class="continue-arrow">→</text>
           </button>
           
-          <!-- 跟读录音按钮 -->
-          <button class="record-btn {{isRecording ? 'recording' : ''}}" bindtap="toggleRecording" disabled="{{isScoring}}" style="margin-left:20rpx">
-            <text wx:if="{{!isRecording}}">录音</text>
-            <text wx:if="{{isRecording}}">停止</text>
-          </button>
-
-          <!-- 跟读得分展示 -->
-          <view class="follow-score" wx:if="{{followScore !== null}}" style="margin-left:20rpx; display:flex; align-items:center;">
-            <text class="score-text">{{followScore}} 分</text>
+          <!-- 跟读录音（移入卡片内） -->
+          <view class="inline-record-box" style="display:flex; justify-content:center; align-items:center; margin-top: 18rpx; flex-direction:column;">
+            <view style="background: #ffffff; padding: 8rpx 18rpx; border-radius: 22rpx; box-shadow: 0 8rpx 20rpx rgba(0,0,0,0.06); display:flex; align-items:center;">
+              <button class="record-btn small {{isRecording ? 'recording' : ''}}" bindtap="toggleRecording" disabled="{{isScoring}}" style="background: linear-gradient(90deg,#ff7a45,#ff5722); color:#fff; padding:12rpx 34rpx; border-radius: 16rpx; font-size:26rpx; line-height:26rpx;">
+                <text wx:if="{{!isRecording}}">录音</text>
+                <text wx:if="{{isRecording}}">停止</text>
+              </button>
+              <view class="follow-score" wx:if="{{followScore !== null}}" style="margin-left:12rpx; display:flex; align-items:center;">
+                <text class="score-text" style="font-weight:700; font-size:22rpx; color:#0b9f6b;">{{followScore}} 分</text>
+              </view>
+            </view>
+            <view class="score-error" wx:if="{{followScoreError}}" style="margin-top:8rpx; color:#ff4d4f; font-size:18rpx; max-width:420rpx; text-align:center;">
+              <text>{{followScoreError}}</text>
+            </view>
           </view>
         </view>
       
@@ -313,6 +333,21 @@
           </view>
           <text class="pronunciation-text">{{isPlaying ? '播放中...' : '点击听发音'}}</text>
         </button>
+        <!-- 跟读录音（移入卡片内） -->
+        <view class="inline-record-box" style="display:flex; justify-content:center; align-items:center; margin-top: 14rpx; flex-direction:column;">
+          <view style="background: #ffffff; padding: 8rpx 18rpx; border-radius: 22rpx; box-shadow: 0 8rpx 20rpx rgba(0,0,0,0.06); display:flex; align-items:center;">
+            <button class="record-btn small {{isRecording ? 'recording' : ''}}" bindtap="toggleRecording" disabled="{{isScoring}}" style="background: linear-gradient(90deg,#ff7a45,#ff5722); color:#fff; padding:12rpx 34rpx; border-radius: 16rpx; font-size:24rpx; line-height:24rpx;">
+              <text wx:if="{{!isRecording}}">录音</text>
+              <text wx:if="{{isRecording}}">停止</text>
+            </button>
+            <view class="follow-score" wx:if="{{followScore !== null}}" style="margin-left:12rpx; display:flex; align-items:center;">
+              <text class="score-text" style="font-weight:700; font-size:22rpx; color:#0b9f6b;">{{followScore}} 分</text>
+            </view>
+          </view>
+          <view class="score-error" wx:if="{{followScoreError}}" style="margin-top:8rpx; color:#ff4d4f; font-size:18rpx; max-width:420rpx; text-align:center;">
+            <text>{{followScoreError}}</text>
+          </view>
+        </view>
       </view>
 
       <!-- 含义显示 -->
@@ -374,10 +409,27 @@
 
 
   <!-- 加载 -->
-  <view class="loading-container" wx:if="{{loading}}" style="height: 1018rpx; display: flex; box-sizing: border-box">
+  <view class="loading-container" wx:if="{{loading}}" style="height: 930rpx; display: flex; box-sizing: border-box; width: 691rpx">
     <view class="loading-text">正在安排本节训练...</view>
   </view>
 
+
+  <!-- 固定底部录音操作栏（更贴合卡片，半重叠；错误信息换行显示避免溢出） -->
+  <view class="fixed-record-container" style="position: fixed; left: 0rpx; right: 0rpx; bottom: 18rpx; display: none; justify-content: center; z-index: 100;">
+    <view class="record-box" style="background: #ffffff; width: 540rpx; padding: 12rpx 20rpx; border-radius: 34rpx; box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.10); display:flex; align-items: center; border: 6rpx solid rgba(255,255,255,0.92); transform: translateY(-12rpx); flex-wrap: wrap; gap: 8rpx;">
+      <button class="record-btn big {{isRecording ? 'recording' : ''}}" bindtap="toggleRecording" disabled="{{isScoring}}" style="background: linear-gradient(90deg,#ff7a45,#ff5722); color: #fff; padding: 16rpx 40rpx; border-radius: 22rpx; font-size: 30rpx; line-height: 30rpx; box-shadow: 0 6rpx 18rpx rgba(255,122,69,0.18); border: 4rpx solid rgba(255,255,255,0.6); flex-shrink: 0;">
+        <text wx:if="{{!isRecording}}">录音</text>
+        <text wx:if="{{isRecording}}">停止</text>
+      </button>
+      <view class="follow-score" wx:if="{{followScore !== null}}" style="margin-left: 16rpx; display:flex; align-items:center; flex-shrink: 0;">
+        <text class="score-text" style="font-weight:700; font-size:26rpx; color:#0b9f6b;">{{followScore}} 分</text>
+      </view>
+      <!-- 错误提示独占一行，避免与按钮在一行挤压或换行导致布局错位 -->
+      <view class="score-error" wx:if="{{followScoreError}}" style="flex-basis:100%; margin-top: 8rpx; color: #ff4d4f; max-width: 520rpx; text-align:left; font-size: 22rpx; line-height: 1.2;">
+        <text>{{followScoreError}}</text>
+      </view>
+    </view>
+  </view>
 
 </view>
 

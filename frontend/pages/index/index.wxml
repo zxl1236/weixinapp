@@ -211,10 +211,10 @@
         <view class="tool-name">生词本</view>
       </view>
 
-      <view class="tool-item" bindtap="goToDebugAudio">
+      <!-- <view class="tool-item" bindtap="goToDebugAudio">
         <view class="tool-icon">🔊</view>
         <view class="tool-name">发音测试</view>
-      </view>
+      </view> -->
     </view>
   </view>
 

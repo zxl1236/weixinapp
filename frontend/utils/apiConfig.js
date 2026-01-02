@@ -46,8 +46,19 @@ function getApiUrl(path) {
   return `${baseUrl}${normalizedPath}`;
 }
 
+/**
+ * 辅助：返回开发基础 URL（用于客户端在检测到主接口不可用时快速退回）
+ * NOTE: 仅用于调试/本地开发环境；生产时请确保 PROD_API_BASE 正确配置
+ */
+function getDevApiBase() {
+  return DEV_API_BASE;
+}
+
 module.exports = {
   getApiBaseUrl,
-  getApiUrl
+  getApiUrl,
+  getDevApiBase,
+  DEV_API_BASE,
+  PROD_API_BASE
 };
 

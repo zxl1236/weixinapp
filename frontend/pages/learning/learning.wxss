@@ -643,7 +643,7 @@ button[disabled]:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 12rpx;
+  margin-top: -65rpx;
   padding: 10rpx 18rpx;
   background: rgba(220, 38, 38, 0.1);
   border-radius: 12rpx;

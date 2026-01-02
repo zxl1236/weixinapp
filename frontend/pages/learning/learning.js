@@ -21,7 +21,7 @@ const {
 } = require('./utils/commonUtils.js');
 const { buildTTSUrl } = require('./utils/audioUtils.js');
 const AudioManager = require('../../utils/audioManager.js');
-const { getApiUrl } = require('../../utils/apiConfig.js');
+const { getApiUrl, getDevApiBase } = require('../../utils/apiConfig.js');
 
 // 引入业务模块
 const createDataSyncModule = require('./modules/dataSync.js');
@@ -105,6 +105,7 @@ Page({
     
     // 跟读功能状态
     followScore: null,         // 跟读评分：0-100
+    followScoreError: '',      // 打分失败时的错误提示
     isRecording: false,        // 是否正在录音
     isScoring: false,          // 是否正在上传/评分
     recordingTempFilePath: '',  // 临时录音文件路径
@@ -2900,7 +2901,8 @@ Page({
       };
 
       recorder.onStart(() => {
-        this.setData({ isRecording: true, followScore: null });
+        // 开始录音时清除上一次得分与错误提示
+        this.setData({ isRecording: true, followScore: null, followScoreError: '' });
       });
 
       recorder.onError((err) => {
@@ -2940,44 +2942,118 @@ Page({
 
   uploadRecording(tempFilePath) {
     if (!tempFilePath) return;
-    this.setData({ isScoring: true });
+
+    // 开始上传前清除旧的错误提示
+    this.setData({ isScoring: true, followScoreError: '' });
     const gradeId = this.data.gradeId || '';
     const word = this.data.currentWord?.word || '';
-    const apiUrl = getApiUrl(`/api/asr/score?gradeId=${encodeURIComponent(gradeId)}&word=${encodeURIComponent(word)}`);
+    const pathBase = `/api/asr/score`;
+    const primaryUrl = getApiUrl(pathBase);
+    const fallbackBase = getDevApiBase && typeof getDevApiBase === 'function' ? getDevApiBase() : null;
+    const fallbackUrl = fallbackBase ? `${fallbackBase}${pathBase.startsWith('/') ? pathBase : '/' + pathBase}` : null;
 
-    wx.uploadFile({
-      url: apiUrl,
-      filePath: tempFilePath,
-      name: 'audio',
-      formData: {
-        word: word
-      },
-      success: (res) => {
-        try {
-          const data = JSON.parse(res.data);
-          if (data && data.success && typeof data.score === 'number') {
-            this.setData({ followScore: Math.round(data.score) });
-            if (data.score < 60) {
-              wx.showToast({ title: '得分偏低，建议再读一遍', icon: 'none', duration: 2000 });
+    let triedFallback = false;
+
+    const doPost = (url, audioBase64) => {
+      wx.request({
+        url: url,
+        method: 'POST',
+        header: {
+          'content-type': 'application/json'
+        },
+        data: {
+          gradeId: gradeId,
+          word: word,
+          audioBase64: audioBase64
+        },
+        success: (res) => {
+          try {
+            const httpOk = res && (res.statusCode >= 200 && res.statusCode < 300);
+            const data = res && res.data;
+            if (httpOk && data && data.success && typeof data.score === 'number') {
+              this.setData({ followScore: Math.round(data.score), followScoreError: '' });
+              if (data.score < 60) {
+                wx.showToast({ title: '得分偏低，建议再读一遍', icon: 'none', duration: 2000 });
+              } else {
+                wx.showToast({ title: `得分 ${Math.round(data.score)}`, icon: 'success', duration: 1200 });
+              }
             } else {
-              wx.showToast({ title: `得分 ${Math.round(data.score)}`, icon: 'success', duration: 1200 });
+              const serverMsg = data && (data.message || data.error || data.errMsg);
+              const reason = serverMsg ? `评分失败：${serverMsg}` : `评分失败：接口返回异常（状态 ${res.statusCode}）`;
+              if (!triedFallback && fallbackUrl && url !== fallbackUrl) {
+                console.warn('主接口返回异常，尝试回退地址...', { url, fallbackUrl, serverMsg, status: res.statusCode });
+                triedFallback = true;
+                doPost(fallbackUrl, audioBase64);
+                return;
+              }
+              this.setData({ followScore: null, followScoreError: reason });
+              wx.showToast({ title: reason, icon: 'none', duration: 2500 });
             }
-          } else {
-            wx.showToast({ title: '评分失败', icon: 'none' });
+          } catch (e) {
+            console.error('解析评分响应失败', e, res);
+            if (!triedFallback && fallbackUrl && url !== fallbackUrl) {
+              console.warn('解析响应失败，尝试回退地址...', { url, fallbackUrl });
+              triedFallback = true;
+              doPost(fallbackUrl, audioBase64);
+              return;
+            }
+            const reason = '评分返回异常：服务端返回格式异常';
+            this.setData({ followScore: null, followScoreError: reason });
+            wx.showToast({ title: reason, icon: 'none' });
           }
-        } catch (e) {
-          console.error('解析评分响应失败', e, res);
-          wx.showToast({ title: '评分返回异常', icon: 'none' });
+        },
+        fail: (err) => {
+          console.error('上传评分失败', err, { url });
+          if (!triedFallback && fallbackUrl && url !== fallbackUrl) {
+            triedFallback = true;
+            console.warn('上传失败，尝试回退地址...', { url, fallbackUrl, err });
+            doPost(fallbackUrl, audioBase64);
+            return;
+          }
+          const reason = err && err.errMsg ? `上传失败：${err.errMsg}` : '上传失败：网络或服务器错误';
+          if (reason.includes('404') || reason.includes('接口不存在')) {
+            this.setData({ followScore: null, followScoreError: '评分失败：接口未部署或路径错误' });
+            wx.showToast({ title: '评分失败：接口未部署或路径错误', icon: 'none', duration: 3000 });
+          } else {
+            this.setData({ followScore: null, followScoreError: reason });
+            wx.showToast({ title: reason, icon: 'none' });
+          }
+        },
+        complete: () => {
+          this.setData({ isScoring: false, recordingTempFilePath: '' });
         }
-      },
-      fail: (err) => {
-        console.error('上传评分失败', err);
-        wx.showToast({ title: '上传失败', icon: 'none' });
-      },
-      complete: () => {
-        this.setData({ isScoring: false, recordingTempFilePath: '' });
-      }
-    });
+      });
+    };
+
+    // 读取文件为 base64，然后以 POST 方式发送（更规范）
+    try {
+      const fs = wx.getFileSystemManager();
+      fs.readFile({
+        filePath: tempFilePath,
+        encoding: 'base64',
+        success: (r) => {
+          const audioBase64 = r && r.data ? r.data : '';
+          if (!audioBase64) {
+            const reason = '读取录音失败：无法获取音频数据';
+            this.setData({ isScoring: false, followScoreError: reason });
+            wx.showToast({ title: reason, icon: 'none' });
+            return;
+          }
+          // 发起 POST 到主地址
+          doPost(primaryUrl, audioBase64);
+        },
+        fail: (err) => {
+          console.error('读取录音文件失败', err);
+          const reason = err && err.errMsg ? `读取录音失败：${err.errMsg}` : '读取录音失败';
+          this.setData({ isScoring: false, followScoreError: reason });
+          wx.showToast({ title: reason, icon: 'none' });
+        }
+      });
+    } catch (e) {
+      console.error('读取录音异常', e);
+      this.setData({ isScoring: false, followScoreError: '读取录音异常' });
+      wx.showToast({ title: '读取录音异常', icon: 'none' });
+    }
   },
 
 

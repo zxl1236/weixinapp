@@ -160,11 +160,41 @@ function persistRecording({ gradeId, word, filePath, score, details }) {
 // MFCC+DTW评分实现，保存文件并返回 score + hints
 async function scorePronunciation(req, res) {
   try {
-    if (!req.file || !req.file.path) {
-      return res.status(400).json({ success: false, message: '未上传音频文件' });
+    // 支持两种上传方式：
+    // 1) multipart/form-data 上传文件（multer -> req.file）
+    // 2) JSON body 中携带 base64 字符串（req.body.audioBase64）
+    let uploadedPath = null;
+    let receivedBytes = null;
+    let uploadSource = null; // 'multipart' | 'base64'
+    let originalUploadedPath = null;
+    if (req.file && req.file.path) {
+      uploadedPath = req.file.path;
+      receivedBytes = req.file.size || null;
+      uploadSource = 'multipart';
+      originalUploadedPath = req.file.originalname || req.file.path;
+    } else if (req.body && req.body.audioBase64) {
+      // decode base64 并写入临时文件
+      try {
+        const base64 = req.body.audioBase64;
+        // 去除 data:*;base64, 前缀（如果存在）
+        const commaIndex = base64.indexOf(',');
+        const cleaned = commaIndex !== -1 ? base64.slice(commaIndex + 1) : base64;
+        const buffer = Buffer.from(cleaned, 'base64');
+        const tmpName = `base64_${Date.now()}.wav`;
+        const tmpPath = path.join(recordingsDir, tmpName);
+        fs.writeFileSync(tmpPath, buffer);
+        uploadedPath = tmpPath;
+        receivedBytes = buffer.length;
+        uploadSource = 'base64';
+        originalUploadedPath = tmpName;
+        logger.info('Received audioBase64 and wrote to tmp file', { tmpPath, size: buffer.length });
+      } catch (e) {
+        logger.warn('Failed to write base64 audio to file', { err: e.message });
+        return res.status(400).json({ success: false, message: 'base64 音频数据解析失败', error: e.message });
+      }
+    } else {
+      return res.status(400).json({ success: false, message: '未上传音频文件或未提供 audioBase64' });
     }
-
-    const uploadedPath = req.file.path;
     // convert to standard wav 16k mono
     const convPath = await convertToWav16kMono(uploadedPath);
 
@@ -231,11 +261,18 @@ async function scorePronunciation(req, res) {
       logger.warn('persistRecording failed', { err: e.message });
     }
 
+    // 返回结果并包含调试信息（方便定位接口/文件问题）
     return res.json({
       success: true,
       score,
       hints,
-      details: { dtw: norm, duration: userDuration, refLen, durationRatio }
+      details: { dtw: norm, duration: userDuration, refLen, durationRatio },
+      debug: {
+        uploadSource,
+        receivedBytes,
+        originalUploadedPath,
+        storedPath: destPath
+      }
     });
   } catch (error) {
     logger.error('scorePronunciation failed', { error: error.message, stack: error.stack });
