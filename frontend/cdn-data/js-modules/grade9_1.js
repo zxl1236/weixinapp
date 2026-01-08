@@ -7,117 +7,96 @@ module.exports = {
   "gradeName": "初中三年级上册",
   "total": 750,
   "lastUpdated": "2025-09-21T02:38:36.130Z",
-  "words": [
+  "sentences": [
     {
-      "word": "democracy",
-      "phonetic": "/dɪˈmɒkrəsi/",
-      "meaning": "民主",
+      "sentence": "In a *democracy*, people have the right to vote for their leaders.",
+      "sentenceType": "explanatory",
       "level": 9,
       "semester": 1,
-      "example": "",
       "difficulty": "normal",
-      "category": "general",
-      "partOfSpeech": "名词"
-    },
-   
-    {
-      "word": "government",
-      "phonetic": "/ˈɡʌvənmənt/",
-      "meaning": "政府",
-      "level": 9,
-      "semester": 1,
-      "example": "",
-      "difficulty": "normal",
-      "category": "general",
-      "partOfSpeech": "名词"
+      "category": "politics",
+      "highlightedWords": ["democracy"]
     },
     {
-      "word": "politics",
-      "phonetic": "/ˈpɒlətɪks/",
-      "meaning": "政治",
+      "sentence": "The *government* is responsible for making laws and policies.",
+      "sentenceType": "factual",
       "level": 9,
       "semester": 1,
-      "example": "",
       "difficulty": "normal",
-      "category": "general",
-      "partOfSpeech": "名词"
+      "category": "politics",
+      "highlightedWords": ["government"]
     },
     {
-      "word": "society",
-      "phonetic": "/səˈsaɪəti/",
-      "meaning": "社会",
+      "sentence": "*Politics* involves the activities of governing a country or area.",
+      "sentenceType": "definitional",
       "level": 9,
       "semester": 1,
-      "example": "",
       "difficulty": "normal",
-      "category": "general",
-      "partOfSpeech": "名词"
+      "category": "politics",
+      "highlightedWords": ["politics"]
     },
     {
-      "word": "citizen",
-      "phonetic": "/ˈsɪtɪzn/",
-      "meaning": "公民",
+      "sentence": "Our *society* values education and cultural development.",
+      "sentenceType": "descriptive",
       "level": 9,
       "semester": 1,
-      "example": "",
       "difficulty": "normal",
-      "category": "general",
-      "partOfSpeech": "名词"
+      "category": "social",
+      "highlightedWords": ["society"]
     },
     {
-      "word": "rights",
-      "phonetic": "/raɪts/",
-      "meaning": "权利",
+      "sentence": "Every *citizen* has duties and responsibilities to their country.",
+      "sentenceType": "general",
       "level": 9,
       "semester": 1,
-      "example": "",
       "difficulty": "normal",
-      "category": "general",
-      "partOfSpeech": "名词"
+      "category": "social",
+      "highlightedWords": ["citizen"]
     },
     {
-      "word": "responsibility",
-      "phonetic": "/rɪˌspɒnsəˈbɪləti/",
-      "meaning": "责任",
+      "sentence": "Human *rights* must be protected by law in all countries.",
+      "sentenceType": "imperative",
       "level": 9,
       "semester": 1,
-      "example": "",
       "difficulty": "normal",
-      "category": "general",
-      "partOfSpeech": "名词"
+      "category": "social",
+      "highlightedWords": ["rights"]
     },
     {
-      "word": "freedom",
-      "phonetic": "/ˈfriːdəm/",
-      "meaning": "自由",
+      "sentence": "Students should take *responsibility* for their own learning.",
+      "sentenceType": "advisory",
       "level": 9,
       "semester": 1,
-      "example": "",
       "difficulty": "normal",
-      "category": "general",
-      "partOfSpeech": "名词"
+      "category": "personal",
+      "highlightedWords": ["responsibility"]
     },
     {
-      "word": "justice",
-      "phonetic": "/ˈdʒʌstɪs/",
-      "meaning": "正义",
+      "sentence": "*Freedom* of speech is a fundamental right in democratic societies.",
+      "sentenceType": "factual",
       "level": 9,
       "semester": 1,
-      "example": "",
       "difficulty": "normal",
-      "category": "general",
-      "partOfSpeech": "名词"
+      "category": "politics",
+      "highlightedWords": ["freedom"]
     },
     {
-      "word": "equality",
-      "phonetic": "/iˈkwɒləti/",
-      "meaning": "平等",
+      "sentence": "The court ensures *justice* is served to all people equally.",
+      "sentenceType": "factual",
       "level": 9,
       "semester": 1,
-      "example": "",
       "difficulty": "normal",
-      "category": "general",
-      "partOfSpeech": "名词"
+      "category": "legal",
+      "highlightedWords": ["justice"]
+    },
+    {
+      "sentence": "*Equality* means treating everyone fairly and without discrimination.",
+      "sentenceType": "definitional",
+      "level": 9,
+      "semester": 1,
+      "difficulty": "normal",
+      "category": "social",
+      "highlightedWords": ["equality"]
     }
   ]
 };
