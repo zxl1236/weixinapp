@@ -1,9 +1,13 @@
 <view class="login-page">
+  <!-- <view class="bg-decor">
+    <view class="blob blob-1"></view>
+    <view class="blob blob-2"></view>
+  </view> -->
   <view class="login-container">
     <!-- Logo/标题区域 -->
     <view class="login-header">
       <view class="logo-icon">📚</view>
-      <view class="app-title">K12词汇学习系统</view>
+      <view class="app-title">K12词汇拼读系统</view>
       <view class="welcome-text">欢迎使用，请先完善个人信息</view>
     </view>
 

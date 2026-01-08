@@ -190,7 +190,32 @@ Page({
     // 先展示本地数据（快速）
     this.loadUserData();
 
-    // 再后台同步一次后端用户信息（防止“支付成功但回调延迟/本地缓存旧”导致看起来会员丢失）
+    // 如果没有 openid，引导登录并跳过后端同步
+    const openid = wx.getStorageSync('openid') || userManager.userData.openid;
+    if (!openid) {
+      // 在非交互场景（页面展示）仅提示但不强制跳转
+      wx.showModal({
+        title: '未登录',
+        content: '检测到您尚未登录，登录后可确保支付/会员信息同步。是否前往登录？',
+        confirmText: '去登录',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            wx.navigateTo({
+              url: '/pages/login/login?return=/pages/payment/payment',
+              success: () => {},
+              fail: (err) => {
+                console.error('navigateTo login failed', err);
+                wx.showToast({ title: '跳转登录失败，请稍后重试', icon: 'none' });
+              }
+            });
+          }
+        }
+      });
+      return;
+    }
+
+    // 有 openid 时再后台同步一次后端用户信息（防止“支付成功但回调延迟/本地缓存旧”导致看起来会员丢失）
     userManager.fetchUserFromBackend()
       .then(() => this.loadUserData())
       .catch(() => {

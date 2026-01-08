@@ -9,8 +9,14 @@ Page({
     isLogging: false
   },
 
-  onLoad() {
+  onLoad(options) {
     // 检查是否已经登录
+    // 读取传入的 return 路径（如支付页），登录成功后会跳回
+    options = options || {};
+    // 保存 returnUrl 至页面 data
+    if (options.return) {
+      this.setData({ returnUrl: decodeURIComponent(options.return) });
+    }
     this.checkLoginStatus();
   },
 
@@ -175,9 +181,21 @@ Page({
 
         // 延迟跳转，让用户看到成功提示
         setTimeout(() => {
-          wx.switchTab({
-            url: '/pages/index/index'
-          });
+          // 若有 returnUrl 参数，跳回到指定页面；否则回到首页
+          const returnUrl = this.data.returnUrl;
+          if (returnUrl) {
+            // 如果目标页是 tab 页面，使用 switchTab，否则使用 navigateTo
+            const isTab = ['/pages/index/index','/pages/home/index','/pages/profile/profile'].includes(returnUrl);
+            if (isTab) {
+              wx.switchTab({ url: returnUrl });
+            } else {
+              wx.navigateTo({ url: returnUrl });
+            }
+          } else {
+            wx.switchTab({
+              url: '/pages/index/index'
+            });
+          }
         }, 1500);
       } else {
         throw new Error('登录响应数据异常');

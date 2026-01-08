@@ -1,67 +1,76 @@
+/* 极简白 + 品牌色：全局 */
 .login-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f6f7fb;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40rpx;
+  padding: 44rpx;
   box-sizing: border-box;
 }
 
+/* 卡片容器：更“干净” */
 .login-container {
   width: 100%;
-  max-width: 600rpx;
+  max-width: 640rpx;
   background: #ffffff;
   border-radius: 32rpx;
-  padding: 60rpx 40rpx;
-  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.15);
+  padding: 64rpx 44rpx 52rpx;
+  box-sizing: border-box;
+
+  border: 1rpx solid #eef0f5;
+  box-shadow:
+    0 18rpx 48rpx rgba(39, 36, 17, 0.08),
+    0 6rpx 18rpx rgba(17, 24, 39, 0.05);
 }
 
-/* 头部区域 */
+/* 头部 */
 .login-header {
   text-align: center;
-  margin-bottom: 60rpx;
+  margin-bottom: 52rpx;
 }
 
 .logo-icon {
-  font-size: 120rpx;
-  margin-bottom: 24rpx;
+  font-size: 104rpx;
+  margin-bottom: 18rpx;
+  line-height: 1;
 }
 
 .app-title {
-  font-size: 48rpx;
-  font-weight: bold;
-  color: #333333;
-  margin-bottom: 16rpx;
+  font-size: 46rpx;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: 1rpx;
+  margin-bottom: 14rpx;
 }
 
 .welcome-text {
   font-size: 28rpx;
-  color: #666666;
+  color: #6b7280;
 }
 
-/* 表单区域 */
+/* 表单 */
 .login-form {
   width: 100%;
 }
 
 .form-item {
-  margin-bottom: 40rpx;
+  margin-bottom: 36rpx;
 }
 
 .form-label {
   font-size: 28rpx;
-  color: #333333;
-  margin-bottom: 16rpx;
-  font-weight: 500;
+  color: #111827;
+  margin-bottom: 14rpx;
+  font-weight: 600;
 }
 
 .required {
-  color: #ff4757;
-  margin-left: 4rpx;
+  color: #ef4444;
+  margin-left: 6rpx;
 }
 
-/* 头像选择 */
+/* 头像按钮：去掉默认样式 */
 .avatar-button {
   width: 100%;
   background: transparent;
@@ -70,11 +79,11 @@
   margin: 0;
   line-height: normal;
 }
-
 .avatar-button::after {
   border: none;
 }
 
+/* 头像：白底风格 + 品牌色细节 */
 .avatar-preview {
   width: 160rpx;
   height: 160rpx;
@@ -82,7 +91,10 @@
   margin: 0 auto;
   position: relative;
   overflow: hidden;
-  border: 4rpx solid #e5e7eb;
+
+  background: #ffffff;
+  border: 2rpx solid #eef0f5;
+  box-shadow: 0 10rpx 28rpx rgba(17, 24, 39, 0.08);
 }
 
 .avatar-img {
@@ -94,7 +106,7 @@
 .avatar-placeholder {
   width: 100%;
   height: 100%;
-  background: #f3f4f6;
+  background: #f8fafc;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -102,41 +114,50 @@
 }
 
 .avatar-icon {
-  font-size: 80rpx;
+  font-size: 72rpx;
   color: #9ca3af;
 }
 
+/* 右下角徽标：品牌色点缀 */
 .avatar-edit-badge {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 48rpx;
-  height: 48rpx;
-  background: #667eea;
+  bottom: 10rpx;
+  right: 10rpx;
+  width: 52rpx;
+  height: 52rpx;
+  background: #4f46e5;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24rpx;
-  border: 3rpx solid #ffffff;
+  border: 4rpx solid #ffffff;
+  box-shadow: 0 10rpx 18rpx rgba(79, 70, 229, 0.22);
 }
 
-/* 昵称输入 */
+/* 输入：极简、干净 */
 .nickname-input {
   width: 100%;
-  height: 88rpx;
+  height: 92rpx;
   background: #f9fafb;
   border: 2rpx solid #e5e7eb;
-  border-radius: 16rpx;
-  padding: 0 24rpx;
+  border-radius: 18rpx;
+  padding: 0 26rpx;
   font-size: 32rpx;
-  color: #333333;
+  color: #111827;
   box-sizing: border-box;
+
+  /* 轻微内阴影：让输入区域更明确 */
+  box-shadow: inset 0 2rpx 6rpx rgba(17, 24, 39, 0.04);
 }
 
-.nickname-input:focus {
-  border-color: #667eea;
+/* 聚焦态（建议配合 JS 绑定 focus/blur 切换类名） */
+.nickname-input.is-focus {
   background: #ffffff;
+  border-color: rgba(79, 70, 229, 0.75);
+  box-shadow:
+    0 0 0 6rpx rgba(79, 70, 229, 0.10),
+    inset 0 2rpx 6rpx rgba(17, 24, 39, 0.03);
 }
 
 .input-tip {
@@ -145,40 +166,4 @@
   margin-top: 12rpx;
 }
 
-/* 登录按钮 */
-.login-button {
-  width: 100%;
-  height: 96rpx;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 16rpx;
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #ffffff;
-  margin-top: 40rpx;
-  border: none;
-  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.3);
-}
-
-.login-button:active {
-  opacity: 0.9;
-  transform: scale(0.98);
-}
-
-.login-button.disabled {
-  background: #d1d5db;
-  color: #9ca3af;
-  box-shadow: none;
-}
-
-.login-button.disabled:active {
-  transform: none;
-}
-
-/* 提示信息 */
-.login-tip {
-  text-align: center;
-  margin-top: 40rpx;
-  font-size: 24rpx;
-  color: #9ca3af;
-}
-
+/* 主按钮：品牌色为主，克制但有力量 */

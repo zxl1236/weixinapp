@@ -117,10 +117,30 @@ async function createOrder(plan) {
     // 获取用户信息（避免 userInfo 常量未刷新导致 openid 为空）
     const openidToSend = getOpenidSafe();
     if (!openidToSend) {
-      const error = new Error('用户未登录，请先登录');
-      error.code = 'NOT_LOGGED_IN';
-      error.suggestion = '请返回首页点击"重新登录"按钮';
-      throw error;
+      // 引导用户去登录页，不直接抛错，返回失败结果以便调用方处理
+      wx.showModal({
+        title: '请先登录',
+        content: '检测到您尚未登录，登录后可完成支付。是否前往登录？',
+        confirmText: '去登录',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            // 跳转到登录页并在登录后返回支付页
+            wx.navigateTo({
+              url: '/pages/login/login?return=/pages/payment/payment',
+              success: () => {},
+              fail: (err) => {
+                console.error('navigateTo login failed', err);
+                wx.showToast({ title: '跳转登录失败，请稍后重试', icon: 'none' });
+              }
+            });
+          }
+        }
+      });
+      return {
+        success: false,
+        error: '用户未登录，请先登录'
+      };
     }
 
     const response = await new Promise((resolve, reject) => {

@@ -114,12 +114,10 @@ async function startServer() {
     const paymentRoutes = require('./routes/payment');
     const exportRoutes = require('./routes/export');
     const ttsRoutes = require('./routes/tts');
-    const asrRoutes = require('./routes/asr');
     app.use('/api/users', userRoutes);
     app.use('/api/admin', adminRoutes);
     app.use('/api/payment', paymentRoutes);
     app.use('/api/export', exportRoutes);
-    app.use('/api/asr', asrRoutes);
     app.use('/api/tts', ttsRoutes);
 
     // 路由之后注册404处理
